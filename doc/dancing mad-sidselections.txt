@@ -1,0 +1,266 @@
+
+Summary:
+
+Selection for 1-01: SSC
+Selection for 1-02: SSC
+Selection for 1-03: FFT
+Selection for 1-04: FFT
+Selection for 1-05: SSC
+Selection for 1-06: SSC
+Selection for 1-07: SSC
+Selection for 1-08: SSC
+Selection for 1-09: SSC
+Selection for 1-10: SSC
+Selection for 1-11: OCR
+Selection for 1-12: FFT
+Selection for 1-13: SSC
+Selection for 1-14: FFT
+Selection for 1-15: OCR
+Selection for 1-16: SSC
+Selection for 1-17: SSC
+Selection for 1-18: SSC
+Selection for 1-19: SSC
+Selection for 1-20: SSC
+Selection for 1-21: SSC
+Selection for 1-22: SSC
+Selection for 1-23: OCR
+Selection for 1-24: OCR
+Selection for 1-25: OCR
+Selection for 2-01: OCR
+Selection for 2-02: OCR
+Selection for 2-03: OCR
+Selection for 2-04: OST
+Selection for 2-05: OCR
+Selection for 2-06: OCR
+Selection for 2-11: OST
+Selection for 2-12: OST
+Selection for 2-13: OST (maybe OCR if amplified?)
+Selection for 2-14: OCR
+Selection for 2-15: OCR
+Selection for 2-16: OST
+Selection for 2-17: OCR
+Selection for 2-18: OST
+Selection for 2-19: OCR
+Selection for 2-20: OCR
+Selection for 3-01: OCR
+Selection for 3-02: OCR
+Selection for 3-03: OCR
+Selection for 3-04: OCR
+Selection for 3-05: OCR
+Selection for 3-06: OST
+Selection for 3-07: OST
+Selection for 3-08: OST
+Selection for 3-09: OCR
+Selection for 3-10: OCR
+Selection for 3-11: OCR
+Selection for 3-12: OCR
+Selection for 3-13: OCR
+Selection for 3-14: OCR
+Selection for 3-15: OCR
+Selection for 3-16: OCR
+
+
+
+Track by track (up to 2-01 when selection became binary):
+
+1-01 Opening
+
+OST .     (Baseline)
+FFT ..    (Certain effects too loud, poorly mixed)
+SSC ....  (Selected!)
+OCR ...   (Too long by a full minute)
+
+
+1-02 The Mines of Narshe
+
+OST .     (Baseline)
+FFT ..    (Poor mastering again, also an oddly placed "outro")
+SSC ...   (Selected!)
+OCR ..    (Completely different genre, doesn't fit, also too long)
+
+
+1-03 Awakening
+
+OST .     (Baseline)
+FFT ....  (Selected!)
+SSC ...   (Not too hot on the twinkly terra theme)
+OCR ..    (Was almost beating FFT until the sudden genre shift to 80s Soft Rock around 2:00)
+
+
+1-04 Locke
+
+OST .     (Baseline)
+FFT ...   (Selected!)
+SSC ..    (Too much strings, too high pitched/whiny sounding, every string hit sounds like a million cats)
+OCR       (What the hell is this? Very odd genre)
+
+
+1-05 Battle
+
+OST .     (Baseline)
+FFT ..    (Hard decision between it and SSC, but slightly poor mastering on certain string hits)   
+SSC ...   (Selected!)
+OCR .     (Too epic, probably more suited for a boss theme honestly)
+
+
+1-06 Fanfare
+
+OST .     (Baseline)
+FFT ..    (Again with the poor mastering :( FFT needs to lower his trumpets/brass)
+SSC ...   (Selected!... Though honestly the trumpets are a bit loud in this too.)
+OCR       (Neat, but vocals disqualify it immediately)
+
+
+1-07 Edgar & Sabin
+
+OST .     (Baseline)
+FFT ..    (Not "regal" enough)
+SSC ...   (Selected!)
+OCR ..    (Too complex)
+
+
+1-08 Kefka
+
+OST .     (Baseline)
+FFT ..    (Just not quite as sinister sounding as SSC version)
+SSC ...   (Selected!)
+OCR       (Sooo close to making it, but too quiet+vocals+sudden genre switch)
+
+
+1-09 Mt Koltz
+
+OST .     (Baseline)
+FFT ..    (A bit muddy)
+SSC ...   (Selected!)
+OCR       (Wrong genre)
+
+
+1-10 The Returners
+
+OST .     (Baseline)
+FFT ..    (Arguably a bit fast)
+SSC ...   
+OCR       (Wrong effing genre. Again. And vocals.)
+
+
+1-11 Shadow
+
+OST .     (Baseline)
+FFT       (Guitar effect is just wrong, everything is too fairylike, not western enough.)
+SSC ..    (Barely better than OST... Apparently this is a hard track to get right.)
+OCR ...   (OCRemix's first win!)
+
+
+1-12 Troops March On
+
+OST .     (Baseline)
+FFT ..    (Selected!)
+SSC .     (Too quiet. Not bombastic enough.)
+OCR       (Interesting, but wrong genre.)
+
+
+1-13 Cyan/Cayenne
+
+OST .     (Baseline)
+FFT       (Not "japanese" enough)
+SSC ..    (Selected!)
+OCR -     (What the hell!? (Wrong genre, very wrong))
+
+
+1-14 The Unforgiven
+
+OST .     (Baseline)
+FFT ...   (Selected!)
+SSC ..    (Not quite bombastic enough)
+OCR       (... No. (Wrong genre, again very much so))
+
+
+1-15 The Phantom Forest/Mystic Forest
+
+OST .     (Baseline)
+FFT       (Not really feeling those vocal samples, FFT, Ah ah ah ah ah...)
+SSC ..    (Pretty good, but not as good as OCR)
+OCR ...   (Selected!) 
+
+
+1-16 The Phantom Train
+
+OST .     (Baseline)
+FFT ..    (Brass seems a bit off sometimes)
+SSC ...   (Selected!)
+OCR       (Wrong genre)
+
+
+1-17 Wild West (And then there were 3! No FFT for this and tracks after)
+
+OST .     (Baseline)
+SSC ..    (Selected!)
+OCR       (Wrong genre)
+
+
+1-18 Gau
+
+OST .     (Baseline)
+SSC ...   (Selected!)
+OCR ..    (Very close, but not quite)
+
+
+1-19 The Serpent Trench
+
+OST .     (Baseline)
+SSC ..    (Selected!)
+OCR       (We don't want to *downgrade* the audio fidelity... No chiptunes kthx.)
+
+
+1-20 Kids Run Through The City
+
+OST .     (Baseline)
+SSC ..    (Selected!)
+OCR .     (Close but no cigar)
+
+
+1-21 Under Martial Law
+
+OST .     (Baseline)
+SSC ..    (Selected!)
+OCR       (Wrong genre)
+
+
+1-22 Celes (no OCR here)
+
+OST .     (Baseline)
+SSC ..    (Selected!)
+
+
+1-23 Save Them!
+
+OST .     (Baseline)
+SSC .     (Not sure, the strings are a bit whiny...)
+OCR ..    (A bit different, but a definite improvement over OST)
+
+
+1-24 The Decisive Battle
+
+OST .     (Baseline)
+SSC ..    (Great, but I fell in love with the OCR one during testing)
+OCR ...   (Selected!)
+
+
+1-25 Metamorphosis
+
+OST .     (Baseline)
+SSC ..    (Good, but..)
+OCR ...   (Selected! Goes against my genre and vocal rules but... I dunno, I just think it's an awesome version!)
+
+Selection for 1-25: OCR
+
+2-01 Terra (From this point on, it's OST or OCR! Basically just voting on "does it improve upon the OST" at this point)
+
+OST .     (Baseline)
+OCR ..    (Selected!)
+
+Selection for 2-01: OCR
+
+
+
+

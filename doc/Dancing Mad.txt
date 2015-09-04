@@ -1,0 +1,174 @@
+Dancing Mad - The FF6 Soundtrack Mod! Patches and compilation by
+Dylan Morrison, conversions by Dylan Morrison and Covarr, 
+songs copyright their respective authors, see AUTHORS.txt.
+
+FF3us Important RAM Map:
+$1300: MusInstrumentSet
+$1301: MusSongID/SfxID - Passed to SPC routines to play music/long sound effects. Different look up table for each, below is for music (as that's what we're handling)
+$1302: MusVolume/SfxVolume
+$1303: 00?
+$1304: CurrentMusInstrumentSet
+$1305: CurrentMusID - Currently playing music.
+$1306: CurrentMusVolume
+$1307: 00?
+$1308: LastMusInstrumentSet
+$1309: LastMusID - Music that was playing last.
+$130a: LastMusVolume
+
+Important hardware registers:
+$2140-$2144: SPC Communications Registers
+
+Routines we're overriding:
+Bank 5 Address 180: Play new track
+
+ROM we're using:
+Bank 18 Address FA72: 1.5KB
+
+Bugs:
+Playing SPC music and MSU-1 music together after battle. Currently worked around but I'm not happy with the workaround, we need to find a permanent fix, involving finding whatever routine is re-enabling SPC music.
+Playing Prelude (or silence) after game load. Proposed fix is to save our variables in place of the game's on save.
+
+
+Tracks:
+00 - Silence
+01 - The Prelude
+02 - Opening Part 01 (Title Screen)
+03 - Opening Part 02 (War of the Magi)
+04 - Opening Part 03 (Magitek March)
+05 - Awakening 
+06 - Terra
+07 - Shadow
+08 - Stragus
+09 - Gau
+0a - Edgar & Sabin
+0b - Coin Song
+0c - Cyan/Cayenne
+0d - Locke
+0e - Forever Rachel
+0f - Relm
+10 - Setzer
+11 - Epitaph
+12 - Celes
+13 - Techno de Chocobo
+14 - Decisive Battle
+15 - Johnny C Bad
+16 - Kefka
+17 - Narshe
+18 - Mystic Forest
+19 - Wild West
+1a - Save Them
+1b - The Gestahl Empire
+1c - Troops March On
+1d - Under Martial Law
+1e - Rain Effect (PASS!)
+1f - Metamorphosis
+20 - Train Effect? Mystery Train intro? (Special handling)
+21 - Esper World
+22 - Grand Finale
+23 - Mt Koltz
+24 - Battle
+25 - Unlisted Fanfare (PASS!)
+26 - The Wedding Waltz Part 1
+27 - Aria de Mezzo Carattare
+28 - The Serpent Trench
+29 - Slam Shuffle
+2a - Kids Run Through The City Corner
+2b - What?/??
+2c - Grand Finale 1 (Crowd Roar? PASS!) (Possibly special handling?)
+2d - Gogo
+2e - Returners
+2f - Fanfare
+30 - Umaro
+31 - Mog
+32 - The Unforgiven
+33 - The Fierce Battle
+34 - From That Day Forward/The Day After
+35 - Blackjack
+36 - Catastrophe
+37 - The Magic House
+38 - Nighty Night (Inn Sleep Effect. PASS!)
+39 - Wind (Wind. PASS!)
+3a - Windy Shores (More wind. PASS!)
+3b - Dancing Mad Parts 1 through 3 (Special handling)
+3c - Raft effects (PASS!)
+3d - Spinach Rag
+3e - Rest in Peace
+3f - Train running (PASS!)
+40 - Dream of a train (miscellaneous phantom train scene effects, PASS!)
+41 - Overture Part 1
+42 - Part 2
+43 - Part 3
+44 - Wedding Waltz Part 2
+45 - Part 3
+46 - Part 4
+47 - Devil's Lab/Magitek Research Facility
+48 - Fire effect (PASS!)
+49 - Machine effect (PASS!)
+4a - Burning house background effects (PASS!)
+4b - New Continent/The Floating Continent
+4c - Searching for Friends
+4d - Fanatics
+4e - Last Dungeon
+4f - Dark World
+50 - Dancing Mad 4.2
+51 - Silence
+52 - Dancing Mad 4.1
+53 - Ending Part 1
+54 - Ending Part 2
+
+To Pass List:
+
+Probably:
+2C
+
+Definitely:
+1e
+25
+38
+39
+3A
+3C
+3F
+40
+48
+49
+4A
+
+Special handling:
+20
+3B
+
+
+Needs to be redone (multiple parts!):
+
+Opening
+Waltz
+Overture
+
+
+Notes:
+
+$1305 seems to be set *based* on $1301, I think we just have to hook ONLY the music (not effects) subroutine, check if $1301 is something we handle, play it if we do (and we're not already playing it), then clear $1301/$1302 to 00 and return to the SPC routine. If we *don't*, then return to the SPC routine and *don't touch anything*
+
+Special handling. 20 and 3b: Phantom Train and Dancing Mad Tier 1-3. They appear to use some sort of command to switch loops within a song.
+
+Certain bits seem to wait for a song to end. The opening seems to loop the first bit until a song ends (or maybe until it can change a track? Did the chicken come before the egg or the egg before the chicken? Can't tell at this stage). This is doable with the MSU-1 as long as it isn't in looping mode (wait for PLAYING flag to clear), but we need to figure out how to signal to the game that the song has ended.
+
+There seems to be a routine called after battle that's reading *something* (not our current, last, or immediate playing variables but something that seems to be copied from them at least) and re-enabling SPC music. We need to find this routine and hook it.
+
+We need to hook the save routine and fix it.
+
+Prelude being played after Terra awakes, during her flashback? Fixed by replacing Prelude?
+
+Still playing Narshe theme on first entrance to world map? Until entering figaro, then leaving?
+
+
+Before Release We Need:
+
+
+1. Special handling working for at *least* Dancing Mad, we might be able to just work around The Phantom Train but we need to be able to play 3 different loops for the Dancing Mad tiers even though there's only one internal track for it.
+
+2. All of the music for all of the versions looped and trimmed.
+
+3. A full playthrough of the entire game with everything working, and MSU-1 music working for everything *but* the opera.
+

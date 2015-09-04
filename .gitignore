@@ -1,0 +1,21 @@
+# Ignore rom folder, music folder, .pcm files, .exes, .sfcs, .smcs, .figs, .roms, .bins and .pycs
+# Reasons:
+# 	.pcm files are large, and are meant to be mirrored seperately from the Git project.
+#       .exe files are mostly utilities for which I don't have the license, and I don't wish to complicate things with trying to include source code and/or LICENSE files.
+#       .sfc, .smc, .rom, .bin and .fig files are the ROM images (patched and unpatched) themselves, and are therefore (other than the tester) copyrighted content.
+#       .pycs are cached precompiled python files, and unneeded for distribution.
+#       rom folder contains copyrighted content.
+#       music folder will likely be empty, since it just contains pcms.
+rom/
+music/
+**/*.pyc
+**/*.pcm
+**/*.exe
+**/*.sfc
+!patch/test/msuplay.sfc # See below
+**/*.smc
+**/*.fig
+!patch/test/msuplay.fig # Allow binaries of the testing ROM, it is entirely my own code.
+**/*.rom
+**/*.bin
+**/*.pyc
