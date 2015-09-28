@@ -21,3 +21,7 @@ music/
 **/*.bin
 **/*.pyc
 installer/dist/
+utils/wla-dx-9.5-win32-bin-2013-SVN-rev8-WJ/
+utils/src/
+*.zip
+*.srm
