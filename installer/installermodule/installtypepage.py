@@ -2,6 +2,7 @@
 
 from PyQt5 import QtWidgets
 
-class finalPage(QtWidgets.QWizardPage):
+class installtypePage(QtWidgets.QWizardPage):
         def __init__(self):
               super().__init__()
+              self.setCommitPage(True)

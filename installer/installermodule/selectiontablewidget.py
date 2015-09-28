@@ -12,7 +12,7 @@ class selectionTableWidget(QtWidgets.QTableWidget):
                 self.setGeometry(QtCore.QRect(0, 10, 551, 401))
                 self.setCornerButtonEnabled(False)
                 self.setObjectName("tableWidget")
-                self.setColumnCount(4)
+                self.setColumnCount(5)
                 self.setRowCount(59)
                 item = QtWidgets.QTableWidgetItem()
                 self.setVerticalHeaderItem(0, item)
@@ -140,6 +140,8 @@ class selectionTableWidget(QtWidgets.QTableWidget):
                 self.setHorizontalHeaderItem(2, item)
                 item = QtWidgets.QTableWidgetItem()
                 self.setHorizontalHeaderItem(3, item)
+                item = QtWidgets.QTableWidgetItem()
+                self.setHorizontalHeaderItem(4, item)
                 self.horizontalHeader().setDefaultSectionSize(40)
                 self.horizontalHeader().setMinimumSectionSize(10)
                 self.horizontalHeader().setStretchLastSection(False)
@@ -154,6 +156,8 @@ class selectionTableWidget(QtWidgets.QTableWidget):
                 item.setText("SSC")
                 item = self.horizontalHeaderItem(3)
                 item.setText("OCR")
+                item = self.horizontalHeaderItem(4)
+                item.setText("OTH")
                 # End static crap.
 
                 # Initialize song list and fill with 0s.
@@ -192,7 +196,11 @@ class selectionTableWidget(QtWidgets.QTableWidget):
                                                 self.setItem(rowindex, colindex, item)
                                         colindex = colindex + 1
                                 rowindex = rowindex + 1
-                        print("DEBUG: Init Finished")
+
+        
+        @QtCore.pyqtProperty(QtCore.QVariant)
+        def SongList(self):
+                return QtCore.QVariant(self.songList)
 
         def buttonClicked(self):
                 button = self.sender()

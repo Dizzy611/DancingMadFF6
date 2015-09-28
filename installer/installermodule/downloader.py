@@ -85,7 +85,8 @@ class Downloader():
                         except:
                                 pass
                         self.status = self.Error
-                        self.errormessage = "cURL Error: " + e.args[1]
+                        print("DEBUG: Downloader encountered ERROR Details: URL: " + url +"," + " Destination: " + fulldestination)
+                        self.errormessage = "cURL Error: " + e.args[1] 
                         threadQueue.task_done()
 
         def progressFunction(self, download_t, download_d, upload_t, upload_d):

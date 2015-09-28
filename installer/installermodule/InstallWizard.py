@@ -235,11 +235,11 @@ class Ui_InstallWizard(object):
 "</style></head><body style=\" font-family:\'Sans Serif\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt;\">TO BE FILLED IN</span></p></body></html>"))
 
-from customselectionpage import customselectionPage
-from readmepage import readmePage
-from finalpage import finalPage
-from downloadpage import downloadPage
-from licensepage import licensePage
-from selectiontablewidget import selectionTableWidget
-from installtypepage import installtypePage
-from destinationpage import destinationPage
+from installermodule.customselectionpage import customselectionPage
+from installermodule.readmepage import readmePage
+from installermodule.finalpage import finalPage
+from installermodule.downloadpage import downloadPage
+from installermodule.licensepage import licensePage
+from installermodule.selectiontablewidget import selectionTableWidget
+from installermodule.installtypepage import installtypePage
+from installermodule.destinationpage import destinationPage

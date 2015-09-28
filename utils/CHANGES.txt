@@ -1,0 +1,5 @@
+﻿LiteIPS Changelog
+
+v0.1.0.4 beta (07/25/2014)
+
+Initial release.

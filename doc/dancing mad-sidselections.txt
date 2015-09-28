@@ -1,6 +1,3 @@
-
-Summary:
-
 Selection for 1-01: SSC
 Selection for 1-02: SSC
 Selection for 1-03: FFT
@@ -32,6 +29,8 @@ Selection for 2-03: OCR
 Selection for 2-04: OST
 Selection for 2-05: OCR
 Selection for 2-06: OCR
+Selection for Opera: OTH
+Selection for 2-10: OTH
 Selection for 2-11: OST
 Selection for 2-12: OST
 Selection for 2-13: OST (maybe OCR if amplified?)

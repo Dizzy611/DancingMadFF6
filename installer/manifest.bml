@@ -1,0 +1,85 @@
+unverified
+
+cartridge region=NTSC
+  rom name=program.rom size=0x300000
+  ram name=save.ram size=0x2000
+  map id=rom address=00-3f,80-bf:8000-ffff
+  map id=rom address=40-7f,c0-ff:0000-ffff
+  map id=ram address=10-3f,90-bf:6000-7fff mask=0xe000
+
+  msu1
+    rom name=ff3msu.msu size=0x000
+    map id=io address=00-3f,80-bf:2000-2007
+    track number=1 name=ff3-1.pcm
+    track number=2 name=ff3-2.pcm
+    track number=3 name=ff3-3.pcm
+    track number=4 name=ff3-4.pcm
+    track number=5 name=ff3-5.pcm
+    track number=6 name=ff3-6.pcm
+    track number=7 name=ff3-7.pcm
+    track number=8 name=ff3-8.pcm
+    track number=9 name=ff3-9.pcm
+    track number=10 name=ff3-10.pcm
+    track number=11 name=ff3-11.pcm
+    track number=12 name=ff3-12.pcm
+    track number=13 name=ff3-13.pcm
+    track number=14 name=ff3-14.pcm
+    track number=15 name=ff3-15.pcm
+    track number=16 name=ff3-16.pcm
+    track number=17 name=ff3-17.pcm
+    track number=18 name=ff3-18.pcm
+    track number=19 name=ff3-19.pcm
+    track number=20 name=ff3-20.pcm
+    track number=21 name=ff3-21.pcm
+    track number=22 name=ff3-22.pcm
+    track number=23 name=ff3-23.pcm
+    track number=24 name=ff3-24.pcm
+    track number=26 name=ff3-26.pcm
+    track number=27 name=ff3-27.pcm
+    track number=28 name=ff3-28.pcm
+    track number=29 name=ff3-29.pcm
+    track number=31 name=ff3-31.pcm
+    track number=32 name=ff3-32.pcm
+    track number=33 name=ff3-33.pcm
+    track number=34 name=ff3-34.pcm
+    track number=35 name=ff3-35.pcm
+    track number=36 name=ff3-36.pcm
+    track number=38 name=ff3-38.pcm
+    track number=39 name=ff3-39.pcm
+    track number=40 name=ff3-40.pcm
+    track number=41 name=ff3-41.pcm
+    track number=42 name=ff3-42.pcm
+    track number=43 name=ff3-43.pcm
+    track number=45 name=ff3-45.pcm
+    track number=46 name=ff3-46.pcm
+    track number=47 name=ff3-47.pcm
+    track number=48 name=ff3-48.pcm
+    track number=49 name=ff3-49.pcm
+    track number=50 name=ff3-50.pcm
+    track number=51 name=ff3-51.pcm
+    track number=52 name=ff3-52.pcm
+    track number=53 name=ff3-53.pcm
+    track number=54 name=ff3-54.pcm
+    track number=55 name=ff3-55.pcm
+    track number=61 name=ff3-61.pcm
+    track number=62 name=ff3-62.pcm
+    track number=65 name=ff3-65.pcm
+    track number=66 name=ff3-66.pcm
+    track number=67 name=ff3-67.pcm
+    track number=68 name=ff3-68.pcm
+    track number=69 name=ff3-69.pcm
+    track number=70 name=ff3-70.pcm
+    track number=71 name=ff3-71.pcm
+    track number=75 name=ff3-75.pcm
+    track number=76 name=ff3-76.pcm
+    track number=77 name=ff3-77.pcm
+    track number=78 name=ff3-78.pcm
+    track number=79 name=ff3-79.pcm
+    track number=82 name=ff3-82.pcm
+    track number=83 name=ff3-83.pcm
+    track number=101 name=ff3-101.pcm
+    track number=102 name=ff3-102.pcm
+    track number=103 name=ff3-103.pcm
+
+information
+  title: ff3msu

@@ -6,6 +6,7 @@
 #       .pycs are cached precompiled python files, and unneeded for distribution.
 #       rom folder contains copyrighted content.
 #       music folder will likely be empty, since it just contains pcms.
+testpath/
 rom/
 music/
 **/*.pyc
@@ -19,3 +20,4 @@ music/
 **/*.rom
 **/*.bin
 **/*.pyc
+installer/dist/
