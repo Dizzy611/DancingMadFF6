@@ -29,17 +29,19 @@
 
 .DEFINE OriginalNMIHandler $1500
 
-; Might have to change these, but they look safe for now, the game appears to initialize them to 0 and then not use them.
+; Was using $1E00-$1E07 earlier, but these are used for storing Veldt monsters. $1E20-$1E27 are unused. 
+; $7E8051 appears to be unused and is used so that the data for what track the MSU is currently playing 
+; can persist across saved games.
 
-.DEFINE MSUExists        $1E00
-.DEFINE MSUCurrentTrack  $1E01
-.DEFINE MSUCurrentVolume $1E02
-.DEFINE SPCTrackTemp     $1E03
-.DEFINE SPCVolumeTemp    $1E04
-.DEFINE FadeType         $1E05
-.DEFINE FadeVolume       $1E06
-.DEFINE TrackFade        $1E07
-
+.DEFINE MSUExists        $1E20
+.DEFINE MSUCurrentTrack  $1E21
+.DEFINE MSUCurrentVolume $1E22
+.DEFINE SPCTrackTemp     $1E23
+.DEFINE SPCVolumeTemp    $1E24
+.DEFINE FadeType         $1E25
+.DEFINE FadeVolume       $1E26
+.DEFINE TrackFade        $1E27
+.DEFINE MSULastTrackSet  $7E8051
 ; MSU Registers
 
 .DEFINE MSUStatus        $2000
@@ -129,7 +131,7 @@ MSUMain:
 MSUFound:
 	; Are we playing it?
 	lda PlayTrack
-	cmp MSUCurrentTrack
+	cmp MSULastTrackSet
 	; If not, skip to NotPlaying
 	bne NotPlaying
 	; Are we *really* playing it?
@@ -162,6 +164,8 @@ ContinueToPlay:
 	jmp ShutUpAndLetMeTalk
 SetTrack:
 	sta MSUTrack
+    ; Write the last track set to an unused area of HiRAM, this should persist even after a load game.
+    sta MSULastTrackSet
 	stz MSUTrack+1
 	; Wait for the MSU to either be done loading or to return a track error
 WaitMSU:
@@ -260,6 +264,7 @@ WILStop:
 ShutUp:
 	stz MSUVolume
 	stz MSUTrack
+    stz MSULastTrackSet
 	stz MSUTrack+1
 	stz MSUControl
 SilenceAndReturn:
@@ -277,6 +282,7 @@ OriginalCode:
 ShutUpAndLetMeTalk:
 	stz MSUVolume
 	stz MSUTrack
+    stz MSULastTrackSet
 	stz MSUTrack+1
 	stz MSUControl
 	jmp OriginalCode
