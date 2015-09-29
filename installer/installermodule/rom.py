@@ -7,6 +7,9 @@ import struct
 # LoROM support is back, instead of using the struct.error sanity check we now check for the presence
 # of the fixed value 0x33 at position 26 in the header.
 #
+# UPDATE: Found at least one valid LoROM for which the value at position 26 is not 0x33, thanks for
+# being wrong wiki I found. Checking based on the checksum and inverse checksum summing to 0xFFFF instead.
+#
 # Also modified to read Destcode and checksum, and a checksum calculator and destcode reader function 
 # were added.
 #
@@ -213,20 +216,20 @@ class SNESRom:
         taking into account the presence of an SMC header.
         """
         offset = SNES_HEADER_OFFSET_LOROM
-        print('Attempting to teading SNES header at LoROM offset %s (has SMC header: %s)...' %
+        print('Attempting to read SNES header at LoROM offset %s (has SMC header: %s)...' %
                   (hex(offset), bool(self.has_smc_header)))
         try:
             self.rom.seek(offset + self.has_smc_header*SMC_HEADER_SIZE)
             header = self.rom.read(SNES_HEADER_SIZE_PARSED)
             data = struct.unpack(SNES_HEADER_FORMAT, header)
-            if (data[6] != 0x33) or ((data[8] + data[9]) != 0xFFFF): # Probably HIROM
-                print('Attempting to teading SNES header at HiROM offset %s (has SMC header: %s)...' %
-                  (hex(offset), bool(self.has_smc_header)))
+            if (data[8] + data[9]) != 0xFFFF: # Probably HIROM
                 offset = SNES_HEADER_OFFSET_HIROM
+                print('Attempting to read SNES header at HiROM offset %s (has SMC header: %s)...' %
+                  (hex(offset), bool(self.has_smc_header)))
                 self.rom.seek(offset + self.has_smc_header*SMC_HEADER_SIZE)
                 header = self.rom.read(SNES_HEADER_SIZE_PARSED)
                 data = struct.unpack(SNES_HEADER_FORMAT, header)
-                if (data[6] != 0x33) or ((data[8] + data[9]) != 0xFFFF): # Invalid Header.
+                if (data[8] + data[9]) != 0xFFFF: # Invalid Header.
                     raise InvalidHeaderFormatException
                 else:
                     print('SNES HiROM header data: %s.' % repr(data))
