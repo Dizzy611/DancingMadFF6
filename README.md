@@ -33,3 +33,9 @@ Welcome to the repository for Dancing Mad. If you've been invited to this privat
 ### Contact ###
 
 * Contact insidious@gmail.com via email for help, or if you want a more live conversation approach me on the #qhimm.com IRC on irc.esper.net. I much prefer IRC to any other line of communication for this project. If necessary I also have a Skype, Insidious615.
+
+
+
+### A final note ###
+
+* Due to personal issues outside my control, I may take unscheduled hiatuses from this project for months at a time. Please continue to report issues during this time. 
