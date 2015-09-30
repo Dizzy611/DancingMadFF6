@@ -33,7 +33,8 @@
 ; $7EF001 appears to be unused and is used so that the data for what track the MSU is currently playing 
 ; can persist across saved games.
 
-.DEFINE MSUExists        $1E20
+; EXPERIMENTAL TEST: Remove MSUExists variable, do direct checks against the MSU each track jump instead.
+;.DEFINE MSUExists $1E20
 .DEFINE MSUCurrentTrack  $1E21
 .DEFINE MSUCurrentVolume $1E22
 .DEFINE SPCTrackTemp     $1E23
@@ -125,11 +126,8 @@ done\@:
 ; Main Code
 
 MSUMain:
-	; Has the MSU already been found? If so, skip this step
-	lda MSUExists
-	cmp #$01
-	beq MSUFound
 	; Check for MSU presence
+    ; REMINDER. We removed the variable here to check if this fixes the SD2SNES bug.
 	jsr MSUCheck
 	cmp #$01
 	beq MSUFound
@@ -258,12 +256,10 @@ MSUCheck:
 	lda MSUID+5
 	cmp #$31	; '1'
 	bne +
-	lda #$01
-	sta MSUExists
+    lda #$01
 	rts
 +
 	lda #$00
-	stz MSUExists
 	rts
 
 ; Check if the track to play is in our list of non-looping tracks, if so return $01 in A, if not, return $03 in A. Also, certain tracks essentially mean "stop", so handle those too.
