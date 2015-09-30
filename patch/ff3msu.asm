@@ -165,6 +165,7 @@ ContinueToPlay:
 SetTrack:
 	sta MSUTrack
     ; Write the last track set to an unused area of HiRAM, this should persist even after a load game.
+    sta MSULastTrackSet
 	stz MSUTrack+1
 	; Wait for the MSU to either be done loading or to return a track error
 WaitMSU:
@@ -183,7 +184,6 @@ KeepWaiting:
 	ChangeVolume PlayVolume
 	; Set our currently playing track to this one.
 	lda PlayTrack
-    sta MSULastTrackSet
 	sta MSUCurrentTrack
 	; Check against our looping track list. This subroutine will return the proper MSUControl value in A.
 	jsr WillItLoop
