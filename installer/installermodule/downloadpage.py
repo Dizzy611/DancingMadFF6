@@ -4,7 +4,6 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import pyqtSignal, QTimer
 import os
 from installermodule.downloader import Downloader
-from installermodule import rom
 from decimal import Decimal
 from queue import Queue
 import ips
@@ -144,28 +143,10 @@ class downloadPage(QtWidgets.QWizardPage):
                   try:
                     self.currentLabel.setText("Patching: Copying ROM to destination path...")
                     shutil.copy2(self.field("romPath"), destromPath)
-                    self.currentBar.setValue(25)
+                    self.currentBar.setValue(33)
                     self.currentLabel.setText("Patching: Copying Patch to destination path...")
                     shutil.copy2("ff3msu.ips", self.field("destPath"))
-                    self.currentBar.setValue(50)
-                    self.currentLabel.setText("Patching: Checking for SMC header...")
-                    myrom = rom.SNESRom(self.field("romPath"))
-                    myrom.parse()
-                    if myrom.has_smc_header:
-                        unheaderedPath = os.path.join(self.field("destPath"), "temp.sfc")
-                        self.currentBar.setText("Patching: Found SMC header, removing...")
-                        newfile = open(unheaderedPath, "wb")
-                        romfile = open(destromPath, "rb")
-                        _ = romfile.read(512) # Skip the header
-                        newfile.write(romfile.read()) # Write everything else to the new file
-                        newfile.close()
-                        romfile.close()
-                        os.remove(destromPath)
-                        os.rename(unheaderedPath, destromPath)
-                        self.currentBar.setText("Patching: Header removed.")
-                    else:
-                        self.currentBar.setText("Patching: No SMC header found.")
-                    self.currentBar.setValue(75)
+                    self.currentBar.setValue(66)
                     self.currentLabel.setText("Patching: Applying patch...")
                     # TODO: Apply different patch with SD2SNES volume values if we're installing for SD2SNES
                     ips.apply(patchPath, destromPath)

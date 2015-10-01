@@ -59,12 +59,8 @@ class destinationPage(QtWidgets.QWizardPage):
                        else:
                           romlabel += "(Acceptable: No :( )"
                           self.romValid = False
-                       if (greenLights == 4) and (computedchecksum == FF3_MSU_ALPHA_CHECKSUM):
-                          romlabel = "Unacceptable Prepatched ROM Detected: Final Fantasy 3 (U) (V1.0) (Dancing Mad) (Alpha)"
-                       if myrom.has_smc_header == True:
-                          romlabel += " (Headered: Yes)"
-                       else:
-                          romlabel += " (Headered: No)"
+                       if (greenLights == 4) and (computedchecksum == FF3_MSU_CURRENT_CHECKSUM):
+                          romlabel = "Unacceptable Prepatched ROM Detected: Final Fantasy 3 (U) (V1.0) (Dancing Mad) (Checksum: Fail)"
                        self.ROMDetected.setText(romlabel)
                 if self.field("destPath") == "":
                    return False

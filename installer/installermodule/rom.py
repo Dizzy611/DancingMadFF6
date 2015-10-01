@@ -4,11 +4,11 @@ import os
 import struct
 
 # Modified (hacked, more like) by Dylan Morrison for specific use in the Dancing Mad installer.
-# LoROM support is back, instead of using the struct.error sanity check we now check for the presence
-# of the fixed value 0x33 at position 26 in the header.
+# No longer supports LoROMs, because the way this checked for LoROMs was a python2-ism that
+# doesn't work in Python3, and I don't have time for now to fix it for Python3. Should be able
+# to fix that soon, as there are other (better) ways to sanity-check.
 #
-# Also modified to read Destcode and checksum, and a checksum calculator and destcode reader function 
-# were added.
+# Also modified to read Destcode and checksum, and a checksum calculator function was added.
 #
 
 __author__ = ('David Anderson <dave@natulte.net>',
@@ -146,7 +146,7 @@ def decode_destcode(destcode):
     elif destcode == 13:
         return("K")
     elif destcode == 14:
-        return("Unk") # Maybe should be W or JUE?
+        return("Unk")
     elif destcode == 15:
         return("C")
     elif destcode == 16:
@@ -208,35 +208,23 @@ class SNESRom:
         else:
             raise InvalidRomFileException
 
-    def _read_header(self):
+    def _read_header_at(self, offset):
         """Read and unpack the SNES header at the given offset, eventually
         taking into account the presence of an SMC header.
         """
-        offset = SNES_HEADER_OFFSET_LOROM
-        print('Attempting to teading SNES header at LoROM offset %s (has SMC header: %s)...' %
+        print('Reading SNES header at offset %s (has SMC header: %s)...' %
                   (hex(offset), bool(self.has_smc_header)))
+
         try:
             self.rom.seek(offset + self.has_smc_header*SMC_HEADER_SIZE)
             header = self.rom.read(SNES_HEADER_SIZE_PARSED)
+            print(len(header))
             data = struct.unpack(SNES_HEADER_FORMAT, header)
-            if (data[6] != 0x33) or ((data[8] + data[9]) != 0xFFFF): # Probably HIROM
-                print('Attempting to teading SNES header at HiROM offset %s (has SMC header: %s)...' %
-                  (hex(offset), bool(self.has_smc_header)))
-                offset = SNES_HEADER_OFFSET_HIROM
-                self.rom.seek(offset + self.has_smc_header*SMC_HEADER_SIZE)
-                header = self.rom.read(SNES_HEADER_SIZE_PARSED)
-                data = struct.unpack(SNES_HEADER_FORMAT, header)
-                if (data[6] != 0x33) or ((data[8] + data[9]) != 0xFFFF): # Invalid Header.
-                    raise InvalidHeaderFormatException
-                else:
-                    print('SNES HiROM header data: %s.' % repr(data))
-                    return data
-            else:
-                print('SNES LoROM header data: %s.' % repr(data))
-                return data 
+            print('SNES header data: %s.' % repr(data))
+            return data
         except struct.error:
             raise InvalidHeaderFormatException
-            
+
     def parse(self):
         """Parses the ROM image to extract information from the SNES header
         (game title, ROM details, etc.)."""
@@ -246,11 +234,14 @@ class SNESRom:
 
         if not self._smc_parsed:
             self._parse_smc_header()
-            
+        # Dummied out LoROM stuff because we're checked for FF3 which is a HiROM, 
+        print('Header does not match expected format at LoROM offset. '
+                    'Trying at HiROM offset %s...' %
+                 hex(SNES_HEADER_OFFSET_HIROM))
         try:
-            header_data = self._read_header()
+            header_data = self._read_header_at(SNES_HEADER_OFFSET_HIROM)
         except InvalidHeaderFormatException:
-            print('Header does not match expected format. '
+            print('Header still does not match expected format. '
                       'Giving up!')
             raise InvalidRomFileException
 
