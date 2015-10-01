@@ -170,16 +170,15 @@ SetTrack:
 	; Wait for the MSU to either be done loading or to return a track error
 WaitMSU:
 	lda MSUStatus
-	and #MSUStatus_BadTrack
-	cmp #MSUStatus_BadTrack
-	bne KeepWaiting
-	; If we've gotten bad track, just stop and let the SPC handle things
-	jmp ShutUpAndLetMeTalk
-KeepWaiting:
-	lda MSUStatus
 	and #MSUStatus_AudioBusy
 	cmp #MSUStatus_AudioBusy
-	beq WaitMSU
+    beq WaitMSU
+    lda MSUStatus
+    and #MSUStatus_BadTrack
+    cmp #MSUStatus_BadTrack
+    bne + ; If it's not a bad track, don't jump to the SPC code
+	jmp ShutUpAndLetMeTalk 
++
 	; Set the MSU Volume to the requested volume. 
 	ChangeVolume PlayVolume
 	; Set our currently playing track to this one.
