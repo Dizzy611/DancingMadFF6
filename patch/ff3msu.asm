@@ -42,8 +42,6 @@
 .DEFINE FadeVolume       $1E26
 .DEFINE TrackFade        $1E27
 .DEFINE MSULastTrackSet  $7EF001
-.DEFINE MSUCodeErrorFlag $7EF002
-
 ; MSU Registers
 
 .DEFINE MSUStatus        $2000
@@ -61,11 +59,6 @@
 .DEFINE MSUStatus_AudioLooping %00100000
 .DEFINE MSUStatus_AudioPlaying %00010000
 .DEFINE MSUStatus_BadTrack     %00001000
-
-; Internal error flags
-
-.DEFINE MSUCodeError_NotPlayingNotBusy $01
-.DEFINE MSUCodeError_BadTrack $02
 
 ; Subroutine hooks
 
@@ -171,6 +164,7 @@ ContinueToPlay:
 	jmp ShutUpAndLetMeTalk
 SetTrack:
 	sta MSUTrack
+    ; Write the last track set to an unused area of HiRAM, this should persist even after a load game.
 	stz MSUTrack+1
 	; Wait for the MSU to either be done loading or to return a track error
 WaitMSU:
@@ -187,10 +181,8 @@ KeepWaiting:
 	beq WaitMSU
 	; Set the MSU Volume to the requested volume. 
 	ChangeVolume PlayVolume
-PlayerTime:
 	; Set our currently playing track to this one.
 	lda PlayTrack
-    ; Write the last track set to an unused area of HiRAM
     sta MSULastTrackSet
 	sta MSUCurrentTrack
 	; Check against our looping track list. This subroutine will return the proper MSUControl value in A.
@@ -200,35 +192,7 @@ PlayerTime:
 	jmp ShutUp
 TimeToPlay:
 	sta MSUControl
-	; We should now be playing the track. 
-    ; Check if the MSU audio is playing or busy at this point? Is this necessary? Throwing shit at the wall and
-    ; seeing what sticks to try to fix SD2SNES bug.
-WaitToPlay:
-    lda MSUStatus
-    and #MSUStatus_AudioPlaying
-    cmp #MSUStatus_AudioPlaying
-    beq MSUDone
-    lda MSUStatus
-    and #MSUStatus_AudioBusy
-    cmp #MSUStatus_AudioBusy
-    beq WaitToPlay
-    ; We shouldn't get here! Put a flag in RAM indicating an error (Can we debug on the SD2SNES?) and
-    ; check to see if we have BadTrack. If so, increment the error flag by one (we shouldn't be getting badtrack down here)
-    ; and go back to start. If not, try to tell the MSU-1 to play again? Could result in an infinite loop...
-    lda #MSUCodeError_NotPlayingNotBusy
-    sta MSUCodeErrorFlag
-    lda MSUStatus
-    and #MSUStatus_BadTrack
-    cmp #MSUStatus_BadTrack
-    beq Weirdness
-    jml PlayerTime
-Weirdness:
-    lda #MSUCodeError_BadTrack
-    sta MSUCodeErrorFlag
-    jml MSUMain
-    
-MSUDone:
-    ; Silence the SPC music and return
+	; We're now playing the track. Silence the SPC music and return
 	jmp SilenceAndReturn
 
 ; End Main Code
@@ -269,6 +233,8 @@ MSUCheck:
 ; Check if the track to play is in our list of non-looping tracks, if so return $01 in A, if not, return $03 in A. Also, certain tracks essentially mean "stop", so handle those too.
 WillItLoop:
 	lda PlayTrack
+	cmp #$00   ; Silence
+	beq WILStop
 	cmp #$02   ; Opening part 1
 	beq WILNope
 	cmp #$03   ; Opening part 2
@@ -277,6 +243,8 @@ WillItLoop:
 	beq WILNope
 	cmp #$27   ; Aria de Mezzo Carattare
 	beq WILNope
+	cmp #$51   ; Silence
+	beq WILStop
 	cmp #$53   ; Ending part 1
 	beq WILNope
 	cmp #$54   ; Ending part 2
@@ -285,6 +253,9 @@ WillItLoop:
 	rts
 WILNope:
 	lda #$01
+	rts
+WILStop:
+	lda #$00
 	rts
 
 
