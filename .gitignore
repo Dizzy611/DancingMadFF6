@@ -21,3 +21,5 @@ music/
 **/*.bin
 **/*.pyc
 installer/dist/
+*.srm
+utils/
