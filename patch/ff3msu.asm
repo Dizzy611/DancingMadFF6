@@ -29,16 +29,19 @@
 
 .DEFINE OriginalNMIHandler $1500
 
-; Might have to change these, but they look safe for now, the game appears to initialize them to 0 and then not use them.
+; Was using $1E00-$1E07 earlier, but these are used for storing Veldt monsters. $1E20-$1E27 are unused. 
+; $7EF001 appears to be unused and is used so that the data for what track the MSU is currently playing 
+; can persist across saved games.
 
-.DEFINE MSUExists        $1E00
-.DEFINE MSUCurrentTrack  $1E01
-.DEFINE MSUCurrentVolume $1E02
-.DEFINE SPCTrackTemp     $1E03
-.DEFINE SPCVolumeTemp    $1E04
-.DEFINE FadeType         $1E05
-.DEFINE FadeVolume       $1E06
-.DEFINE TrackFade        $1E07
+.DEFINE MSUExists        $1E20
+.DEFINE MSUCurrentTrack  $1E21
+.DEFINE MSUCurrentVolume $1E22
+.DEFINE SPCTrackTemp     $1E23
+.DEFINE SPCVolumeTemp    $1E24
+.DEFINE FadeType         $1E25
+.DEFINE FadeVolume       $1E26
+.DEFINE TrackFade        $1E27
+.DEFINE MSULastTrackSet  $7EF001
 
 ; MSU Registers
 
@@ -162,20 +165,21 @@ ContinueToPlay:
 	jmp ShutUpAndLetMeTalk
 SetTrack:
 	sta MSUTrack
+    ; Write the last track set to an unused area of HiRAM, this should persist even after a load game.
+    sta MSULastTrackSet
 	stz MSUTrack+1
 	; Wait for the MSU to either be done loading or to return a track error
 WaitMSU:
 	lda MSUStatus
-	and #MSUStatus_BadTrack
-	cmp #MSUStatus_BadTrack
-	bne KeepWaiting
-	; If we've gotten bad track, just stop and let the SPC handle things
-	jmp ShutUpAndLetMeTalk
-KeepWaiting:
-	lda MSUStatus
 	and #MSUStatus_AudioBusy
 	cmp #MSUStatus_AudioBusy
-	beq WaitMSU
+    beq WaitMSU
+    lda MSUStatus
+    and #MSUStatus_BadTrack
+    cmp #MSUStatus_BadTrack
+    bne + ; If it's not a bad track, don't jump to the SPC code
+	jmp ShutUpAndLetMeTalk 
++
 	; Set the MSU Volume to the requested volume. 
 	ChangeVolume PlayVolume
 	; Set our currently playing track to this one.
