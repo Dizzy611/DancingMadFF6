@@ -132,7 +132,7 @@ MSUMain:
 MSUFound:
 	; Are we playing it?
 	lda PlayTrack
-	cmp MSUCurrentTrack
+	cmp MSULastTrackSet
 	; If not, skip to NotPlaying
 	bne NotPlaying
 	; Are we *really* playing it?
