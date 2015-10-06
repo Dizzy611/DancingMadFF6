@@ -2,6 +2,13 @@
 
 Welcome to the repository for Dancing Mad. If you've been invited to this private repository, you have been accepted as a tester. Congrats! Please submit any issues using the Issues tab on the left. 
 
+## Important Notice ##
+
+SD2SNES testers, your current test code is in commit e78864e. Please apply the patch from there to an unpatched ROM and replace ff3.sfc with it.
+
+Other testers, as of 10/06/2015, the alpha code you were initially given is still your current test code.
+
+
 ### Summary ###
 
 * Dancing Mad is an FF6 rom hack or mod using the MSU-1 to replace the built-in music with CD quality streaming music from a number of sources.
