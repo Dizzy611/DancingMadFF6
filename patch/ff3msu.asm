@@ -137,7 +137,8 @@ done\@:
 ; Main Code
 
 MSUMain:
-    ; Disable NMI. Attempted heavyhanded SD2Snes Graphical Glitch fix.
+    ; Turn off the screen and disable NMI. Attempted heavyhanded SD2Snes Graphical Glitch fix.
+    ; NMI disabled.
     lda #$00
     sta $4200
 	; Has the MSU already been found? If so, skip this step
@@ -295,7 +296,7 @@ SilenceAndReturn:
 	sta PlayTrack
 	; End hack
 OriginalCode:
-    ; Before returning, turn NMI back on.
+    ; Turn screen and NMI back on.
     lda #$8f 
     sta $4200
 	lda PlayTrack
