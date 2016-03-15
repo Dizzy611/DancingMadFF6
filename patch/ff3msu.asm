@@ -114,6 +114,24 @@ forcesub\@:
 done\@:
 .ENDM
 
+; Input: Error character to indicate (uses FF3 character table)
+; $80-$99 A-Z $9A-$B3 a-z $B4-BD 0-9 
+; Modifies: Terra's name in RAM to "ERROR(number)" (addresses $1602 through $1607 modified)
+; Output: None
+
+.MACRO SignalError
+     lda \1
+     sta $1607
+     lda #$84 ; E
+     sta $1602
+     lda #$91 ; R
+     sta $1603
+     sta $1604 
+     sta $1606
+     lda #$8E ; O
+     sta $1605
+.ENDM
+
 ; End Macros
 
 ; Main Code
