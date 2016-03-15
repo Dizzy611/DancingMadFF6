@@ -29,7 +29,7 @@ def _doSongMap(source, tracknum):
         retstr = sourcestr + "/ff3-" + str(tracknum) + ".pcm"
         return retstr
 
-           
+
 def mapSongs(songSources):
         retlist = list()
         i = 0
@@ -61,11 +61,10 @@ class downloadPage(QtWidgets.QWizardPage):
               self.checktimer.timeout.connect(self.timerEvent)
               self.compChgSgnl.connect(self.completeChanged)
               self.compChgSgnl.emit()
-              
+
         def initializePage(self):
               self.checktimer.start(100)
-              
-              
+
         def timerEvent(self):
               if self.installstate == 1:   # Initializing...
                   self.currentLabel.setText("Initializing downloader...")
@@ -85,11 +84,11 @@ class downloadPage(QtWidgets.QWizardPage):
                       self.songSources[32] = [4]
                   else:
                       self.songSources = [0]*59 # Shouldn't get here, but ost as default anyway.
-                  
+
                   # Opera track magic! To be revised later.
-                  if self.songSources[31] != 4: 
+                  if self.songSources[31] != 4:
                       self.songSources[31] = 5 # Dummy out the Opera tracks for now for non OTH versions.
-                     
+
                   templist = mapSongs(self.songSources)
                   destination = self.field("destPath")
                   urllist = ['http://www.somebodyelsesproblem.org/ff6data/{0}'.format(i) for i in templist]
@@ -114,7 +113,7 @@ class downloadPage(QtWidgets.QWizardPage):
                       else:
                           percentage = (progress / size) * 100
                           labelStr = "Downloading ({0}/{1}) ({2}/{3} kB) {4}% ...".format(self.totalDownloads-self.downloader.count(),self.totalDownloads,round(progress/1024,2),round(size/1024,2),round(percentage,2))
-                      self.currentLabel.setText(labelStr)                  
+                      self.currentLabel.setText(labelStr)
                       self.currentBar.setValue(percentage)
                   elif self.downloader.status == self.downloader.Waiting:
                       self.currentLabel.setText("Connecting...")
@@ -180,11 +179,24 @@ class downloadPage(QtWidgets.QWizardPage):
                     self.currentLabel.setText("Patching: ROM Patching Failed! Error:" + e)
                     self.installstate = 254
               elif self.installstate == 4:   # Final copying/renaming/etc.
-                  self.currentLabel.setText("Finalizing: Copying Manifests...")
+                  self.currentLabel.setText("Finalizing: Copying Manifests and MSU file...")
                   self.currentBar.setValue(0)
                   if self.field("higanButton") == True:
                       shutil.copy2("manifest.bml", self.field("destPath"))
                       shutil.copy2("ff3msu.msu", self.field("destPath"))
+                      tmpRomSrc = os.path.join(self.field("destPath"), "ff3msu.sfc")
+                      tmpRomDst = os.path.join(self.field("destPath"), "program.rom")
+                      tmpMsuSrc = os.path.join(self.field("destPath"), "ff3msu.msu")
+                      tmpMsuDst = os.path.join(self.field("destPath"), "msu1.rom")
+                      shutil.move(tmpRomSrc, tmpRomDst)
+                      shutil.move(tmpMsuSrc, tmpMsuDst)
+                      self.currentBar.setValue(50)
+                      self.currentLabel.setText("Finalizing: Higanifying track names...")
+                      tmpOldCwd = os.getcwd()
+                      os.chdir(self.field("destPath")
+                      for thisfile in glob.glob("ff3-*.pcm"):
+                          newfilename = thisfile.replace("ff3", "track")
+                          os.rename(thisfile, newfilename)
                   elif self.field("SD2SNESButton") == True:
                       shutil.copy2("ff3msu.msu", os.path.join(self.field("destPath"), "ff3.msu"))
                       os.rename(os.path.join(self.field("destPath"), "ff3msu.sfc"), os.path.join(self.field("destPath"), "ff3.sfc"))
@@ -194,9 +206,6 @@ class downloadPage(QtWidgets.QWizardPage):
                       os.rename(os.path.join(self.field("destPath"), "ff3msu.sfc"), os.path.join(self.field("destPath"), "ff3.sfc"))
                   else:
                       pass
-                  self.currentBar.setValue(50)
-                  self.currentLabel.setText("Finalizing: Copying MSU file.")
-                  
                   self.currentBar.setValue(100)
                   self.currentLabel.setText("Done!")
                   self.totalBar.setValue(100)

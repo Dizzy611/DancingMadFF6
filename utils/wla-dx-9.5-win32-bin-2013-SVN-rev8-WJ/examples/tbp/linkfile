@@ -1,0 +1,8 @@
+[objects]
+main.o
+vbi.o
+setup.o
+level_01.o
+
+[libraries]
+bank 0 slot 0 speed.lib

@@ -11,15 +11,11 @@ rom/
 music/
 **/*.pyc
 **/*.pcm
-**/*.exe
 **/*.sfc
-!patch/test/msuplay.sfc # See below
 **/*.smc
 **/*.fig
-!patch/test/msuplay.fig # Allow binaries of the testing ROM, it is entirely my own code.
 **/*.rom
 **/*.bin
 **/*.pyc
 installer/dist/
 *.srm
-utils/

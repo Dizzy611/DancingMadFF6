@@ -1,9 +1,0 @@
-	.define MSU_STATUS	$2000
-	.define MSU_READ	$2001
-	.define MSU_ID		$2002
-	.define MSU_SEEK	$2000
-	.define MSU_TRACK	$2004
-	.define MSU_VOLUME	$2006
-	.define MSU_CONTROL	$2007
-	
-	

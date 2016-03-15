@@ -33,15 +33,18 @@
 ; $7EF001 appears to be unused and is used so that the data for what track the MSU is currently playing 
 ; can persist across saved games.
 
-.DEFINE MSUExists        $1E20
-.DEFINE MSUCurrentTrack  $1E21
-.DEFINE MSUCurrentVolume $1E22
-.DEFINE SPCTrackTemp     $1E23
-.DEFINE SPCVolumeTemp    $1E24
-.DEFINE FadeType         $1E25
-.DEFINE FadeVolume       $1E26
-.DEFINE TrackFade        $1E27
-.DEFINE MSULastTrackSet  $7EF001
+
+.DEFINE MSUExists          $1E20
+.DEFINE MSUCurrentTrack    $1E21
+.DEFINE MSUCurrentVolume   $1E22
+.DEFINE SPCTrackTemp       $1E23
+.DEFINE SPCVolumeTemp      $1E24
+.DEFINE FadeType           $1E25
+.DEFINE FadeVolume         $1E26
+.DEFINE TrackFade          $1E27
+.DEFINE MSULastTrackSet    $7EF001
+.DEFINE MSUBattleHolding   $7EF002
+.DEFINE MSUBattleHeldTrack $7EF003
 
 ; MSU Registers
 
@@ -60,6 +63,12 @@
 .DEFINE MSUStatus_AudioLooping %00100000
 .DEFINE MSUStatus_AudioPlaying %00010000
 .DEFINE MSUStatus_BadTrack     %00001000
+
+; MSU Control Values Definition
+.DEFINE MSUControl_Pause       %00000100
+.DEFINE MSUControl_PlayNoLoop  %00000001
+.DEFINE MSUControl_PlayLoop    %00000011
+.DEFINE MSUControl_Stop        %00000000
 
 ; Subroutine hooks
 
@@ -120,16 +129,16 @@ done\@:
 ; Output: None
 
 .MACRO SignalError
-     lda \1
-     sta $1607
-     lda #$84 ; E
-     sta $1602
-     lda #$91 ; R
-     sta $1603
-     sta $1604 
-     sta $1606
-     lda #$8E ; O
-     sta $1605
+	lda \1
+	sta $1607
+	lda #$84 ; E
+	sta $1602
+	lda #$91 ; R
+	sta $1603
+	sta $1604 
+	sta $1606
+	lda #$8E ; O
+	sta $1605
 .ENDM
 
 ; End Macros
@@ -148,6 +157,17 @@ MSUMain:
 	; If not found, do the original SPC code
 	jmp OriginalCode
 MSUFound:
+BattleCheck:
+	lda PlayTrack
+	; Special track handling section
+	cmp #$24 ; Battle theme
+	bne Kefka5Check
+	jml BattleTheme
+Kefka5Check:
+	cmp #$50 ; Kefka's Dancing Mad Part 5
+	bne SpecialHandlingBack
+	jml Kefka5
+SpecialHandlingBack:
 	; Are we playing it?
 	lda PlayTrack
 	cmp MSULastTrackSet
@@ -183,21 +203,23 @@ ContinueToPlay:
 	jmp ShutUpAndLetMeTalk
 SetTrack:
 	sta MSUTrack
-    ; Write the last track set to an unused area of HiRAM, this should persist even after a load game.
-    sta MSULastTrackSet
+	; Write the last track set to an unused area of HiRAM, this should persist even after a load game.
+	sta MSULastTrackSet
 	stz MSUTrack+1
 	; Wait for the MSU to either be done loading or to return a track error
 WaitMSU:
 	lda MSUStatus
 	and #MSUStatus_AudioBusy
 	cmp #MSUStatus_AudioBusy
-    beq WaitMSU
-    lda MSUStatus
-    and #MSUStatus_BadTrack
-    cmp #MSUStatus_BadTrack
-    bne + ; If it's not a bad track, don't jump to the SPC code
+	beq WaitMSU
+	lda MSUStatus
+	and #MSUStatus_BadTrack
+	cmp #MSUStatus_BadTrack
+	bne + ; If it's not a bad track, don't jump to the SPC code
 	jmp ShutUpAndLetMeTalk 
 +
+	; Cleanly stop the MSU-1 before playing a new track
+        stz MSUControl
 	; Set the MSU Volume to the requested volume. 
 	ChangeVolume PlayVolume
 	; Set our currently playing track to this one.
@@ -214,7 +236,7 @@ TimeToPlay:
 	jmp SilenceAndReturn
 
 ; End Main Code
-	
+
 ; Subroutines
 
 
@@ -267,15 +289,40 @@ WillItLoop:
 	beq WILNope
 	cmp #$54   ; Ending part 2
 	beq WILNope
-	lda #$03
+	lda #MSUControl_PlayLoop
 	rts
 WILNope:
-	lda #$01
+	lda #MSUControl_PlayNoLoop
 	rts
 WILStop:
-	lda #$00
+	lda #MSUControl_Stop
 	rts
 
+; Battle and victory theme handling
+BattleTheme:
+	lda MSUStatus   ; Are we on Revision 2 or greater? If so, we have Resume support. Handle this specially.
+	and #%00000111
+	cmp #$02
+	bcs ResumeSupportBT
+	jml SpecialHandlingBack ; If not, do our normal stuff.
+ResumeSupportBT:
+	lda #MSUControl_Pause ; Pause the current track.
+	sta MSUControl
+	jml SpecialHandlingBack
+
+; Kefka 5 handling
+Kefka5:
+; If MSU-1 currently playing Dancing Mad 4 (which leads directly into 5 in our copy), then continue playing without modifying the MSU-1 state,
+; otherwise process the track as normal.
+	lda MSUCurrentTrack
+	cmp #$52
+	bne +
+        lda MSUStatus
+	cmp #MSUStatus_AudioPlaying
+        bne +
+	jml SilenceAndReturn
++
+	jml SpecialHandlingBack
 
 ; Return routines
 

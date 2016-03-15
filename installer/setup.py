@@ -12,7 +12,7 @@ executables = [
 ]
 
 setup(name='Dancing Mad Installer',
-      version = '15.09.28',
+      version = '16.03.15',
       description = 'Installer for Dancing Mad FF6 mod, Pre-Alpha.',
       options = dict(build_exe = buildOptions),
       executables = executables)
