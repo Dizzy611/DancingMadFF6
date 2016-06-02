@@ -178,10 +178,10 @@ class Ui_InstallWizard(object):
     def retranslateUi(self, InstallWizard):
         _translate = QtCore.QCoreApplication.translate
         InstallWizard.setWindowTitle(_translate("InstallWizard", "Dancing Mad Installer"))
-        self.welcomePage.setTitle(_translate("InstallWizard", "Dancing Mad Pre-Alpha Installer"))
+        self.welcomePage.setTitle(_translate("InstallWizard", "Dancing Mad Beta Installer"))
         self.welcomePage.setSubTitle(_translate("InstallWizard", "Welcome"))
-        self.welcomeLabel.setText(_translate("InstallWizard", "<html><head/><body><p align=\"center\">Welcome to the installer for <span style=\" font-weight:600;\">Dancing Mad</span>, the music replacement mod for Final Fantasy VI!</p><p><br/></p><p><br/></p><p><br/></p><p><br/>This installer will walk you through the steps of selecting and downloading your replacement soundtrack, patching your game, and setting the mod up to run in your preferred emulator(s) and/or flashcart. <br/><br/>Currently, <span style=\" font-weight:600;\">Dancing Mad </span>has been tested on the <span style=\" font-weight:600;\">Higan v094</span> and <span style=\" font-weight:600;\">BSNES v075</span> emulators, and is supported in both, with some caveats for BSNES as outlined in the readme, which you can view later on in the install. It should also work just fine on the <span style=\" font-weight:600;\">SD2SNES</span> flash cart, and an installation option is provided for it. However, the developers do not have one so it is untested as of this writing.<br/></p><p><br/></p><p><br/></p><p><br/></p><p><br/>Press &quot;Next&quot; to begin.</p></body></html>"))
-        self.licensePage.setTitle(_translate("InstallWizard", "Dancing Mad Pre-Alpha Installer"))
+        self.welcomeLabel.setText(_translate("InstallWizard", "<html><head/><body><p align=\"center\">Welcome to the installer for <span style=\" font-weight:600;\">Dancing Mad</span>, the music replacement mod for Final Fantasy VI!</p><p><br/></p><p><br/></p><p><br/></p><p><br/>This installer will walk you through the steps of selecting and downloading your replacement soundtrack, patching your game, and setting the mod up to run in your preferred emulator(s) and/or flashcart. <br/><br/>Currently, <span style=\" font-weight:600;\">Dancing Mad </span>has been tested on the <span style=\" font-weight:600;\">Higan v097</span> and <span style=\" font-weight:600;\">bsnes-plus v073+2</span> emulators, and is supported in both, with some caveats for BSNES as outlined in the readme, which you can view later on in the install. It should also work just fine on the <span style=\" font-weight:600;\">SD2SNES</span> flash cart, and an installation option is provided for it. However, the developers do not have one so it is untested as of this writing.<br/></p><p><br/></p><p><br/></p><p><br/></p><p><br/>Press &quot;Next&quot; to begin.</p></body></html>"))
+        self.licensePage.setTitle(_translate("InstallWizard", "Dancing Mad Beta Installer"))
         self.licensePage.setSubTitle(_translate("InstallWizard", "License Agreement"))
         self.licenseBrowser.setHtml(_translate("InstallWizard", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
@@ -191,7 +191,7 @@ class Ui_InstallWizard(object):
         self.licenseLabel.setText(_translate("InstallWizard", "<html><head/><body><p>Please read the below licensing agreement.</p></body></html>"))
         self.licenseAccepted.setText(_translate("InstallWizard", "Check here if you have read and accept the terms.\n"
 "Acceptance is necessary to complete installation."))
-        self.readmePage.setTitle(_translate("InstallWizard", "Dancing Mad Pre-Alpha Installer"))
+        self.readmePage.setTitle(_translate("InstallWizard", "Dancing Mad Beta Installer"))
         self.readmePage.setSubTitle(_translate("InstallWizard", "Readme"))
         self.readmeBrowser.setHtml(_translate("InstallWizard", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
@@ -199,7 +199,7 @@ class Ui_InstallWizard(object):
 "</style></head><body style=\" font-family:\'Sans Serif\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt;\">ERROR: Could not load README file</span></p></body></html>"))
         self.readmeLabel.setText(_translate("InstallWizard", "<html><head/><body><p>Below you will find detailed documentation for both the install process and the mod in general. Please read thoroughly before proceeding.</p></body></html>"))
-        self.destinationPage.setTitle(_translate("InstallWizard", "Dancing Mad Pre-Alpha Installer"))
+        self.destinationPage.setTitle(_translate("InstallWizard", "Dancing Mad Beta Installer"))
         self.destinationPage.setSubTitle(_translate("InstallWizard", "Select Destination Directory..."))
         self.romPathLabel.setText(_translate("InstallWizard", "Final Fantasy VI SNES/SFC ROM to be patched:"))
         self.romPathBrowse.setText(_translate("InstallWizard", "Browse..."))
@@ -207,7 +207,7 @@ class Ui_InstallWizard(object):
         self.destPathLabel.setText(_translate("InstallWizard", "Destination Directory*:"))
         self.higanNotice.setText(_translate("InstallWizard", "*Higan users, you will have to manually import the patched ROM and then copy your files from this directory into Higan\'s directory structure after install, so treat this as a temporary directory. Everyone else, this is where the modded ROM will reside."))
         self.ROMDetected.setText(_translate("InstallWizard", "Detected ROM Version: Not Yet Selected"))
-        self.installtypePage.setTitle(_translate("InstallWizard", "Dancing Mad Pre-Alpha Installer"))
+        self.installtypePage.setTitle(_translate("InstallWizard", "Dancing Mad Beta Installer"))
         self.installtypePage.setSubTitle(_translate("InstallWizard", "Select Install Type"))
         self.soundtrackLabel.setText(_translate("InstallWizard", "Choose which soundtrack to use, or pick \"Custom\" to select individual tracks:"))
         self.sidselectButton.setText(_translate("InstallWizard", "Developer\'s Recommendation"))
@@ -220,13 +220,13 @@ class Ui_InstallWizard(object):
         self.higanButton.setText(_translate("InstallWizard", "Higan"))
         self.BSNESButton.setText(_translate("InstallWizard", "BSNES"))
         self.SD2SNESButton.setText(_translate("InstallWizard", "SD2SNES"))
-        self.customselectionPage.setTitle(_translate("InstallWizard", "Dancing Mad Pre-Alpha Installer"))
+        self.customselectionPage.setTitle(_translate("InstallWizard", "Dancing Mad Beta Installer"))
         self.customselectionPage.setSubTitle(_translate("InstallWizard", "Custom Track Selection"))
-        self.downloadPage.setTitle(_translate("InstallWizard", "Dancing Mad Pre-Alpha Installer"))
+        self.downloadPage.setTitle(_translate("InstallWizard", "Dancing Mad Beta Installer"))
         self.downloadPage.setSubTitle(_translate("InstallWizard", "Downloading, Patching, and Installing..."))
         self.totalLabel.setText(_translate("InstallWizard", "Total"))
         self.currentLabel.setText(_translate("InstallWizard", "Connecting..."))
-        self.finalPage.setTitle(_translate("InstallWizard", "Dancing Mad Pre-Alpha Installer"))
+        self.finalPage.setTitle(_translate("InstallWizard", "Dancing Mad Beta Installer"))
         self.finalPage.setSubTitle(_translate("InstallWizard", "Final Notes..."))
         self.finalLabel.setText(_translate("InstallWizard", "<html><head/><body><p>Install successful! Below you will find some final notes for your particular install. These will generally be things already covered in the documentation, but they\'re here for your convenience.</p></body></html>"))
         self.finalBrowser.setHtml(_translate("InstallWizard", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
