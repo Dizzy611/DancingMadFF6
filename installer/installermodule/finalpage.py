@@ -14,6 +14,6 @@ class finalPage(QtWidgets.QWizardPage):
              else:
                     htmlfile = "bsnes-final.html"
              if os.path.isfile(htmlfile):
-                    licenseurl = QtCore.QUrl.fromLocalFile(htmlfile)
-                    self.finalBrowser.setSource(licenseurl)
+                    finalurl = QtCore.QUrl.fromLocalFile(htmlfile)
+                    self.finalBrowser.setSource(finalurl)
                     

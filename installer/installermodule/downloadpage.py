@@ -198,6 +198,7 @@ class downloadPage(QtWidgets.QWizardPage):
                       for thisfile in pcmsList:
                           newfilename = thisfile.replace("ff3", "track")
                           os.rename(thisfile, newfilename)
+                      os.chdir(tmpOldCwd)
                   elif self.field("SD2SNESButton") == True:
                       shutil.copy2("ff3msu.msu", os.path.join(self.field("destPath"), "ff3.msu"))
                       os.rename(os.path.join(self.field("destPath"), "ff3msu.sfc"), os.path.join(self.field("destPath"), "ff3.sfc"))
