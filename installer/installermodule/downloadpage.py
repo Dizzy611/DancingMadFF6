@@ -164,7 +164,7 @@ class downloadPage(QtWidgets.QWizardPage):
                         os.rename(unheaderedPath, destromPath)
                         self.currentBar.setText("Patching: Header removed.")
                     else:
-                        self.currentBar.setText("Patching: No SMC header found.")
+                        self.currentLabel.setText("Patching: No SMC header found.")
                     self.currentBar.setValue(75)
                     self.currentLabel.setText("Patching: Applying patch...")
                     # TODO: Apply different patch with SD2SNES volume values if we're installing for SD2SNES
@@ -177,7 +177,7 @@ class downloadPage(QtWidgets.QWizardPage):
                     self.installstate = 4
                   except:
                     e = sys.exc_info()[0]
-                    self.currentLabel.setText("Patching: ROM Patching Failed! Error:" + e)
+                    self.currentLabel.setText("Patching: ROM Patching Failed! Error:" + str(e))
                     self.installstate = 254
               elif self.installstate == 4:   # Final copying/renaming/etc.
                   self.currentLabel.setText("Finalizing: Copying Manifests and MSU file...")
