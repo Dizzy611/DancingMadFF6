@@ -7,7 +7,7 @@ Welcome to the repository for Dancing Mad. If you've been invited to this privat
 * Dancing Mad is an FF6 rom hack or mod using the MSU-1 to replace the built-in music with CD quality streaming music from a number of sources.
 * Dancing Mad contains an easy installer to allow you to download the music you want, patch your ROM, and be ready to go.
 * Dancing Mad is currently in close alpha. The "baseline" alpha version was emailed or otherwise given to you as an installer, and is also in the "stable" branch. My current work in progress version is an ASM file and IPS patch in the "experimental" branch. The "master" branch is at this point a midline, the code I'm likely to ask you to use instead of "stable".
-* As of 2016-03-15 Dancing Mad is now in Alpha 2 state. A new installer will be coming out soon, for now please read resume.txt for how to get the new Resume support working in Higan v096/v097. People using the SD2SNES or BSNES may simply patch a clean ROM with the new IPS.
+* As of 2016-06-02 Dancing Mad is now in Beta state, and a public beta is currently pending release. New installers for Windows are available in the Downloads section and in the Installer directory of the source tree.
 
 ### Setup ###
 
