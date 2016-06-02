@@ -9,6 +9,7 @@ from decimal import Decimal
 from queue import Queue
 import ips
 import sys
+import glob
 
 def _doSongMap(source, tracknum):
         sourcestr = ""
@@ -182,7 +183,6 @@ class downloadPage(QtWidgets.QWizardPage):
                   self.currentLabel.setText("Finalizing: Copying Manifests and MSU file...")
                   self.currentBar.setValue(0)
                   if self.field("higanButton") == True:
-                      shutil.copy2("manifest.bml", self.field("destPath"))
                       shutil.copy2("ff3msu.msu", self.field("destPath"))
                       tmpRomSrc = os.path.join(self.field("destPath"), "ff3msu.sfc")
                       tmpRomDst = os.path.join(self.field("destPath"), "program.rom")
@@ -193,8 +193,9 @@ class downloadPage(QtWidgets.QWizardPage):
                       self.currentBar.setValue(50)
                       self.currentLabel.setText("Finalizing: Higanifying track names...")
                       tmpOldCwd = os.getcwd()
-                      os.chdir(self.field("destPath")
-                      for thisfile in glob.glob("ff3-*.pcm"):
+                      os.chdir(self.field("destPath"))
+                      pcmsList = glob.glob('ff3-*.pcm')
+                      for thisfile in pcmsList:
                           newfilename = thisfile.replace("ff3", "track")
                           os.rename(thisfile, newfilename)
                   elif self.field("SD2SNESButton") == True:

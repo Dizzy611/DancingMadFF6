@@ -28,7 +28,7 @@
 .DEFINE LastVolume $130A
 
 .DEFINE OriginalNMIHandler $1500
-
+.DEFINE ReturnCommand 
 ; Was using $1E00-$1E07 earlier, but these are used for storing Veldt monsters. $1E20-$1E27 are unused. 
 ; $7EF001 appears to be unused and is used so that the data for what track the MSU is currently playing 
 ; can persist across saved games.
@@ -37,14 +37,11 @@
 .DEFINE MSUExists          $1E20
 .DEFINE MSUCurrentTrack    $1E21
 .DEFINE MSUCurrentVolume   $1E22
-.DEFINE SPCTrackTemp       $1E23
+.DEFINE SPCCommandTemp     $1E23
 .DEFINE SPCVolumeTemp      $1E24
-.DEFINE FadeType           $1E25
-.DEFINE FadeVolume         $1E26
-.DEFINE TrackFade          $1E27
+.DEFINE DancingFlag        $1E25
 .DEFINE MSULastTrackSet    $7EF001
-.DEFINE MSUBattleHolding   $7EF002
-.DEFINE MSUBattleHeldTrack $7EF003
+
 
 ; MSU Registers
 
@@ -77,6 +74,14 @@
 .SECTION "NMIOverride" SIZE 4 OVERWRITE
 
 jml NMIHandle
+
+.ENDS
+
+.BANK 5
+.ORG $148
+.SECTION "PlayCommand" SIZE 4 OVERWRITE
+
+jml CommandHandle
 
 .ENDS
 
@@ -145,6 +150,60 @@ done\@:
 
 ; Main Code
 
+CommandHandle:
+	; Are we being given command 82? (which appears to be switch subsong)
+	lda PlayCommand
+	cmp #$82
+	beq +
+	jmp OriginalCommand
++
+    ; Are we currently playing a Dancing Mad part?
+	lda MSULastTrackSet
+	cmp #$65
+	bne +
+	; The first time this is called during Dancing Mad Part 1 it seems to be a sort of 'false positive' at the start, and causes this code to skip part 1 entirely.
+	; so wait until it's called the second time.
+	lda DancingFlag
+	cmp #$01
+	bne setflag
+	jmp DancingMadPart2
++
+	cmp #$66
+	bne +
+	jmp DancingMadPart3
++
+	jmp OriginalCommand
+setflag:
+	lda #$01
+	sta DancingFlag
+	jmp OriginalCommand
+	
+DancingMadPart2:
+    ; Play Part 2 of Dancing Mad
+	lda #$66
+	sta PlayTrack
+	lda #$ff
+	sta PlayVolume
+	jsl MSUMain
+    jmp OriginalCommand
+	
+DancingMadPart3:
+    ; Play Part 3 of Dancing Mad
+	lda #$67
+	sta PlayTrack
+	lda #$ff
+	sta PlayVolume
+	jsl MSUMain
+	jmp OriginalCommand
+
+OriginalCommand:
+	lda PlayCommand
+	beq +
+	jml $c5014c
++
+	jml $c50171
+	
+	
 MSUMain:
 	; Has the MSU already been found? If so, skip this step
 	lda MSUExists
@@ -165,8 +224,13 @@ BattleCheck:
 	jml BattleTheme
 Kefka5Check:
 	cmp #$50 ; Kefka's Dancing Mad Part 5
-	bne SpecialHandlingBack
+	bne Kefka1Check
 	jml Kefka5
+Kefka1Check:
+	cmp #$3b ; Kefka's Dancing Mad Parts 1-3
+	bne SpecialHandlingBack
+	lda #$65 ; Play part 1.
+	sta PlayTrack
 SpecialHandlingBack:
 	; Are we playing it?
 	lda PlayTrack
@@ -317,9 +381,10 @@ Kefka5:
 	lda MSUCurrentTrack
 	cmp #$52
 	bne +
-        lda MSUStatus
+    lda MSUStatus
+	and #MSUStatus_AudioPlaying
 	cmp #MSUStatus_AudioPlaying
-        bne +
+    bne +
 	jml SilenceAndReturn
 +
 	jml SpecialHandlingBack

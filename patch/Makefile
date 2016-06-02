@@ -1,14 +1,14 @@
 # OS detection
 ifeq ($(OS),Windows_NT)
-	ASM      = ../utils/wla-dx-9.5-win32-bin-2013-SVN-rev8-WJ/wla-65816.exe
+		ASM      = ../utils/wla-dx-9.5-win32-bin-2013-SVN-rev8-WJ/wla-65816.exe
         ASMFLAGS = -vo
         LD       = ../utils/wla-dx-9.5-win32-bin-2013-SVN-rev8-WJ/wlalink.exe
         LDFLAGS  = -vr
         IPS      = ../utils/flips.exe
         IPSFLAGS = --create --ips
-        DELETE   = del
+        DELETE   = rm -f
 else
-	ASM      = wla-65816
+		ASM      = wla-65816
         ASMFLAGS = -vo
         LD       = wlalink
         LDFLAGS  = -vr
