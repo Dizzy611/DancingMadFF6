@@ -19,3 +19,4 @@ music/
 **/*.pyc
 installer/dist/
 *.srm
+*.log
