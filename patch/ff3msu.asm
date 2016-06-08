@@ -296,6 +296,12 @@ WaitMSU:
 	jmp ShutUp
 TimeToPlay:
 	sta MSUControl
+	; TEMPORARY: ATTEMPT TO FIX/DIAGNOSE SD2SNES ISSUE: ARE WE REALLY PLAYING?
+PlayWait:
+	lda MSUStatus
+	and #MSUStatus_AudioPlaying
+	cmp #MSUStatus_AudioPlaying
+	bne PlayWait ; Loop around until it's playing.
 	; We're now playing the track. Silence the SPC music and return
 	jmp SilenceAndReturn
 
