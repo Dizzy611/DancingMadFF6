@@ -283,7 +283,7 @@ WaitMSU:
 	jmp ShutUpAndLetMeTalk 
 +
 	; Cleanly stop the MSU-1 before playing a new track
-        stz MSUControl
+    ; stz MSUControl ; Don't, because this causes a race condition that breaks the SD2SNES.
 	; Set the MSU Volume to the requested volume. 
 	ChangeVolume PlayVolume
 	; Set our currently playing track to this one.
