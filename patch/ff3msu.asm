@@ -228,9 +228,13 @@ Kefka5Check:
 	jml Kefka5
 Kefka1Check:
 	cmp #$3b ; Kefka's Dancing Mad Parts 1-3
-	bne SpecialHandlingBack
+	bne SilenceCheck
 	lda #$65 ; Play part 1.
 	sta PlayTrack
+SilenceCheck:
+	cmp #$00 ; Silence (FF6 does a *lot* of track 0 requests, we're specifically masking this one to reduce calls to the MSU.)
+	bne SpecialHandlingBack
+	jmp ShutUpAndLetMeTalk ; Mute, stop, and have the SPC handle the request for silence.
 SpecialHandlingBack:
 	; Are we playing it?
 	lda PlayTrack
@@ -283,7 +287,7 @@ WaitMSU:
 	jmp ShutUpAndLetMeTalk 
 +
 	; Cleanly stop the MSU-1 before playing a new track
-        stz MSUControl
+    ; stz MSUControl ; Don't, because this causes a race condition that breaks the SD2SNES.
 	; Set the MSU Volume to the requested volume. 
 	ChangeVolume PlayVolume
 	; Set our currently playing track to this one.
