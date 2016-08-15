@@ -20,3 +20,6 @@ music/
 installer/dist/
 *.srm
 *.log
+patch/ff3msu.link
+*.obj
+installer/build/
