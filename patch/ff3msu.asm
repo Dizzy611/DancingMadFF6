@@ -270,6 +270,12 @@ ContinueToPlay:
 	bne SetTrack
 	jmp ShutUpAndLetMeTalk
 SetTrack:
+	; Fix for Sabin/Figaro bug: set $1309 to the actual last track set before changing LastTrackSet.
+	lda MSULastTrackSet
+	sta LastTrack
+	lda MSUCurrentVolume
+	sta LastVolume
+	lda PlayTrack
 	sta MSUTrack
 	; Write the last track set to an unused area of HiRAM, this should persist even after a load game.
 	sta MSULastTrackSet
