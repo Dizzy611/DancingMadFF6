@@ -22,3 +22,4 @@ installer/dist/
 *.log
 patch/ff3msu.link
 *.obj
+installer/build/
