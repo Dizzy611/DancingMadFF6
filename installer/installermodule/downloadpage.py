@@ -94,8 +94,9 @@ class downloadPage(QtWidgets.QWizardPage):
                   templist = mapSongs(self.songSources)
                   destination = self.field("destPath")
                   urllist = ['http://www.somebodyelsesproblem.org/ff6data/{0}'.format(i) for i in templist]
-                  altlist = ['https://saika.de-ge.so/ff6data/{0}'.format(i) for i in templist]
-		  comblist = list(zip(urllist, altlist))
+                  altlist = ['http://durandal.somebodyelsesproblem.org/ff6data/{0}'.format(i) for i in templist]
+                  altlist2 = ['https://saika.de-ge.so/ff6data/{0}'.format(i) for i in templist]
+                  comblist = list(zip(urllist, altlist, altlist2))
                   self.totalDownloads = len(comblist)
                   urlqueue = Queue(maxsize=self.totalDownloads)
                   for urlpair in comblist:
