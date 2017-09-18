@@ -17,17 +17,13 @@ class Pages(IntEnum):
     final = 7
 
 class InstallWizard(QWizard, InstallWizard.Ui_InstallWizard):
-    # GLOBAL TODO: Handle custom track page and download page. The former should add checkboxes per-source per-track if the specified source exists
-        # for the specified track. The latter should download the requested tracks, patch the ROM, and put things in the correct directory structure for the selected
-        # emulator/flash cart.
-
         def __init__(self):
                 super().__init__()
 
                 self.setupUi(self)
 
-        # Register fields. Has to be done here because these are all at QWizard scope due to the way the UIC works. Thankfully, due to the way fields work, 
-        # these can then be referenced from within the individual page .py files as fields.
+                # Register fields. Has to be done here because these are all at QWizard scope due to the way the UIC works. Thankfully, due to the way fields work, 
+                # these can then be referenced from within the individual page .py files as fields.
                 self.licensePage.registerField("licenseAccepted*", self.licenseAccepted)
                 self.destinationPage.registerField("romPath*", self.romPath)
                 self.destinationPage.registerField("destPath*", self.destPath)

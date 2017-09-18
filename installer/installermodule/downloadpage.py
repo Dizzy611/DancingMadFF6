@@ -94,10 +94,13 @@ class downloadPage(QtWidgets.QWizardPage):
                   templist = mapSongs(self.songSources)
                   destination = self.field("destPath")
                   urllist = ['http://www.somebodyelsesproblem.org/ff6data/{0}'.format(i) for i in templist]
-                  self.totalDownloads = len(urllist)
-                  urlqueue = Queue(maxsize=len(urllist))
-                  for url in urllist:
-                      urlqueue.put(url)
+                  altlist = ['http://durandal.somebodyelsesproblem.org/ff6data/{0}'.format(i) for i in templist]
+                  altlist2 = ['https://saika.de-ge.so/ff6data/{0}'.format(i) for i in templist]
+                  comblist = list(zip(urllist, altlist, altlist2))
+                  self.totalDownloads = len(comblist)
+                  urlqueue = Queue(maxsize=self.totalDownloads)
+                  for urlpair in comblist:
+                      urlqueue.put(urlpair)  
                   self.downloader = Downloader(urlqueue, destination)
                   self.installstate = 2
               elif self.installstate == 2:   # Downloading PCMs
