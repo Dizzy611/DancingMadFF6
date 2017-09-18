@@ -1,0 +1,1 @@
+copy /b 7zS.sfx + config.txt + DancingMadInstaller.7z DancingMadInstaller.exe
