@@ -25,9 +25,6 @@ Welcome to the repository for Dancing Mad. Please submit any issues using the Is
 * Please submit bugs using the Issues tracker. Please state clearly whether you're using the beta provided, the experimental branch, or your own code. 
 
 
-* If you are using your own code and have not made a branch for it, please submit either a relevant code snippet or the ASM file in your issue submission.
-
-
 
 ### Contact ###
 
