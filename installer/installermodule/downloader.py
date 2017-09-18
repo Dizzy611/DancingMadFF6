@@ -4,7 +4,7 @@ from urllib.parse import unquote
 import os
 import pycurl
 import urllib
-
+import time
 
 class Downloader():
         Initializing = 1
@@ -52,23 +52,49 @@ class Downloader():
 
         def work(self, threadQueue):
                 self.status = self.Downloading
-                url = threadQueue.get()
-                sizecurl = pycurl.Curl()
-                sizecurl.setopt(sizecurl.URL, url)
-                sizecurl.setopt(sizecurl.NOBODY, True)
-                sizecurl.perform()
-                destfilename = unquote(url.rsplit('/',1)[1])
+                urls = threadQueue.get()
+                urls = list(urls)
+                self.progress = 0
+                myurl = None
+                for url in urls:
+                    try:
+                        print("Attempting to open connection to URL " + url + " to check size")
+                        sizecurl = pycurl.Curl()
+                        sizecurl.setopt(sizecurl.URL, url)
+                        sizecurl.setopt(sizecurl.NOBODY, True)
+                        sizecurl.setopt(sizecurl.FAILONERROR, True)
+                        sizecurl.perform()
+                        str_error = None
+                    except pycurl.error as e:
+                        str_error = e
+                        pass                        
+                    if str_error is not None:
+                        time.sleep(1)
+                    else:
+                        myurl = url
+                        break
+                if (str_error is not None) or (myurl is None):
+                    self.status = self.Error
+                    print("Downloader encountered ERROR Details: URL: " + url)
+                    self.errormessage = "cURL Error: " + str_error.args[1]
+                    threadQueue.task_done()
+                    return
+                else:
+                    print("Succeeded in grabbing size of " + myurl)
+                destfilename = unquote(myurl.rsplit('/',1)[1])
                 fulldestination = os.path.join(self.destination,destfilename)
                 self.size = sizecurl.getinfo(sizecurl.CONTENT_LENGTH_DOWNLOAD)
                 try:
                         with open(fulldestination, 'wb') as f:
+                                print("Attempting to open connection to URL " + url + " to download")
                                 filecurl = pycurl.Curl()
-                                filecurl.setopt(filecurl.URL, url)
+                                filecurl.setopt(filecurl.URL, myurl)
                                 filecurl.setopt(filecurl.NOPROGRESS, False)
                                 filecurl.setopt(filecurl.PROGRESSFUNCTION, self.progressFunction)
                                 filecurl.setopt(filecurl.WRITEDATA, f)
                                 filecurl.setopt(filecurl.FAILONERROR, True)
                                 filecurl.perform()
+                                print("Succeeded in downloading from URL " + url)
                                 threadQueue.task_done()
                                 if threadQueue.empty():
                                         self.status = self.Complete
@@ -80,15 +106,46 @@ class Downloader():
                         self.errormessage = "IOError: " + e.strerror
                         threadQueue.task_done()
                 except pycurl.error as e:
-                        try:
+                        for url in urls:
+                            try:
                                 os.remove(self.destination)
-                        except:
+                            except:
                                 pass
-                        self.status = self.Error
-                        print("DEBUG: Downloader encountered ERROR Details: URL: " + url +"," + " Destination: " + fulldestination)
-                        self.errormessage = "cURL Error: " + e.args[1] 
-                        threadQueue.task_done()
-
+                            try:
+                                with open(fulldestination, 'wb') as f:
+                                    print("Attempting to open connection to URL " + url + " to download")
+                                    filecurl = pycurl.Curl()
+                                    filecurl.setopt(filecurl.URL, url)
+                                    filecurl.setopt(filecurl.NOPROGRESS, false)
+                                    filecurl.setopt(filecurl.PROGRESSFUNCTION, self.progressFunction)
+                                    filecurl.setopt(filecurl.FAILONERROR, True)
+                                    filecurl.perform()
+                                    print("Succeeded in downloading from URL " + url)
+                                    threadQueue.task_done()
+                                    if threadQueue.empty():
+                                        self.status = self.Complete
+                                    else:
+                                        self.status = self.Waiting
+                                str_error = None
+                            except IOError as e:
+                                str_error = e
+                                self.status = self.Error
+                                self.errormessage = "IOError: " + e.strerror
+                                threadQueue.task_done()
+                                break
+                            except pycurl.error as e:
+                                str_error = e
+                                pass
+                            if str_error:
+                                sleep(2)
+                            else:
+                                break
+                        if str_error:
+                            self.status = self.Error
+                            print("DEBUG: Downloader encountered ERROR Details: URL: " + url +"," + " Destination: " + fulldestination)
+                            self.errormessage = "cURL Error: " + e.args[1] 
+                            threadQueue.task_done()
+                            
         def progressFunction(self, download_t, download_d, upload_t, upload_d):
                 self.progress = download_d
 
