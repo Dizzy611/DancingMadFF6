@@ -20,7 +20,7 @@ Welcome to the repository for Dancing Mad. Please submit any issues using the Is
 
 ### Contribution guidelines ###
 
-* I have given specific people (testers from the closed alpha and such) write access, but please do *not* commit your own changes to the repository's master or experimental branches. If you wish to create your own changes, please create your own branch against whatever you're using as your base code.
+* Feel free to fork and submit pull requests. This is the preferred method of submitting fixes to the code/contributions. 
 
 * Please submit bugs using the Issues tracker. Please state clearly whether you're using the beta provided, the experimental branch, or your own code. 
 
