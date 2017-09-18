@@ -5,6 +5,8 @@ import os
 import pycurl
 import urllib
 import time
+import certifi
+
 
 class Downloader():
         Initializing = 1
@@ -63,6 +65,7 @@ class Downloader():
                         sizecurl.setopt(sizecurl.URL, url)
                         sizecurl.setopt(sizecurl.NOBODY, True)
                         sizecurl.setopt(sizecurl.FAILONERROR, True)
+                        sizecurl.setopt(sizecurl.CAINFO, certifi.where())
                         sizecurl.perform()
                         str_error = None
                     except pycurl.error as e:
@@ -93,6 +96,7 @@ class Downloader():
                                 filecurl.setopt(filecurl.PROGRESSFUNCTION, self.progressFunction)
                                 filecurl.setopt(filecurl.WRITEDATA, f)
                                 filecurl.setopt(filecurl.FAILONERROR, True)
+                                filecurl.setopt(filecurl.CAINFO, certifi.where())
                                 filecurl.perform()
                                 print("Succeeded in downloading from URL " + url)
                                 threadQueue.task_done()
