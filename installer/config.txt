@@ -1,5 +1,5 @@
 ;!@Install@!UTF-8!
-Title="Dancing Mad Beta 20170918 Installer"
+Title="Dancing Mad Beta 20171006 Installer"
 BeginPrompt="Do you want to install Dancing Mad?"
 RunProgram="Installer.exe"
 ;!@InstallEnd@!
