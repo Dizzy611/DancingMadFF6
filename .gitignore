@@ -17,6 +17,8 @@ music/
 **/*.rom
 **/*.bin
 **/*.pyc
+**/*.7z
+**/*.exe
 installer/dist/
 *.srm
 *.log
