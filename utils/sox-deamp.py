@@ -18,23 +18,58 @@ destdirs = ["./deamp-OCR", "./deamp-OTH", "./deamp-FFT", "./deamp-OST", "./deamp
 
 # Default deamplification value
 default = -7.5
-# List of "exceptions" to normal deamplification. Uses a tuple of the format (source, number, gain) where source is the source from above list, number is the track number, and gain is the (de)amplification to apply.
-# A gain of 0 will cause the script to simply copy the file over.
-exceptions = [
-    ("SSC", 29, -4),
-    ("OTH", 34, 0),
-    ("FFT", 46, -6.5),
-    ("SSC", 46, -4),
-    ("OCR", 47, -8),
-    ("SSC", 50, -6),
-    ("OCR", 62, -5),
-    ("OCR", 78, -4),
-    ("OST", 82, -5),
-    ("OST", 83, -6.5),
-    ("OST", 101, -6.5),
-    ("OST", 102, -6.5),
-    ("OST", 103, -6),
-    ("SSC", 32, -4)
+# List of additions to normal deamplification. Uses a tuple of the format 
+# (source, number, gain) where source is the source from above list, number is 
+# the track number, and gain is the (de)amplification to apply, added
+# to the base (-7.5 as of this writing).
+# A total gain of 0 will cause the script to simply copy the file over.
+additions = [
+    #("SSC", 29, 3.5),
+    #("FFT", 46, 1),
+    #("SSC", 46, 3.5),
+    #("SSC", 50, 1.5),
+    ("OCR", 47, -0.5),
+    ("OCR", 62, 2.5),
+    ("OCR", 78, 3.5),
+    ("OST", 82, 2.5),
+    ("OST", 83, 1),
+    ("OST", 101, 1),
+    ("OST", 102, 1),
+    ("OST", 103, 1.5),
+    ("SSC", 2, -0.5),
+    ("SSC", 5, -0.5),
+    ("SSC", 9, -1),
+    ("SSC", 10, -3),
+    ("SSC", 12, -1),
+    ("SSC", 13, -1.5),
+    ("SSC", 18, -0.5),
+    ("SSC", 20, -2),
+    ("SSC", 22, -2),
+    ("SSC", 23, -1.5),
+    ("SSC", 25, -3.5),
+    ("SSC", 26, -3),
+    ("SSC", 29, -1),
+    ("SSC", 31, -2),
+    ("SSC", 32, 3.5),
+    ("SSC", 35, -1.5),
+    ("SSC", 36, -1.5),
+    ("SSC", 42, -0.5),
+    ("SSC", 46, -0.5),
+    ("SSC", 47, -1),
+    ("SSC", 50, -1),
+    ("FFT", 2, 1.5),
+    ("FFT", 10, -0.5),
+    ("FFT", 12, -0.5),
+    ("FFT", 13, -1),
+    ("FFT", 24, -1),
+    ("FFT", 28, -1.5),
+    ("FFT", 32, -1),
+    ("FFT", 35, -0.5),
+    ("FFT", 36, -1),
+    ("FFT", 46, -0.5),
+    ("FFT", 50, -1)
+    ("OTH", 34, 7.5),
+    ("OTH", 70, -0.5)
 ]
 
 def grab_track_number(filename):
@@ -55,9 +90,9 @@ for idx,dir in enumerate(dirs):
             file = file.replace("\\", "/") # Make my life easier.
         tracknum = grab_track_number(file)
         volume = default
-        for exception in exceptions:
-            if exception[0] == dir_type and exception[1] == tracknum:
-                volume = exception[2]
+        for addition in additions:
+            if addition[0] == dir_type and addition[1] == tracknum:
+                volume = volume + addition[2]
         noext = file[:-4]
         if volume != 0:
             try:
