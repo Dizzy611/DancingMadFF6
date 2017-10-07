@@ -33,7 +33,8 @@ exceptions = [
     ("OST", 83, -6.5),
     ("OST", 101, -6.5),
     ("OST", 102, -6.5),
-    ("OST", 103, -6)
+    ("OST", 103, -6),
+    ("SSC", 32, -4)
 ]
 
 def grab_track_number(filename):
