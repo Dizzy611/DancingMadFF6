@@ -1,4 +1,5 @@
 import sys, types
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWizard, QApplication, QWizardPage, QFileDialog
 from PyQt5.QtCore import pyqtSlot
 from installermodule import InstallWizard
@@ -94,6 +95,7 @@ class InstallWizard(QWizard, InstallWizard.Ui_InstallWizard):
 
 app = QApplication(sys.argv)
 window = InstallWizard()
-
+window.setWindowIcon(QIcon("kefka.ico"))
 window.show()
+app.setWindowIcon(QIcon("kefka.ico"))
 app.exec_()
