@@ -26,3 +26,4 @@ patch/ff3msu.link
 *.obj
 installer/build/
 *.sfx
+utils/normalize/
