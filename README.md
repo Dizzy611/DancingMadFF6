@@ -28,7 +28,7 @@ Welcome to the repository for Dancing Mad. Please submit any issues using the Is
 
 ### Contact ###
 
-* Contact dylanjmorrison611@gmail.com via email or [this forum thread](http://forums.qhimm.com/index.php?topic=16077) for help, or if you want a more live conversation approach me on the project's official Discord using this [invite](https://discord.gg/Wfdfq4). I don't use IRC or Skype much anymore. 
+* Contact dylanjmorrison611@gmail.com via email or [this forum thread](http://forums.qhimm.com/index.php?topic=16077) for help, or if you want a more live conversation approach me on the project's official Discord using this [invite](https://discord.gg/ynZkNnK). I don't use IRC or Skype much anymore. 
 
 
 
