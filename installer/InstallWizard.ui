@@ -73,8 +73,8 @@
      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;ERROR: Could not load LICENSE file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;ERROR: Could not load LICENSE file.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
    <widget class="QLabel" name="licenseLabel">
@@ -128,30 +128,30 @@ Acceptance is necessary to complete installation.</string>
      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Welcome to Dancing Mad, the music replacement mod for FFVI. &lt;br /&gt;&lt;br /&gt;Readme for Pre-Alpha 1, Dated 5/29/15&lt;br /&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;Contents&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;1&lt;/span&gt;. Requirements&lt;br /&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;2&lt;/span&gt;. Music&lt;br /&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;3&lt;/span&gt;. Installation&lt;br /&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;4&lt;/span&gt;. Custom Track Selection&lt;br /&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;5&lt;/span&gt;. Higan Post-Installation&lt;br /&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;6&lt;/span&gt;. Running the Game&lt;br /&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;7&lt;/span&gt;. Known Bugs&lt;br /&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;8&lt;/span&gt;. Tester Information&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;1. Requirements&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Here's what you'll need to complete installation:&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;1&lt;/span&gt;. A ROM image of Final Fantasy III (U) (V1.0). The japanese version and other later revisions will be supported in later releases.&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;2&lt;/span&gt;. An internet connection. The music files you select will be downloaded from http://www.somebodyelsesproblem.org/.&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;3&lt;/span&gt;. At least 4GB of hard drive space.&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;4&lt;/span&gt;. A copy of Higan v094, BSNES v075, or an SD2SNES flash cart.&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;5&lt;/span&gt;. Patience.&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;2. Music&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;When installing Dancing Mad, you will be able to choose music either from my own selection or from one of 4 different sources. As well, for certain tracks, you may choose from special, alternate sources.&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The sources, and their characteristics:&lt;br /&gt;&lt;br /&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Nobuo Uematsu - Final Fantasy VI Original Sound Version Remastered (OST): &lt;br /&gt;&lt;/span&gt;&lt;br /&gt;This is the official remastered version of the Final Fantasy VI soundtrack as released on CD by Square in 2013. This is a minor remaster of the OST also released by Square in 1994. This is a higher fidelity version of the original soundtrack that is present on the cartridge. Except to people with very sensitive ears, this will sound very similar to what is already present in the game. It is mostly provided as an option to those who simply want a higher fidelity version of the original game audio. As well, the mod is intended to eventually feature controllable volume, which, as the MSU-1 can be louder than the SPC, will provide an additional benefit.&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;FinalFanTim - Final Fantasy VI [Remastered Edition] Unreleased Tracks (FFT):&lt;br /&gt;&lt;br /&gt;&lt;/span&gt;This is an incomplete fan remix, very faithful to the original, of the OST by FinalFanTim, an artist who also released a complete remaster of the FFVII OST. The tracks are very faithful to the original, but with modern samples. I would characterize the sound as bombastic, lively, and energizing. The mixing isn't perfect, with certain instruments noticably louder than others. It has the sound of a non-professional remastering, but it's still a definite improvement on the original. Unfortunately, this remaster only covers the first 16 tracks of the first Disc. As such, if you select this as your music source in the installer, the rest of the tracks will be filled in with the OST versions. If you want to use these tracks, I would strongly suggest choosing the developer selection or choosing to pick and choose custom tracks.&lt;br /&gt;&lt;br /&gt;&lt;br /&gt;&lt;br /&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Sean Schafianski - Final Fantasy VI Remastered Soundtrack: Disc One (SSC):&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;This is a polished, professional sounding fan remix. Like the above, it stays very true to the original score, however this one has an orchestral sound reminiscent of later entries in the Final Fantasy franchise. As the title states, this only covers OST Disc One, however unlike FinalFanTim's it covers all 25 tracks of Disc One. As above, if you select this as a music source, the OST will be used for the remaining two discs. &lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;OCRemix (Various) - Balance and Ruin (OCR):&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;This is a remix album spanning almost all tracks in the entire game, released by the remix artists of the OCRemix community. It is available free in its entirety at http://ff6.ocremix.org/. As a collaborative project, there are various differing styles represented. All are worthy remixes of the original, but almost none are 100% faithful to the sound of the original and many stray wildly from the tone of the original tracks. If you don't mind a bit of distance from the original music, this is likely my second recommendation after my own selection. Many of my selections, especially for the last 2 discs, are from this album. This album has all but 3 songs from the original OSV. The three that are missing are Celes's Theme, Grand Finale? (the theme to the opera boss fight), and What?? (the game's &amp;quot;comedy song&amp;quot;, played during lighthearted moments). &lt;br /&gt;&lt;br /&gt;&lt;br /&gt;&lt;br /&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Developer's Selection:&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;This is my own selection of tracks from all of the above sources. Careful consideration went into selecting these tracks. Taste is, of course, subjective. The overall feel I was going for when selecting these tracks was something faithful to the theme (if not the exact melody) of the original, but with a professional, modern feel. Each source has its strengths and weaknesses and I attempted to use the strengths to their fullest.&lt;br /&gt;&lt;br /&gt;&lt;br /&gt;&lt;br /&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Alternate Tracks:&lt;br /&gt;&lt;br /&gt;&lt;/span&gt;For certain tracks for which there is no source other than the OST, or for which the existing alternate sources can't be used, or simply for which there is only one alternate source and that source does not fit the tone of the original, alternate tracks sources from various places, including fan remixes and orchestral arrangements, have been added. These are automatically added when choosing the Developer's Selection. If the Developer's Selection is not chosen, these can be added via a checkbox on the install type page, or added in a custom music selection.&lt;br /&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Welcome to Dancing Mad, the music replacement mod for FFVI. &lt;br /&gt;&lt;br /&gt;Readme for Pre-Alpha 1, Dated 5/29/15&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:600;&quot;&gt;&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:11pt; font-weight:600;&quot;&gt;Contents&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:600;&quot;&gt;1&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;. Requirements&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:600;&quot;&gt;2&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;. Music&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:600;&quot;&gt;3&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;. Installation&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:600;&quot;&gt;4&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;. Custom Track Selection&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:600;&quot;&gt;5&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;. Higan Post-Installation&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:600;&quot;&gt;6&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;. Running the Game&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:600;&quot;&gt;7&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;. Known Bugs&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:600;&quot;&gt;8&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;. Tester Information&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:11pt; font-weight:600;&quot;&gt;1. Requirements&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Here's what you'll need to complete installation:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:600;&quot;&gt;1&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;. A ROM image of Final Fantasy III (U) (V1.0). The japanese version and other later revisions will be supported in later releases.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:600;&quot;&gt;2&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;. An internet connection. The music files you select will be downloaded from http://www.somebodyelsesproblem.org/.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:600;&quot;&gt;3&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;. At least 4GB of hard drive space.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:600;&quot;&gt;4&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;. A copy of Higan v094, BSNES v075, or an SD2SNES flash cart.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:600;&quot;&gt;5&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;. Patience.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:11pt; font-weight:600;&quot;&gt;2. Music&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;When installing Dancing Mad, you will be able to choose music either from my own selection or from one of 4 different sources. As well, for certain tracks, you may choose from special, alternate sources.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;The sources, and their characteristics:&lt;br /&gt;&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:600;&quot;&gt;Nobuo Uematsu - Final Fantasy VI Original Sound Version Remastered (OST): &lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;br /&gt;This is the official remastered version of the Final Fantasy VI soundtrack as released on CD by Square in 2013. This is a minor remaster of the OST also released by Square in 1994. This is a higher fidelity version of the original soundtrack that is present on the cartridge. Except to people with very sensitive ears, this will sound very similar to what is already present in the game. It is mostly provided as an option to those who simply want a higher fidelity version of the original game audio. As well, the mod is intended to eventually feature controllable volume, which, as the MSU-1 can be louder than the SPC, will provide an additional benefit.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:600;&quot;&gt;FinalFanTim - Final Fantasy VI [Remastered Edition] Unreleased Tracks (FFT):&lt;br /&gt;&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;This is an incomplete fan remix, very faithful to the original, of the OST by FinalFanTim, an artist who also released a complete remaster of the FFVII OST. The tracks are very faithful to the original, but with modern samples. I would characterize the sound as bombastic, lively, and energizing. The mixing isn't perfect, with certain instruments noticably louder than others. It has the sound of a non-professional remastering, but it's still a definite improvement on the original. Unfortunately, this remaster only covers the first 16 tracks of the first Disc. As such, if you select this as your music source in the installer, the rest of the tracks will be filled in with the OST versions. If you want to use these tracks, I would strongly suggest choosing the developer selection or choosing to pick and choose custom tracks.&lt;br /&gt;&lt;br /&gt;&lt;br /&gt;&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:600;&quot;&gt;Sean Schafianski - Final Fantasy VI Remastered Soundtrack: Disc One (SSC):&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;This is a polished, professional sounding fan remix. Like the above, it stays very true to the original score, however this one has an orchestral sound reminiscent of later entries in the Final Fantasy franchise. As the title states, this only covers OST Disc One, however unlike FinalFanTim's it covers all 25 tracks of Disc One. As above, if you select this as a music source, the OST will be used for the remaining two discs. &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:600;&quot;&gt;OCRemix (Various) - Balance and Ruin (OCR):&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;This is a remix album spanning almost all tracks in the entire game, released by the remix artists of the OCRemix community. It is available free in its entirety at http://ff6.ocremix.org/. As a collaborative project, there are various differing styles represented. All are worthy remixes of the original, but almost none are 100% faithful to the sound of the original and many stray wildly from the tone of the original tracks. If you don't mind a bit of distance from the original music, this is likely my second recommendation after my own selection. Many of my selections, especially for the last 2 discs, are from this album. This album has all but 3 songs from the original OSV. The three that are missing are Celes's Theme, Grand Finale? (the theme to the opera boss fight), and What?? (the game's &amp;quot;comedy song&amp;quot;, played during lighthearted moments). &lt;br /&gt;&lt;br /&gt;&lt;br /&gt;&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:600;&quot;&gt;Developer's Selection:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;This is my own selection of tracks from all of the above sources. Careful consideration went into selecting these tracks. Taste is, of course, subjective. The overall feel I was going for when selecting these tracks was something faithful to the theme (if not the exact melody) of the original, but with a professional, modern feel. Each source has its strengths and weaknesses and I attempted to use the strengths to their fullest.&lt;br /&gt;&lt;br /&gt;&lt;br /&gt;&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:600;&quot;&gt;Alternate Tracks:&lt;br /&gt;&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;For certain tracks for which there is no source other than the OST, or for which the existing alternate sources can't be used, or simply for which there is only one alternate source and that source does not fit the tone of the original, alternate tracks sources from various places, including fan remixes and orchestral arrangements, have been added. These are automatically added when choosing the Developer's Selection. If the Developer's Selection is not chosen, these can be added via a checkbox on the install type page, or added in a custom music selection.&lt;br /&gt;&lt;br /&gt;&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
    <widget class="QLabel" name="readmeLabel">
@@ -296,7 +296,7 @@ p, li { white-space: pre-wrap; }
       <x>20</x>
       <y>140</y>
       <width>531</width>
-      <height>172</height>
+      <height>181</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="soundtrackLayout">
@@ -346,6 +346,13 @@ p, li { white-space: pre-wrap; }
       </widget>
      </item>
      <item>
+      <widget class="QRadioButton" name="ocraltButton">
+       <property name="text">
+        <string>OCRemix Balance and Ruin (Alternate loops by Qwertymodo)</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QRadioButton" name="customButton">
        <property name="text">
         <string>Custom</string>
@@ -391,7 +398,33 @@ p, li { white-space: pre-wrap; }
      <item>
       <widget class="QRadioButton" name="SD2SNESButton">
        <property name="text">
-        <string>SD2SNES</string>
+        <string>SD2SNES/Snes9x-msu</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="verticalLayoutWidget_3">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>340</y>
+      <width>531</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="normalizeLayout">
+     <item>
+      <widget class="QLabel" name="normalizeLabel">
+       <property name="text">
+        <string>Lower/Normalize track volume? Highly recommended.</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="doNormalize">
+       <property name="text">
+        <string>Use deamplified and normalized tracks</string>
        </property>
       </widget>
      </item>
@@ -412,11 +445,82 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>10</y>
+      <y>40</y>
       <width>551</width>
-      <height>401</height>
+      <height>371</height>
      </rect>
     </property>
+   </widget>
+   <widget class="QWidget" name="horizontalLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>10</y>
+      <width>551</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLabel" name="presetLabel">
+       <property name="text">
+        <string>Preset:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="recommendedPreset">
+       <property name="text">
+        <string>Recommended</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="ostPreset">
+       <property name="text">
+        <string>OST</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="fftPreset">
+       <property name="text">
+        <string>FinalFanTim</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="sscPreset">
+       <property name="text">
+        <string>SSChaf</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="ocrPreset">
+       <property name="text">
+        <string>OCRemix</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="ocraltPreset">
+       <property name="text">
+        <string>Alt OCR</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="loadPreset">
+       <property name="text">
+        <string>Load</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </widget>
   </widget>
   <widget class="downloadPage" name="downloadPage">
@@ -521,8 +625,8 @@ p, li { white-space: pre-wrap; }
      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt;&quot;&gt;TO BE FILLED IN&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;TO BE FILLED IN&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
   </widget>
