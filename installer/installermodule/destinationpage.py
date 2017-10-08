@@ -5,7 +5,7 @@ import os
 from installermodule import rom
 
 FF3_US_V1_CHECKSUM = 24370
-FF3_MSU_CURRENT_CHECKSUM = 58664
+DM_CURR_CHECKSUM = 12763
 
 class destinationPage(QtWidgets.QWizardPage):
         lastRomPath = ""
@@ -48,23 +48,26 @@ class destinationPage(QtWidgets.QWizardPage):
                        if computedchecksum == FF3_US_V1_CHECKSUM:
                           print("DEBUG: ROM actual checksum correct.")
                           greenLights = greenLights + 1
+                       else:
+                          print("DEBUG: ROM checksum mismatch. Found " + str(computedchecksum) + " wanted " + str(FF3_US_V1_CHECKSUM))
                        romlabel += " " + myrom.title.decode("ASCII") + " (" + rom.decode_destcode(myrom.destcode) + ") (V1." + str(myrom.version) + ") "
                        if myrom.checksum == computedchecksum:
-                          romlabel += "(Checksum: OK) "
+                          romlabel += "(Sum: OK) "
                        else:
-                          romlabel += "(Checksum: Fail) "
-                       if greenLights == 5:
-                          romlabel += "(Acceptable: Yes!)"
+                          romlabel += "(Sum: Fail) "
+                       if computedchecksum == DM_CURR_CHECKSUM:
+                          romlabel += "(OK?: NO! Already Patched)"
+                          self.romValid = False
+                       elif greenLights == 5:
+                          romlabel += "(OK?: Yes!)"
                           self.romValid = True
                        else:
-                          romlabel += "(Acceptable: No :( )"
+                          romlabel += "(OK?: No :( )"
                           self.romValid = False
-                       if (greenLights == 4) and (computedchecksum == FF3_MSU_ALPHA_CHECKSUM):
-                          romlabel = "Unacceptable Prepatched ROM Detected: Final Fantasy 3 (U) (V1.0) (Dancing Mad) (Alpha)"
                        if myrom.has_smc_header == True:
-                          romlabel += " (Headered: Yes)"
+                          romlabel += " (Header: Yes)"
                        else:
-                          romlabel += " (Headered: No)"
+                          romlabel += " (Header: No)"
                        self.ROMDetected.setText(romlabel)
                 if self.field("destPath") == "":
                    return False

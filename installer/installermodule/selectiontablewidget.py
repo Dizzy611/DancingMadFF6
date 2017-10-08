@@ -2,6 +2,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 import csv
+from installermodule.selections import *
 
 class selectionTableWidget(QtWidgets.QTableWidget):
         def __init__(self, parent):
@@ -12,7 +13,7 @@ class selectionTableWidget(QtWidgets.QTableWidget):
                 self.setGeometry(QtCore.QRect(0, 10, 551, 401))
                 self.setCornerButtonEnabled(False)
                 self.setObjectName("tableWidget")
-                self.setColumnCount(5)
+                self.setColumnCount(6)
                 self.setRowCount(59)
                 item = QtWidgets.QTableWidgetItem()
                 self.setVerticalHeaderItem(0, item)
@@ -142,42 +143,55 @@ class selectionTableWidget(QtWidgets.QTableWidget):
                 self.setHorizontalHeaderItem(3, item)
                 item = QtWidgets.QTableWidgetItem()
                 self.setHorizontalHeaderItem(4, item)
+                item = QtWidgets.QTableWidgetItem()
+                self.setHorizontalHeaderItem(5, item)
                 self.horizontalHeader().setDefaultSectionSize(40)
                 self.horizontalHeader().setMinimumSectionSize(10)
                 self.horizontalHeader().setStretchLastSection(False)
                 self.verticalHeader().setCascadingSectionResizes(False)
+                self.verticalHeader().setDefaultSectionSize(20)
                 self.verticalHeader().setMinimumSectionSize(10)
                 self.verticalHeader().setStretchLastSection(False)
                 item = self.horizontalHeaderItem(0)
                 item.setText("OST")
+                item.setTextAlignment(QtCore.Qt.AlignCenter)
                 item = self.horizontalHeaderItem(1)
                 item.setText("FFT")
+                item.setTextAlignment(QtCore.Qt.AlignCenter)
                 item = self.horizontalHeaderItem(2)
                 item.setText("SSC")
+                item.setTextAlignment(QtCore.Qt.AlignCenter)
                 item = self.horizontalHeaderItem(3)
                 item.setText("OCR")
+                item.setTextAlignment(QtCore.Qt.AlignCenter)
                 item = self.horizontalHeaderItem(4)
                 item.setText("OTH")
+                item.setTextAlignment(QtCore.Qt.AlignCenter)
+                item = self.horizontalHeaderItem(5)
+                item.setText("OCR2")
+                item.setTextAlignment(QtCore.Qt.AlignCenter)
                 # End static crap.
 
                 # Initialize song list and fill with 0s.
-                self.songList = []
-                self.songList = self.songList + [0]*59
+                self.songList = SELECTION_OST
 
-		# Read list of track titles and place as vertical header text.
+                # Read list of track titles and place as vertical header text.
                 index = 0
                 with open("trackTitles.dat") as f:
                         for line in f:
                                 if index <= 58:
                                         item = self.verticalHeaderItem(index)
                                         item.setText(line)
+                                        item.setTextAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignLeft)
                                 index = index + 1
 
                 # Read valid sources csv and populate radio buttons based on this.
+                self.myButtons = []
                 with open("trackSources.csv") as csvfile:
                         csvreader = csv.reader(csvfile)
                         rowindex = 0
                         for song in csvreader:
+                                self.myButtons.append([])
                                 colindex = 0
                                 radios = []
                                 radioGroup = QtWidgets.QButtonGroup(self)
@@ -190,10 +204,12 @@ class selectionTableWidget(QtWidgets.QTableWidget):
                                                       radios[-1].setChecked(True)
                                                 self.setCellWidget(rowindex, colindex, radios[-1])
                                                 radioGroup.addButton(radios[-1])
+                                                self.myButtons[rowindex].append(radios[-1])
                                         else:
                                                 item = QtWidgets.QTableWidgetItem()
                                                 item.setFlags(QtCore.Qt.NoItemFlags)
                                                 self.setItem(rowindex, colindex, item)
+                                                self.myButtons[rowindex].append(None)
                                         colindex = colindex + 1
                                 rowindex = rowindex + 1
 
@@ -207,3 +223,15 @@ class selectionTableWidget(QtWidgets.QTableWidget):
                 songNum = button.myRowCol[0]
                 source = button.myRowCol[1]
                 self.songList[songNum] = source
+        
+        def reloadSources(self, sources):
+            self.songList = sources
+            for song,source in enumerate(self.songList):
+                try:
+                    if self.myButtons[song][source] is not None:
+                        self.myButtons[song][source].setChecked(True)
+                    else:
+                        self.myButtons[song][0].setChecked(True)
+                        print("DEBUG: Asked to load a source that's not available. Defaulting to OST.")
+                except TypeError as e:
+                    print("DEBUG: TypeError:", song, source, str(e))
