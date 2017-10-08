@@ -15,13 +15,11 @@ import glob
 # Should we use the /new directory in the mirrors. Use when testing new song selections, turn off on release.
 NEW_PATH = True
 
-def _doSongMap(source, tracknum, normalize=False):
+def _doSongMap(source, tracknum):
         if NEW_PATH == False:
             sourcestr = ""
         else:
             sourcestr = "new/"
-        if normalize == True:
-            sourcestr = sourcestr + "deamp-"
         if source == 0:
               sourcestr = sourcestr + "OST"
         elif source == 1:
@@ -42,18 +40,18 @@ def _doSongMap(source, tracknum, normalize=False):
         return retstr
 
 
-def mapSongs(songSources, normalize=False):
+def mapSongs(songSources):
         retlist = list()
         i = 0
         with open("trackMapping.dat") as f:
               for line in f:
                   if line.count(",") != 0:
                       for item in line.split(","):
-                        file = _doSongMap(songSources[i], int(item), normalize)
+                        file = _doSongMap(songSources[i], int(item))
                         if file != "":
                             retlist.append(file)
                   else:
-                      file = _doSongMap(songSources[i], int(line), normalize)
+                      file = _doSongMap(songSources[i], int(line))
                       if file != "":
                           retlist.append(file)
                   i = i + 1
@@ -100,7 +98,7 @@ class downloadPage(QtWidgets.QWizardPage):
                   # Opera track magic! To be revised later.
 				  # Opera bug workaround: *ALL* opera sources now dummied, temporarily.
                   self.songSources[31] = 6
-                  templist = mapSongs(self.songSources,self.field("doNormalize"))
+                  templist = mapSongs(self.songSources)
                   destination = self.field("destPath")
                   urllist = ['http://www.somebodyelsesproblem.org/ff6data/{0}'.format(i) for i in templist]
                   altlist = ['http://durandal.somebodyelsesproblem.org/ff6data/{0}'.format(i) for i in templist]

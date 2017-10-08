@@ -38,7 +38,6 @@ class InstallWizard(QWizard, InstallWizard.Ui_InstallWizard):
                 self.installtypePage.registerField("BSNESButton", self.BSNESButton)
                 self.installtypePage.registerField("SD2SNESButton", self.SD2SNESButton)
                 self.installtypePage.registerField("ocraltButton", self.ocraltButton)
-                self.installtypePage.registerField("doNormalize", self.doNormalize)
                 self.customselectionPage.registerField("songList", self.trackSelectionWidget, "SongList")
                 self.customselectionPage.registerField("loadPreset", self.loadPreset)
                 self.customselectionPage.registerField("recommendedPreset", self.recommendedPreset)
