@@ -95,9 +95,9 @@ class downloadPage(QtWidgets.QWizardPage):
                   else:
                       self.songSources = SELECTION_OST # Shouldn't get here, but ost as default anyway.
 
-                  # Opera track magic! To be revised later.
-				  # Opera bug workaround: *ALL* opera sources now dummied, temporarily.
-                  self.songSources[31] = 6
+                  if self.songSources[31] = 0: # No OST version of Opera is available. Dummy out and play the SPC version instead.
+                      self.songSources[31] = 6
+                  
                   templist = mapSongs(self.songSources)
                   destination = self.field("destPath")
                   urllist = ['http://www.somebodyelsesproblem.org/ff6data/{0}'.format(i) for i in templist]
