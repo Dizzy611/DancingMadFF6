@@ -408,9 +408,11 @@ ShutUp:
 	stz MSUControl
 SilenceAndReturn:
 	stz PlayVolume
-    ; Skip silencing playtrack if we're currently playing problematic track 0x27/ff3-39.
+    ; Skip silencing playtrack if we're currently playing problematic track 0x27/ff3-39 or 0x45/ff3-69.
     lda PlayTrack
     cmp #$27
+    beq OriginalCode
+    cmp #$45
     beq OriginalCode
 	; Attempt to avoid the 'double play' problem by telling the SPC routine we're playing silence. May 
 	; have unintended effects. May be cause of issues #4, partially #3, and #17. :/
