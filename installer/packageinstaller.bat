@@ -1,7 +1,7 @@
 @echo off
 python setup.py build
 mkdir temp
-xcopy /E /Y /Q build\exe.win-amd64-3.5 temp
+xcopy /E /Y /Q build\exe.win-amd64-3.6 temp
 copy /Y ff3msu.ips temp
 copy /Y ff3msu.msu temp
 copy /Y ff3msu.xml temp
@@ -22,4 +22,4 @@ copy /b 7zS.sfx + config.txt + DancingMadInstaller.7z DancingMadInstaller.exe
 move /Y DancingMadInstaller-temp.exe DancingMadInstaller.exe
 rmdir /S /Q temp
 del DancingMadInstaller.7z
-echo Assuming no errors, the installer exe should now be built. Remember when moving to Python 3.6 to adjust the build directory.
+echo Assuming no errors, the installer exe should now be built.

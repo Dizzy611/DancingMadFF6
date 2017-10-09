@@ -95,7 +95,7 @@ class downloadPage(QtWidgets.QWizardPage):
                   else:
                       self.songSources = SELECTION_OST # Shouldn't get here, but ost as default anyway.
 
-                  if self.songSources[31] = 0: # No OST version of Opera is available. Dummy out and play the SPC version instead.
+                  if self.songSources[31] == 0: # No OST version of Opera is available. Dummy out and play the SPC version instead.
                       self.songSources[31] = 6
                   
                   templist = mapSongs(self.songSources)
