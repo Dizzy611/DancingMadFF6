@@ -72,6 +72,5 @@ class InstallWizard(QWizard, InstallWizard.Ui_InstallWizard):
 
 app = QApplication(sys.argv)
 window = InstallWizard()
-
 window.show()
 app.exec_()
