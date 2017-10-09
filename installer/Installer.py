@@ -95,7 +95,5 @@ class InstallWizard(QWizard, InstallWizard.Ui_InstallWizard):
 
 app = QApplication(sys.argv)
 window = InstallWizard()
-window.setWindowIcon(QIcon("kefka.ico"))
 window.show()
-app.setWindowIcon(QIcon("kefka.ico"))
 app.exec_()
