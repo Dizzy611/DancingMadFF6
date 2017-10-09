@@ -21,5 +21,6 @@ copy /b 7zS.sfx + config.txt + DancingMadInstaller.7z DancingMadInstaller.exe
 ..\utils\reshacker\ResourceHacker.exe -open DancingMadInstaller.exe -save DancingMadInstaller-temp.exe -action addoverwrite -res kefka.ico -mask ICONGROUP,MAINICON,
 move /Y DancingMadInstaller-temp.exe DancingMadInstaller.exe
 rmdir /S /Q temp
+rmdir /S /Q build
 del DancingMadInstaller.7z
 echo Assuming no errors, the installer exe should now be built.
