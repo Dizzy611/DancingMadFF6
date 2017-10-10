@@ -228,9 +228,13 @@ Kefka5Check:
     jml Kefka5
 Kefka1Check:
     cmp #$3b ; Kefka's Dancing Mad Parts 1-3
-    bne Ending2Check
+    bne Ending1Check
     lda #$65 ; Play part 1.
     sta PlayTrack
+Ending1Check: ; Ending Part 1
+    cmp #$53 ;
+    bne Ending2Check
+    jml Ending1
 Ending2Check: ; Ending Part 2
     cmp #$54 ;
     bne SilenceCheck
@@ -405,7 +409,11 @@ Kefka5:
 
 ; Ending part 2 handling.
 Ending2:
-; See Kefka 5, very similar.
+; We don't use this track, instead piggybacking onto the end of Ending Part 1, so just silence and return.
+    jml SilenceAndReturn
+
+; Try to stop it from repeatedly restarting ending part 1
+Ending1:
     lda MSUCurrentTrack
     cmp #$53
     bne +
@@ -416,7 +424,7 @@ Ending2:
     jml SilenceAndReturn
 +
     jml SpecialHandlingBack
-    
+
 ; Return routines
 
 ShutUp:
