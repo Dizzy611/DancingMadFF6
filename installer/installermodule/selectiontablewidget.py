@@ -2,7 +2,6 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 import csv
-import itertools.tee
 from installermodule.selections import *
 
 sources = [ "OST", "FFT", "SST", "OCR", "OTH", "OCR2" ]
@@ -19,9 +18,9 @@ class selectionTableWidget(QtWidgets.QTableWidget):
                 with open("trackSources.csv") as f:
                     tmp = csv.reader(f)
                     colcount = len(next(tmp))
-                set.setColumnCount(colcount)
+                self.setColumnCount(colcount)
                 with open("trackTitles.dat") as f:
-                    rowcount = sum(1 for _ in f))
+                    rowcount = sum((1 for _ in f))
                 self.setRowCount(rowcount)
                 for i in range(0, rowcount):
                     item = QtWidgets.QTableWidgetItem()
