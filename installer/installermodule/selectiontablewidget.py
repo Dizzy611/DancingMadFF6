@@ -37,6 +37,7 @@ class selectionTableWidget(QtWidgets.QTableWidget):
                 self.verticalHeader().setStretchLastSection(False)
                 for idx,source in enumerate(sources):
                     item = self.horizontalHeaderItem(idx)
+                    print("DEBUG. Source header:", source)
                     item.setText(source)
                     item.setTextAlignment(QtCore.Qt.AlignCenter)
 
@@ -46,12 +47,12 @@ class selectionTableWidget(QtWidgets.QTableWidget):
                 # Read list of track titles and place as vertical header text.
                 index = 0
                 with open("trackTitles.dat") as f:
-                        for line in f:
-                                if index <= 58:
-                                        item = self.verticalHeaderItem(index)
-                                        item.setText(line)
-                                        item.setTextAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignLeft)
-                                index = index + 1
+                        for idx, line in enumerate(f):
+                            item = self.verticalHeaderItem(idx)
+                            print("DEBUG: Song header:", line)
+                            item.setText(line)
+                            item.setTextAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignLeft)
+                               
 
                 # Read valid sources csv and populate radio buttons based on this.
                 self.myButtons = []
