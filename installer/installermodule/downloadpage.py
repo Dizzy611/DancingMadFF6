@@ -63,7 +63,6 @@ class downloadPage(QtWidgets.QWizardPage):
         compChgSgnl = pyqtSignal()
         installstate = 0
         def __init__(self):
-              # sidselection wuz here
               self.installstate = 1
               self.totalDownloads = 0
               super().__init__()
@@ -95,8 +94,8 @@ class downloadPage(QtWidgets.QWizardPage):
                   else:
                       self.songSources = SELECTION_OST # Shouldn't get here, but ost as default anyway.
 
-                  if self.songSources[31] == 0: # No OST version of Opera is available. Dummy out and play the SPC version instead.
-                      self.songSources[31] = 6
+                  # if self.songSources[31] == 0: # OST opera is now available. Commented this bit out. 
+                      # self.songSources[31] = 6
                   if self.songSources[59] == 0: # No OST versions of sound effects.
                       self.songSources[59] = 6
                   
