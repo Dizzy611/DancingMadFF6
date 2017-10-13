@@ -8,7 +8,7 @@ import sys
 base = 'Win32GUI' if sys.platform=='win32' else None
 
 executables = [
-    Executable('Installer.py', base=base)
+    Executable('Installer.py', base=base, icon="kefka.ico")
 ]
 
 setup(name='Dancing Mad Installer',

@@ -1,7 +1,9 @@
 import sys, types
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWizard, QApplication, QWizardPage, QFileDialog
 from PyQt5.QtCore import pyqtSlot
 from installermodule import InstallWizard
+from installermodule.selections import *
 from enum import IntEnum
 sys.stdout = open("installer.log", "w")
 sys.stderr = sys.stdout
@@ -36,9 +38,15 @@ class InstallWizard(QWizard, InstallWizard.Ui_InstallWizard):
                 self.installtypePage.registerField("higanButton", self.higanButton)
                 self.installtypePage.registerField("BSNESButton", self.BSNESButton)
                 self.installtypePage.registerField("SD2SNESButton", self.SD2SNESButton)
+                self.installtypePage.registerField("ocraltButton", self.ocraltButton)
                 self.customselectionPage.registerField("songList", self.trackSelectionWidget, "SongList")
-
-
+                self.customselectionPage.registerField("loadPreset", self.loadPreset)
+                self.customselectionPage.registerField("recommendedPreset", self.recommendedPreset)
+                self.customselectionPage.registerField("ostPreset", self.ostPreset)
+                self.customselectionPage.registerField("fftPreset", self.fftPreset)
+                self.customselectionPage.registerField("sscPreset", self.sscPreset)
+                self.customselectionPage.registerField("ocrPreset", self.ocrPreset)
+                self.customselectionPage.registerField("ocraltPreset", self.ocraltPreset)
                 # Giving the Page objects access to their own widgets where necessary! Yay for the magic of python.
                 self.readmePage.readmeBrowser = self.readmeBrowser
                 self.licensePage.licenseBrowser = self.licenseBrowser
@@ -69,6 +77,21 @@ class InstallWizard(QWizard, InstallWizard.Ui_InstallWizard):
         @pyqtSlot()
         def on_destPathBrowse_clicked(self):     
             self.destPath.setText(QFileDialog.getExistingDirectory())
+        
+        @pyqtSlot()
+        def on_loadPreset_clicked(self):
+            if self.field("ostPreset") == True:
+                self.trackSelectionWidget.reloadSources(SELECTION_OST)
+            elif self.field("fftPreset") == True:
+                self.trackSelectionWidget.reloadSources(SELECTION_FFT)
+            elif self.field("sscPreset") == True:
+                self.trackSelectionWidget.reloadSources(SELECTION_SSC)
+            elif self.field("ocrPreset") == True:
+                self.trackSelectionWidget.reloadSources(SELECTION_OCR)
+            elif self.field("ocraltPreset") == True:
+                self.trackSelectionWidget.reloadSources(SELECTION_OCRALT)
+            elif self.field("recommendedPreset") == True:
+                self.trackSelectionWidget.reloadSources(SELECTION_RECOMMENDED)
 
 app = QApplication(sys.argv)
 window = InstallWizard()

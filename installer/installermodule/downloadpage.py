@@ -5,28 +5,37 @@ from PyQt5.QtCore import pyqtSignal, QTimer
 import os
 from installermodule.downloader import Downloader
 from installermodule import rom
+from installermodule.selections import *
 from decimal import Decimal
 from queue import Queue
 import ips
 import sys
 import glob
 
+# Should we use the /new directory in the mirrors. Use when testing new song selections, turn off on release.
+NEW_PATH = True
+
 def _doSongMap(source, tracknum):
-        sourcestr = ""
+        if NEW_PATH == False:
+            sourcestr = ""
+        else:
+            sourcestr = "new/"
         if source == 0:
-              sourcestr = "OST"
+              sourcestr = sourcestr + "OST"
         elif source == 1:
-              sourcestr = "FFT"
+              sourcestr = sourcestr + "FFT"
         elif source == 2:
-              sourcestr = "SSC"
+              sourcestr = sourcestr + "SSC"
         elif source == 3:
-              sourcestr = "OCR"
+              sourcestr = sourcestr + "OCR"
         elif source == 4:
-              sourcestr = "OTH"
+              sourcestr = sourcestr + "OTH"
         elif source == 5:
+              sourcestr = sourcestr + "OCR2"
+        elif source == 6:
               return ""
         else:
-              sourcestr = "OST"
+              sourcestr = sourcestr + "OST"
         retstr = sourcestr + "/ff3-" + str(tracknum) + ".pcm"
         return retstr
 
@@ -54,7 +63,6 @@ class downloadPage(QtWidgets.QWizardPage):
         compChgSgnl = pyqtSignal()
         installstate = 0
         def __init__(self):
-              self.sidselection = [2]*2 + [1]*2 + [2]*6 + [3] + [1] + [2] + [1] + [3] + [2]*7 + [3]*6 + [0] + [3]*2 + [4]*2 + [0]*3 + [3]*2 + [0] + [3] + [0] + [3]*7 + [0]*3 + [3]*8 # Make an XML file for this and parse it, eventually, so we don't have this ugly thing.
               self.installstate = 1
               self.totalDownloads = 0
               super().__init__()
@@ -72,25 +80,25 @@ class downloadPage(QtWidgets.QWizardPage):
                   if self.field("customButton") == True:
                       self.songSources = self.field("songList")
                   elif self.field("sidselectButton") == True:
-                      self.songSources = self.sidselection
+                      self.songSources = SELECTION_RECOMMENDED
                   elif self.field("ostButton") == True:
-                      self.songSources = [0]*59 # All OST
+                      self.songSources = SELECTION_OST
                   elif self.field("fftButton") == True:
-                      self.songSources = [1]*16 + [0]*43 # 16 FFT tracks and 43 OST tracks
+                      self.songSources = SELECTION_FFT
                   elif self.field("sschafButton") == True:
-                      self.songSources = [2]*25 + [0]*34 # 25 SSC tracks and 34 OST tracks
+                      self.songSources = SELECTION_SSC
                   elif self.field("ocrButton") == True:
-                      self.songSources = [3]*21 + [0] + [3]*10 + [0] + [3]*5 + [0] + [3]*20 # 56 OCR tracks, with 3 OST tracks in various missing spots.
-                      self.songSources[31] = [4] # Replace OCR opera/finale with OTH 
-                      self.songSources[32] = [4]
+                      self.songSources = SELECTION_OCR
+                  elif self.field("ocraltButton") == True:
+                      self.songSources = SELECTION_OCRALT
                   else:
-                      self.songSources = [0]*59 # Shouldn't get here, but ost as default anyway.
+                      self.songSources = SELECTION_OST # Shouldn't get here, but ost as default anyway.
 
-                  # Opera track magic! To be revised later.
-				  # Opera bug workaround: *ALL* opera sources now dummied, temporarily.
-                  # if self.songSources[31] != 4:
-                      # self.songSources[31] = 5 # Dummy out the Opera tracks for now for non OTH versions.
-                  self.songSources[31] = 5
+                  # if self.songSources[31] == 0: # OST opera is now available. Commented this bit out. 
+                      # self.songSources[31] = 6
+                  if self.songSources[59] == 0: # No OST versions of sound effects.
+                      self.songSources[59] = 6
+                  
                   templist = mapSongs(self.songSources)
                   destination = self.field("destPath")
                   urllist = ['http://www.somebodyelsesproblem.org/ff6data/{0}'.format(i) for i in templist]

@@ -27,5 +27,6 @@ patch/ff3msu.link
 installer/build/
 *.sfx
 utils/normalize/
+utils/rr/
 utils/wla-*/
 utils/reshacker/

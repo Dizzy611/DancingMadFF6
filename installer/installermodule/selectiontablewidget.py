@@ -2,182 +2,65 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 import csv
+from installermodule.selections import *
+
+sources = [ "OST", "FFT", "SST", "OCR", "OTH", "OCR2" ]
 
 class selectionTableWidget(QtWidgets.QTableWidget):
         def __init__(self, parent):
                 super().__init__(parent)
 
-
-                # Static design stuff. Copied from old hand-edited UIC file.
                 self.setGeometry(QtCore.QRect(0, 10, 551, 401))
                 self.setCornerButtonEnabled(False)
                 self.setObjectName("tableWidget")
-                self.setColumnCount(5)
-                self.setRowCount(59)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(0, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(1, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(2, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(3, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(4, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(5, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(6, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(7, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(8, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(9, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(10, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(11, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(12, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(13, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(14, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(15, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(16, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(17, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(18, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(19, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(20, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(21, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(22, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(23, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(24, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(25, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(26, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(27, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(28, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(29, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(30, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(31, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(32, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(33, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(34, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(35, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(36, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(37, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(38, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(39, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(40, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(41, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(42, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(43, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(44, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(45, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(46, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(47, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(48, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(49, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(50, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(51, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(52, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(53, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(54, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(55, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(56, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(57, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setVerticalHeaderItem(58, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setHorizontalHeaderItem(0, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setHorizontalHeaderItem(1, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setHorizontalHeaderItem(2, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setHorizontalHeaderItem(3, item)
-                item = QtWidgets.QTableWidgetItem()
-                self.setHorizontalHeaderItem(4, item)
+                
+                # Grab number of rows/columns based on file entries, set up headers.
+                with open("trackSources.csv") as f:
+                    tmp = csv.reader(f)
+                    colcount = len(next(tmp))
+                self.setColumnCount(colcount)
+                with open("trackTitles.dat") as f:
+                    rowcount = sum((1 for _ in f))
+                self.setRowCount(rowcount)
+                for i in range(0, rowcount):
+                    item = QtWidgets.QTableWidgetItem()
+                    self.setVerticalHeaderItem(i, item)
+                for i in range(0, colcount):
+                    item = QtWidgets.QTableWidgetItem()
+                    self.setHorizontalHeaderItem(i, item)
                 self.horizontalHeader().setDefaultSectionSize(40)
                 self.horizontalHeader().setMinimumSectionSize(10)
                 self.horizontalHeader().setStretchLastSection(False)
                 self.verticalHeader().setCascadingSectionResizes(False)
+                self.verticalHeader().setDefaultSectionSize(20)
                 self.verticalHeader().setMinimumSectionSize(10)
                 self.verticalHeader().setStretchLastSection(False)
-                item = self.horizontalHeaderItem(0)
-                item.setText("OST")
-                item = self.horizontalHeaderItem(1)
-                item.setText("FFT")
-                item = self.horizontalHeaderItem(2)
-                item.setText("SSC")
-                item = self.horizontalHeaderItem(3)
-                item.setText("OCR")
-                item = self.horizontalHeaderItem(4)
-                item.setText("OTH")
-                # End static crap.
+                for idx,source in enumerate(sources):
+                    item = self.horizontalHeaderItem(idx)
+                    print("DEBUG. Source header:", source)
+                    item.setText(source)
+                    item.setTextAlignment(QtCore.Qt.AlignCenter)
 
                 # Initialize song list and fill with 0s.
-                self.songList = []
-                self.songList = self.songList + [0]*59
+                self.songList = SELECTION_OST
 
-		# Read list of track titles and place as vertical header text.
+                # Read list of track titles and place as vertical header text.
                 index = 0
                 with open("trackTitles.dat") as f:
-                        for line in f:
-                                if index <= 58:
-                                        item = self.verticalHeaderItem(index)
-                                        item.setText(line)
-                                index = index + 1
+                        for idx, line in enumerate(f):
+                            item = self.verticalHeaderItem(idx)
+                            print("DEBUG: Song header:", line)
+                            item.setText(line)
+                            item.setTextAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignLeft)
+                               
 
                 # Read valid sources csv and populate radio buttons based on this.
+                self.myButtons = []
                 with open("trackSources.csv") as csvfile:
                         csvreader = csv.reader(csvfile)
                         rowindex = 0
                         for song in csvreader:
+                                self.myButtons.append([])
                                 colindex = 0
                                 radios = []
                                 radioGroup = QtWidgets.QButtonGroup(self)
@@ -190,10 +73,12 @@ class selectionTableWidget(QtWidgets.QTableWidget):
                                                       radios[-1].setChecked(True)
                                                 self.setCellWidget(rowindex, colindex, radios[-1])
                                                 radioGroup.addButton(radios[-1])
+                                                self.myButtons[rowindex].append(radios[-1])
                                         else:
                                                 item = QtWidgets.QTableWidgetItem()
                                                 item.setFlags(QtCore.Qt.NoItemFlags)
                                                 self.setItem(rowindex, colindex, item)
+                                                self.myButtons[rowindex].append(None)
                                         colindex = colindex + 1
                                 rowindex = rowindex + 1
 
@@ -207,3 +92,15 @@ class selectionTableWidget(QtWidgets.QTableWidget):
                 songNum = button.myRowCol[0]
                 source = button.myRowCol[1]
                 self.songList[songNum] = source
+        
+        def reloadSources(self, sources):
+            self.songList = sources
+            for song,source in enumerate(self.songList):
+                try:
+                    if self.myButtons[song][source] is not None:
+                        self.myButtons[song][source].setChecked(True)
+                    else:
+                        self.myButtons[song][0].setChecked(True)
+                        print("DEBUG: Asked to load a source that's not available. Defaulting to OST.")
+                except TypeError as e:
+                    print("DEBUG: TypeError:", song, source, str(e))

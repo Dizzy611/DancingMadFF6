@@ -2,8 +2,7 @@
 
 # Form implementation generated from reading ui file 'InstallWizard.ui'
 #
-# Created: Fri May 29 08:32:49 2015
-#      by: PyQt5 UI code generator 5.3.2
+# Created by: PyQt5 UI code generator 5.9
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -14,7 +13,7 @@ class Ui_InstallWizard(object):
         InstallWizard.setObjectName("InstallWizard")
         InstallWizard.resize(575, 527)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("../../../media/dmorrison/E2CCDAE9CCDAB74F/DancingMadInstaller/kefka-16x16.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap("kefka-16x16.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         InstallWizard.setWindowIcon(icon)
         InstallWizard.setWizardStyle(QtWidgets.QWizard.ModernStyle)
         InstallWizard.setTitleFormat(QtCore.Qt.AutoText)
@@ -78,7 +77,7 @@ class Ui_InstallWizard(object):
         self.installtypePage = installtypePage()
         self.installtypePage.setObjectName("installtypePage")
         self.verticalLayoutWidget = QtWidgets.QWidget(self.installtypePage)
-        self.verticalLayoutWidget.setGeometry(QtCore.QRect(20, 140, 531, 172))
+        self.verticalLayoutWidget.setGeometry(QtCore.QRect(20, 140, 531, 181))
         self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
         self.soundtrackLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
         self.soundtrackLayout.setContentsMargins(0, 0, 0, 0)
@@ -102,6 +101,9 @@ class Ui_InstallWizard(object):
         self.ocrButton = QtWidgets.QRadioButton(self.verticalLayoutWidget)
         self.ocrButton.setObjectName("ocrButton")
         self.soundtrackLayout.addWidget(self.ocrButton)
+        self.ocraltButton = QtWidgets.QRadioButton(self.verticalLayoutWidget)
+        self.ocraltButton.setObjectName("ocraltButton")
+        self.soundtrackLayout.addWidget(self.ocraltButton)
         self.customButton = QtWidgets.QRadioButton(self.verticalLayoutWidget)
         self.customButton.setObjectName("customButton")
         self.soundtrackLayout.addWidget(self.customButton)
@@ -128,8 +130,39 @@ class Ui_InstallWizard(object):
         self.customselectionPage = customselectionPage()
         self.customselectionPage.setObjectName("customselectionPage")
         self.trackSelectionWidget = selectionTableWidget(self.customselectionPage)
-        self.trackSelectionWidget.setGeometry(QtCore.QRect(0, 10, 551, 401))
+        self.trackSelectionWidget.setGeometry(QtCore.QRect(0, 40, 551, 371))
         self.trackSelectionWidget.setObjectName("trackSelectionWidget")
+        self.horizontalLayoutWidget = QtWidgets.QWidget(self.customselectionPage)
+        self.horizontalLayoutWidget.setGeometry(QtCore.QRect(0, 10, 548, 31))
+        self.horizontalLayoutWidget.setObjectName("horizontalLayoutWidget")
+        self.horizontalLayout = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget)
+        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.presetLabel = QtWidgets.QLabel(self.horizontalLayoutWidget)
+        self.presetLabel.setObjectName("presetLabel")
+        self.horizontalLayout.addWidget(self.presetLabel)
+        self.recommendedPreset = QtWidgets.QRadioButton(self.horizontalLayoutWidget)
+        self.recommendedPreset.setObjectName("recommendedPreset")
+        self.horizontalLayout.addWidget(self.recommendedPreset)
+        self.ostPreset = QtWidgets.QRadioButton(self.horizontalLayoutWidget)
+        self.ostPreset.setChecked(True)
+        self.ostPreset.setObjectName("ostPreset")
+        self.horizontalLayout.addWidget(self.ostPreset)
+        self.fftPreset = QtWidgets.QRadioButton(self.horizontalLayoutWidget)
+        self.fftPreset.setObjectName("fftPreset")
+        self.horizontalLayout.addWidget(self.fftPreset)
+        self.sscPreset = QtWidgets.QRadioButton(self.horizontalLayoutWidget)
+        self.sscPreset.setObjectName("sscPreset")
+        self.horizontalLayout.addWidget(self.sscPreset)
+        self.ocrPreset = QtWidgets.QRadioButton(self.horizontalLayoutWidget)
+        self.ocrPreset.setObjectName("ocrPreset")
+        self.horizontalLayout.addWidget(self.ocrPreset)
+        self.ocraltPreset = QtWidgets.QRadioButton(self.horizontalLayoutWidget)
+        self.ocraltPreset.setObjectName("ocraltPreset")
+        self.horizontalLayout.addWidget(self.ocraltPreset)
+        self.loadPreset = QtWidgets.QPushButton(self.horizontalLayoutWidget)
+        self.loadPreset.setObjectName("loadPreset")
+        self.horizontalLayout.addWidget(self.loadPreset)
         InstallWizard.addPage(self.customselectionPage)
         self.downloadPage = downloadPage()
         self.downloadPage.setObjectName("downloadPage")
@@ -180,7 +213,29 @@ class Ui_InstallWizard(object):
         InstallWizard.setWindowTitle(_translate("InstallWizard", "Dancing Mad Installer"))
         self.welcomePage.setTitle(_translate("InstallWizard", "Dancing Mad Beta Installer"))
         self.welcomePage.setSubTitle(_translate("InstallWizard", "Welcome"))
-        self.welcomeLabel.setText(_translate("InstallWizard", "<html><head/><body><p align=\"center\">Welcome to the installer for <span style=\" font-weight:600;\">Dancing Mad</span>, the music replacement mod for Final Fantasy VI!</p><p><br/></p><p><br/></p><p><br/></p><p><br/>This installer will walk you through the steps of selecting and downloading your replacement soundtrack, patching your game, and setting the mod up to run in your preferred emulator(s) and/or flashcart. <br/><br/>Currently, <span style=\" font-weight:600;\">Dancing Mad </span>has been tested on the <span style=\" font-weight:600;\">Higan v097</span> and <span style=\" font-weight:600;\">bsnes-plus v073+2</span> emulators, and is supported in both, with some caveats for BSNES as outlined in the readme, which you can view later on in the install. It should also work just fine on the <span style=\" font-weight:600;\">SD2SNES</span> flash cart, and an installation option is provided for it. However, the developers do not have one so it is untested as of this writing.<br/></p><p><br/></p><p><br/></p><p><br/></p><p><br/>Press &quot;Next&quot; to begin.</p></body></html>"))
+        self.welcomeLabel.setText(_translate("InstallWizard", """<html>
+                                                                 <head/>
+                                                                 <body>
+                                                                 <p align="center">Welcome to the installer for <span style=" font-weight:600;">Dancing Mad</span>, the music replacement mod for Final Fantasy VI!</p>
+                                                                 <p>
+                                                                 <br/>
+                                                                 </p>
+                                                                 <p>
+                                                                 <br/>
+                                                                 </p>
+                                                                 <p>
+                                                                 <br/>
+                                                                 </p>
+                                                                 <p>
+                                                                 <br/>
+                                                                 This installer will walk you through the steps of selecting and downloading your replacement soundtrack, patching your game, and setting the mod up to run in your
+                                                                 preferred emulator(s) and/or flashcart. <br/>
+                                                                 <br/>
+                                                                 Currently, <span style=" font-weight:600;">Dancing Mad</span> has been tested on the <span style=" font-weight:600;">Higan v097</span>, 
+                                                                 <span style=" font-weight:600;">Snes9x-msu v1.55</span>, and <span style=" font-weight:600;">bsnes-plus v073+2</span> emulators, and is supported in all three,
+                                                                 with some caveats for BSNES as outlined in the readme, which you can view later on in the install. It has also been tested on the
+                                                                 <span style=" font-weight:600;">SD2SNES</span> flash cart, and an installation option is provided for it. However, the developers do not have one so testing
+                                                                 is slow as of the time this was written.<br/></p><p><br/></p><p><br/></p><p></p><p>Press &quot;Next&quot; to begin.</p></body></html>"""))
         self.licensePage.setTitle(_translate("InstallWizard", "Dancing Mad Beta Installer"))
         self.licensePage.setSubTitle(_translate("InstallWizard", "License Agreement"))
         self.licenseBrowser.setHtml(_translate("InstallWizard", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
@@ -197,7 +252,7 @@ class Ui_InstallWizard(object):
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Sans Serif\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt;\">ERROR: Could not load README file</span></p></body></html>"))
+"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans Serif\'; font-size:8.25pt;\">ERROR: Could not load README file</span></p></body></html>"))
         self.readmeLabel.setText(_translate("InstallWizard", "<html><head/><body><p>Below you will find detailed documentation for both the install process and the mod in general. Please read thoroughly before proceeding.</p></body></html>"))
         self.destinationPage.setTitle(_translate("InstallWizard", "Dancing Mad Beta Installer"))
         self.destinationPage.setSubTitle(_translate("InstallWizard", "Select Destination Directory..."))
@@ -215,13 +270,22 @@ class Ui_InstallWizard(object):
         self.fftButton.setText(_translate("InstallWizard", "FinalFanTim\'s Remastered Tracks"))
         self.sschafButton.setText(_translate("InstallWizard", "Sean Schafianski\'s Final Fantasy VI Remastered Disc One"))
         self.ocrButton.setText(_translate("InstallWizard", "OCRemix Balance and Ruin"))
+        self.ocraltButton.setText(_translate("InstallWizard", "OCRemix Balance and Ruin (Alternate loops by Qwertymodo)"))
         self.customButton.setText(_translate("InstallWizard", "Custom"))
         self.emulatorLabel.setText(_translate("InstallWizard", "Choose what you will be running the mod on:"))
         self.higanButton.setText(_translate("InstallWizard", "Higan"))
         self.BSNESButton.setText(_translate("InstallWizard", "BSNES"))
-        self.SD2SNESButton.setText(_translate("InstallWizard", "SD2SNES"))
+        self.SD2SNESButton.setText(_translate("InstallWizard", "SD2SNES/Snes9x-msu"))
         self.customselectionPage.setTitle(_translate("InstallWizard", "Dancing Mad Beta Installer"))
         self.customselectionPage.setSubTitle(_translate("InstallWizard", "Custom Track Selection"))
+        self.presetLabel.setText(_translate("InstallWizard", "Preset:"))
+        self.recommendedPreset.setText(_translate("InstallWizard", "Recommended"))
+        self.ostPreset.setText(_translate("InstallWizard", "OST"))
+        self.fftPreset.setText(_translate("InstallWizard", "FinalFanTim"))
+        self.sscPreset.setText(_translate("InstallWizard", "SSChaf"))
+        self.ocrPreset.setText(_translate("InstallWizard", "OCRemix"))
+        self.ocraltPreset.setText(_translate("InstallWizard", "Alt OCR"))
+        self.loadPreset.setText(_translate("InstallWizard", "Load"))
         self.downloadPage.setTitle(_translate("InstallWizard", "Dancing Mad Beta Installer"))
         self.downloadPage.setSubTitle(_translate("InstallWizard", "Downloading, Patching, and Installing..."))
         self.totalLabel.setText(_translate("InstallWizard", "Total"))
@@ -233,7 +297,7 @@ class Ui_InstallWizard(object):
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Sans Serif\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt;\">TO BE FILLED IN</span></p></body></html>"))
+"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans Serif\'; font-size:8.25pt;\">TO BE FILLED IN</span></p></body></html>"))
 
 from installermodule.customselectionpage import customselectionPage
 from installermodule.readmepage import readmePage
