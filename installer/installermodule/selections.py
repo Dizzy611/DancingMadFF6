@@ -1,7 +1,7 @@
 
 # Selections for different presets.
 
-# 0 = OST, 1 = FFT, 2 = SSC, 3 = OCR, 4 = OTH, 5 = OCR2, 6 = None (only used in download page)
+# 0 = OST, 1 = FFT, 2 = SSC, 3 = OCR, 4 = OTH, 5 = OCR2, 6 = None/SPC
 
 SELECTION_RECOMMENDED =  [2, # 1-01 Omen
                           2, # 1-02 The Mines of Narshe
@@ -64,9 +64,9 @@ SELECTION_RECOMMENDED =  [2, # 1-01 Omen
                           3, # 3-16 The Prelude
                           4] # Sound Effects and Miscellany
                           
-SELECTION_OST = [0]*60 # All OST
-SELECTION_FFT = [1]*16 + [0]*44 # 16 FFT tracks and 43 OST tracks
-SELECTION_SSC = [2]*25 + [0]*35 # 25 SSC tracks and 34 OST tracks
+SELECTION_OST = [0]*59 + [6] # All OST
+SELECTION_FFT = [1]*16 + [0]*43 + [6] # 16 FFT tracks and 43 OST tracks
+SELECTION_SSC = [2]*25 + [0]*34 + [6] # 25 SSC tracks and 34 OST tracks
 SELECTION_OCR = [3]*21 + [0] + [3]*9 + [4]*2 + [3]*5 + [0] + [3]*20 + [4] # 56 OCR tracks, with 3 OST tracks in various missing spots.
 SELECTION_OCRALT = [5]*21 + [0] + [5]*9 + [4]*2 + [5]*5 + [0] + [5]*20 + [4] # 56 OCR tracks, alternate loops, with 3 OST tracks in various missing spots.
 
