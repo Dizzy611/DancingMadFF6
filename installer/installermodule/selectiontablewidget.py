@@ -4,7 +4,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import csv
 from installermodule.selections import *
 
-sources = [ "OST", "FFT", "SST", "OCR", "OTH", "OCR2" ]
+sources = [ "OST", "FFT", "SST", "OCR", "OTH", "OCR2", "SPC" ]
 
 class selectionTableWidget(QtWidgets.QTableWidget):
         def __init__(self, parent):
@@ -60,16 +60,21 @@ class selectionTableWidget(QtWidgets.QTableWidget):
                         csvreader = csv.reader(csvfile)
                         rowindex = 0
                         for song in csvreader:
+                                selectspc = False
                                 self.myButtons.append([])
                                 colindex = 0
                                 radios = []
                                 radioGroup = QtWidgets.QButtonGroup(self)
                                 for source in song:
+                                        if colindex == 0 and source == "0":
+                                            selectspc = True
                                         if source == "1":
                                                 radios.append(QtWidgets.QRadioButton())
                                                 radios[-1].myRowCol = (rowindex, colindex) # Dirty, dirty hack. I feel unclean... And it is glorious. Thank you, Python Gods.
                                                 radios[-1].clicked.connect(self.buttonClicked)
                                                 if colindex == 0:
+                                                      radios[-1].setChecked(True)
+                                                if colindex == 6 and selectspc == True:
                                                       radios[-1].setChecked(True)
                                                 self.setCellWidget(rowindex, colindex, radios[-1])
                                                 radioGroup.addButton(radios[-1])
