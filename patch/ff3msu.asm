@@ -308,9 +308,20 @@ WaitMSU:
     lda MSUStatus
     and #MSUStatus_BadTrack
     cmp #MSUStatus_BadTrack
-    bne + ; If it's not a bad track, don't jump to the SPC code
-    jmp ShutUpAndLetMeTalk 
+    bne PlayMSU ; If it's not a bad track, don't jump to the SPC code 
+    lda PlayTrack ; If it's a bad track and we're playing track 65, 66, or 67 (Dancing Mad tracks), play track 3b instead (original dancing mad trio)
+    cmp #$65
+    beq +
+    cmp #$66
+    beq +
+    cmp #$67
+    beq +
+    jmp ShutUpAndLetMeTalk
 +
+    lda #$3b
+    sta PlayTrack
+    jmp ShutUpAndLetMeTalk
+PlayMSU:
     stz ReplayFlag
     ; Set the MSU Volume to the requested volume. 
     ChangeVolume PlayVolume
