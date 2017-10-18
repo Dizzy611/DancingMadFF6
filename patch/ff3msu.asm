@@ -40,7 +40,6 @@
 .DEFINE SPCCommandTemp     $1E23
 .DEFINE SPCVolumeTemp      $1E24
 .DEFINE DancingFlag        $1E25
-.DEFINE ReplayFlag         $1E26
 .DEFINE MSULastTrackSet    $7EF001
 
 
@@ -242,18 +241,8 @@ Ending2Check: ; Ending Part 2
     jml Ending2
 SilenceCheck:
     cmp #$00 ; Silence (FF6 does a *lot* of track 0 requests, we're specifically masking this one to reduce calls to the MSU.)
-    bne RePlayCheck
+    bne SpecialHandlingBack
     jmp ShutUpAndLetMeTalk ; Mute, stop, and have the SPC handle the request for silence.
-RePlayCheck:
-    cmp #$51 ; Trying to play silence. If the replay flag is on, it may be trying to resume the last track played, in that case play the last track the MSU-1 played instead.
-    bne SpecialHandlingBack
-    lda ReplayFlag
-    cmp #$02
-    bne SpecialHandlingBack
-    lda MSUCurrentTrack
-    sta PlayTrack
-    lda MSUCurrentVolume
-    sta PlayVolume
 SpecialHandlingBack:
     ; Are we playing it?
     lda PlayTrack
@@ -322,7 +311,6 @@ WaitMSU:
     sta PlayTrack
     jmp ShutUpAndLetMeTalk
 PlayMSU:
-    stz ReplayFlag
     ; Set the MSU Volume to the requested volume. 
     ChangeVolume PlayVolume
     ; Set our currently playing track to this one.
@@ -469,9 +457,6 @@ SilenceAndReturn:
     ; have unintended effects. May be cause of issues #4, partially #3, and #17. :/
     lda #$51
     sta PlayTrack
-    ; Attempt to signal the MSU code if we're asked to "replay" silence.
-    lda #$01
-    sta ReplayFlag
     ; End hack
 OriginalCode:
     lda PlayTrack
@@ -479,12 +464,6 @@ OriginalCode:
     rtl
 
 ShutUpAndLetMeTalk:
-    lda ReplayFlag
-    cmp #$01
-    bne +
-    lda #$02
-    sta ReplayFlag
-+
     stz MSUVolume
     stz MSUTrack
     stz MSUTrack+1
