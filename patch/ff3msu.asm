@@ -40,7 +40,6 @@
 .DEFINE SPCCommandTemp     $1E23
 .DEFINE SPCVolumeTemp      $1E24
 .DEFINE DancingFlag        $1E25
-.DEFINE ReplayFlag         $1E26
 .DEFINE MSULastTrackSet    $7EF001
 
 
@@ -245,10 +244,8 @@ SilenceCheck:
     bne RePlayCheck
     jmp ShutUpAndLetMeTalk ; Mute, stop, and have the SPC handle the request for silence.
 RePlayCheck:
-    cmp #$51 ; Trying to play silence. If the replay flag is on, it may be trying to resume the last track played, in that case play the last track the MSU-1 played instead.
-    bne SpecialHandlingBack
-    lda ReplayFlag
-    cmp #$02
+    cmp #$51 ; Trying to play silence. As far as I can tell, track 0x51 is not actually used by the game at any point, so this can be used
+             ; as a signal to re-play our last track: If the code is calling for 0x51, what it's really calling for is the last track played.
     bne SpecialHandlingBack
     lda MSUCurrentTrack
     sta PlayTrack
@@ -290,8 +287,12 @@ ContinueToPlay:
     jmp ShutUpAndLetMeTalk
 SetTrack:
     ; Fix for Sabin/Figaro bug: set $1309 to the actual last track set before changing LastTrackSet.
+    ; fix for the fix: if MSULastTrackSet is the same as PlayTrack, don't clobber LastTrack
     lda MSULastTrackSet
+    cmp PlayTrack
+    beq +
     sta LastTrack
++
     lda MSUCurrentVolume
     sta LastVolume
     lda PlayTrack
@@ -322,7 +323,6 @@ WaitMSU:
     sta PlayTrack
     jmp ShutUpAndLetMeTalk
 PlayMSU:
-    stz ReplayFlag
     ; Set the MSU Volume to the requested volume. 
     ChangeVolume PlayVolume
     ; Set our currently playing track to this one.
@@ -403,11 +403,12 @@ WILStop:
 
 ; Battle and victory theme handling
 BattleTheme:
-    lda MSUStatus   ; Are we on Revision 2 or greater? If so, we have Resume support. Handle this specially.
-    and #%00000111
-    cmp #$02
-    bcs ResumeSupportBT
-    jml SpecialHandlingBack ; If not, do our normal stuff.
+    ; Revision check temporarily dummied out for Snes9x-msu compatibility.
+    ;lda MSUStatus   ; Are we on Revision 2 or greater? If so, we have Resume support. Handle this specially.
+    ;and #%00000111
+    ;cmp #$02
+    ;bcs ResumeSupportBT
+    ;jml SpecialHandlingBack ; If not, do our normal stuff.
 ResumeSupportBT:
     lda #MSUControl_Pause ; Pause the current track.
     sta MSUControl
@@ -455,23 +456,22 @@ ShutUp:
     stz MSUControl
 SilenceAndReturn:
     stz PlayVolume
-    ; Skip silencing playtrack if we're currently playing problematic track 0x27/ff3-39, 0x45/ff3-69,  or 0x53&0x54/ff3-83&84.
+    ; Skip silencing playtrack if we're currently playing problematic tracks (ones that rely on track timing)
     lda PlayTrack
-    cmp #$27
+    cmp #$27 ; Opera
     beq OriginalCode
-    cmp #$45
+    cmp #$45 ; Opera
     beq OriginalCode
-    cmp #$53
+    cmp #$53 ; Ending
     beq OriginalCode
-    cmp #$54
+    cmp #$54 ; Ending
+    beq OriginalCode
+    cmp #$38 ; Good Night jingle
     beq OriginalCode
     ; Attempt to avoid the 'double play' problem by telling the SPC routine we're playing silence. May 
     ; have unintended effects. May be cause of issues #4, partially #3, and #17. :/
     lda #$51
     sta PlayTrack
-    ; Attempt to signal the MSU code if we're asked to "replay" silence.
-    lda #$01
-    sta ReplayFlag
     ; End hack
 OriginalCode:
     lda PlayTrack
@@ -479,12 +479,6 @@ OriginalCode:
     rtl
 
 ShutUpAndLetMeTalk:
-    lda ReplayFlag
-    cmp #$01
-    bne +
-    lda #$02
-    sta ReplayFlag
-+
     stz MSUVolume
     stz MSUTrack
     stz MSUTrack+1
