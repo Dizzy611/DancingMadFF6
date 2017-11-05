@@ -403,12 +403,11 @@ WILStop:
 
 ; Battle and victory theme handling
 BattleTheme:
-    ; Revision check temporarily dummied out for Snes9x-msu compatibility.
-    ;lda MSUStatus   ; Are we on Revision 2 or greater? If so, we have Resume support. Handle this specially.
-    ;and #%00000111
-    ;cmp #$02
-    ;bcs ResumeSupportBT
-    ;jml SpecialHandlingBack ; If not, do our normal stuff.
+    lda MSUStatus   ; Are we on Revision 2 or greater? If so, we have Resume support. Handle this specially.
+    and #%00000111
+    cmp #$02
+    bcs ResumeSupportBT
+    jml SpecialHandlingBack ; If not, do our normal stuff.
 ResumeSupportBT:
     lda #MSUControl_Pause ; Pause the current track.
     sta MSUControl
