@@ -2,7 +2,7 @@
 import shutil
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import pyqtSignal, QTimer
-import os
+import os, errno
 from installermodule.downloader import Downloader
 from installermodule import rom
 from installermodule.selections import *
@@ -110,7 +110,10 @@ class downloadPage(QtWidgets.QWizardPage):
                   for urlpair in comblist:
                       urlqueue.put(urlpair)  
                   self.downloader = Downloader(urlqueue, destination)
-                  self.installstate = 2
+                  if self.totalDownloads != 0:
+                    self.installstate = 2
+                  else:
+                    self.installstate = 3
               elif self.installstate == 2:   # Downloading PCMs
                   if self.totalDownloads-self.downloader.count() > 0:
                     totalPercentage = ((self.totalDownloads-self.downloader.count()-1) / (self.totalDownloads+2)) * 100
@@ -155,7 +158,8 @@ class downloadPage(QtWidgets.QWizardPage):
                     os.remove(os.path.join(self.field("destPath"), "ff3msu.sfc")) # Avoid a crash later on by removing any sfcs already present in the destination directory.
                     os.remove(os.path.join(self.field("destPath"), "ff3.sfc"))
                   except OSError:
-                    pass
+                    if e.errno != errno.ENOENT:
+                        raise
                   patchPath = os.path.join(self.field("destPath"), "ff3msu.ips")
                   destromPath = os.path.join(self.field("destPath"), "ff3msu.sfc")
                   try:
