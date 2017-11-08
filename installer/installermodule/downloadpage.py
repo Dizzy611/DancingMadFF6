@@ -151,6 +151,11 @@ class downloadPage(QtWidgets.QWizardPage):
                   self.currentBar.setValue(0)
                   totalPercentage = (self.totalDownloads / (self.totalDownloads + 2)) * 100
                   self.totalBar.setValue(totalPercentage)
+                  try:
+                    os.remove(self.field("destPath"), "ff3msu.sfc") # Avoid a crash later on by removing any sfcs already present in the destination directory.
+                    os.remove(self.field("destPath"), "ff3.sfc")
+                  except OSError:
+                    pass
                   patchPath = os.path.join(self.field("destPath"), "ff3msu.ips")
                   destromPath = os.path.join(self.field("destPath"), "ff3msu.sfc")
                   try:
