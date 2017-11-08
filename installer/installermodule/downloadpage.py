@@ -14,7 +14,7 @@ import sys
 import glob
 
 # Should we use the /new directory in the mirrors. Use when testing new song selections, turn off on release.
-NEW_PATH = True
+NEW_PATH = False
 
 def _doSongMap(source, tracknum):
         if NEW_PATH == False:
