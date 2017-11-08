@@ -5,6 +5,7 @@ from PyQt5.QtCore import pyqtSlot
 from installermodule import InstallWizard
 from installermodule.selections import *
 from enum import IntEnum
+
 sys.stdout = open("installer.log", "w")
 sys.stderr = sys.stdout
 
