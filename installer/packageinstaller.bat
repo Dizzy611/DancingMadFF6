@@ -18,7 +18,7 @@ copy /Y *.wav tmp
 rem Remove pyqt5 bloat. Every DLL and such in the following dir that's *actually used* is copied into the root folder anyway.
 rmdir /S /Q tmp\PyQt5\Qt
 cd tmp
-"C:\Program Files\7-Zip\7z.exe" a -r DancingMadInstaller.7z *.*
+"C:\Program Files\7-Zip\7z.exe" a -mf=off -r DancingMadInstaller.7z *.*
 move DancingMadInstaller.7z ..
 cd ..
 copy /b 7zS.sfx + config.txt + DancingMadInstaller.7z DancingMadInstaller.exe
