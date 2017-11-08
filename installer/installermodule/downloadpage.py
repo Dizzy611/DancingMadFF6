@@ -2,6 +2,7 @@
 import shutil
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import pyqtSignal, QTimer
+from PyQt5.QtMultimedia import QSound
 import os, errno
 from installermodule.downloader import Downloader
 from installermodule import rom
@@ -63,6 +64,15 @@ class downloadPage(QtWidgets.QWizardPage):
         compChgSgnl = pyqtSignal()
         installstate = 0
         def __init__(self):
+              try:
+                self.laughFile = QSound("kefkalaugh.wav")
+                self.soundOn = True
+                self.soundPlayed = False
+              except:
+                self.laughFile = None
+                self.soundOn = False
+                self.soundPlayed = False
+                raise
               self.installstate = 1
               self.totalDownloads = 0
               super().__init__()
@@ -155,9 +165,14 @@ class downloadPage(QtWidgets.QWizardPage):
                   totalPercentage = (self.totalDownloads / (self.totalDownloads + 2)) * 100
                   self.totalBar.setValue(totalPercentage)
                   try:
-                    os.remove(os.path.join(self.field("destPath"), "ff3msu.sfc")) # Avoid a crash later on by removing any sfcs already present in the destination directory.
-                    os.remove(os.path.join(self.field("destPath"), "ff3.sfc"))
-                  except OSError:
+                    os.remove(os.path.join(self.field("destPath").replace("/","\\"), "ff3msu.sfc")) # Avoid a crash later on by removing any sfcs already present in the destination directory.
+                    
+                  except OSError as e:
+                    if e.errno != errno.ENOENT:
+                        raise
+                  try:
+                    os.remove(os.path.join(self.field("destPath").replace("/","\\"), "ff3.sfc")) # Ditto to above.
+                  except OSError as e:
                     if e.errno != errno.ENOENT:
                         raise
                   patchPath = os.path.join(self.field("destPath"), "ff3msu.ips")
@@ -222,10 +237,14 @@ class downloadPage(QtWidgets.QWizardPage):
                       os.chdir(tmpOldCwd)
                   elif self.field("SD2SNESButton") == True:
                       shutil.copy2("ff3msu.msu", os.path.join(self.field("destPath"), "ff3.msu"))
+                      if os.path.exists(os.path.join(self.field("destPath"), "ff3.sfc")):
+                        os.remove(os.path.join(self.field("destPath"), "ff3.sfc"))
                       os.rename(os.path.join(self.field("destPath"), "ff3msu.sfc"), os.path.join(self.field("destPath"), "ff3.sfc"))
                   elif self.field("BSNESButton") == True:
                       shutil.copy2("ff3msu.msu", os.path.join(self.field("destPath"), "ff3.msu"))
                       shutil.copy2("ff3msu.xml", os.path.join(self.field("destPath"), "ff3.xml"))
+                      if os.path.exists(os.path.join(self.field("destPath"), "ff3.sfc")):
+                        os.remove(os.path.join(self.field("destPath"), "ff3.sfc"))
                       os.rename(os.path.join(self.field("destPath"), "ff3msu.sfc"), os.path.join(self.field("destPath"), "ff3.sfc"))
                   else:
                       pass
@@ -236,6 +255,13 @@ class downloadPage(QtWidgets.QWizardPage):
               elif self.installstate == 254: # Error
                   pass
               elif self.installstate == 255: # Complete
+                  if self.soundOn:
+                    if self.soundPlayed == False:
+                        try:
+                            self.laughFile.play()
+                        except:
+                            pass
+                        self.soundPlayed = True
                   self.compChgSgnl.emit()
               else:
                   pass

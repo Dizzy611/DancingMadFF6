@@ -14,6 +14,7 @@ copy /Y *.dat tmp
 copy /Y *.csv tmp
 copy /Y *.ico tmp
 copy /Y *.png tmp
+copy /Y *.wav tmp
 rem Remove pyqt5 bloat. Every DLL and such in the following dir that's *actually used* is copied into the root folder anyway.
 rmdir /S /Q tmp\PyQt5\Qt
 cd tmp
