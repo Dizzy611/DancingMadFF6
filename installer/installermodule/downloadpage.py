@@ -68,11 +68,12 @@ class downloadPage(QtWidgets.QWizardPage):
                 self.laughFile = QSound("kefkalaugh.wav")
                 self.soundOn = True
                 self.soundPlayed = False
+                print("Kefka laugh enabled")
               except:
                 self.laughFile = None
                 self.soundOn = False
                 self.soundPlayed = False
-                raise
+                print("Kefka laugh disabled")
               self.installstate = 1
               self.totalDownloads = 0
               super().__init__()
@@ -85,6 +86,7 @@ class downloadPage(QtWidgets.QWizardPage):
               self.checktimer.start(100)
 
         def timerEvent(self):
+              sys.stdout.flush() # Periodically flush log to disk.
               if self.installstate == 1:   # Initializing...
                   self.currentLabel.setText("Initializing downloader...")
                   if self.field("customButton") == True:
@@ -260,7 +262,9 @@ class downloadPage(QtWidgets.QWizardPage):
                         try:
                             self.laughFile.play()
                         except:
-                            pass
+                            print("Failed to play kefka laugh")
+                        else:
+                            print("Played kefka laugh")
                         self.soundPlayed = True
                   self.compChgSgnl.emit()
               else:
