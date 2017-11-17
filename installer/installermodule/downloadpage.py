@@ -64,16 +64,22 @@ class downloadPage(QtWidgets.QWizardPage):
         compChgSgnl = pyqtSignal()
         installstate = 0
         def __init__(self):
-              try:
-                self.laughFile = QSound("kefkalaugh.wav")
-                self.soundOn = True
-                self.soundPlayed = False
-                print("Kefka laugh enabled")
-              except:
+              if not (len(sys.argv) >= 2 and sys.argv[1] == "-nosound"):
+                try:
+                  self.laughFile = QSound("kefkalaugh.wav")
+                  self.soundOn = True
+                  self.soundPlayed = False
+                  print("Kefka laugh enabled")
+                except:
+                  self.laughFile = None
+                  self.soundOn = False
+                  self.soundPlayed = False
+                  print("Kefka laugh disabled (exception)")
+              else:
                 self.laughFile = None
                 self.soundOn = False
                 self.soundPlayed = False
-                print("Kefka laugh disabled")
+                print("Kefka laugh disabled (commandline)")
               self.installstate = 1
               self.totalDownloads = 0
               super().__init__()
