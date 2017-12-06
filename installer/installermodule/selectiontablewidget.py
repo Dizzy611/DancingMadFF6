@@ -1,10 +1,10 @@
-# Customized Table Widget
+	# Customized Table Widget
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 import csv
 from installermodule.selections import *
 
-sources = [ "OST", "FFT", "SST", "OCR", "OTH", "OCR2", "SPC" ]
+sources = [ "OST", "FFT", "SSC", "OCR", "OTH", "OCR2", "SPC" ]
 
 class selectionTableWidget(QtWidgets.QTableWidget):
         def __init__(self, parent):
