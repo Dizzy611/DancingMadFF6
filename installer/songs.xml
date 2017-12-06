@@ -1,4 +1,47 @@
 <songlist>
+	<sources>
+		<source>ost</source>
+		<source>fft</source>
+		<source>ssc</source>
+		<source>ocr</source>
+		<source>ocr2</source>
+		<source>oth</source>
+		<source>ffar</source>
+		<source>crc</source>
+		<source>spc</source>
+	</sources>
+	<presets>
+		<preset name="ost">
+			<ost range="0-59" />
+			<spc range="60" />
+		</preset>
+		<preset name="fft">
+			<fft ramge="0-16" />
+			<ost range="17-59" />
+			<spc range="60" />
+		</preset>
+		<preset name="ssc">
+			<ssc range="0-25" />
+			<ost range="26-59" />
+			<spc range="60" />
+		</preset>
+		<preset name="ocr">
+			<ocr range="0-21,23-31,34-38,40-59" />
+			<oth range="32-33,60" />
+			<ost range="22,39" />
+		</preset>
+		<preset name="ocr2">
+			<ocr2 range="0-21,23-31,34-38,40-59" />
+			<oth range="32-33,60" />
+			<ost range="22,39" />
+		</preset>
+		<preset name="ffar">
+			<!-- TODO: Fill. -->
+		</preset>
+		<preset name="crc">
+			<!-- TODO: Fill. -->
+		</preset>
+		<preset name="sid" type="per-song" />
 	<song>
 		<name>1-01 Omen</name>
 		<pcms>2,3,4</pcms>
@@ -7,6 +50,7 @@
 		<ssc/>
 		<ocr/>
 		<ocr2/>
+		<preset name="sid"><ssc /></preset>
 	</song>
 	<song>
 		<name>1-02 The Mines of Narshe</name>
@@ -16,6 +60,7 @@
 		<ssc/>
 		<ocr/>
 		<ocr2/>
+		<preset name="sid"><ssc /></preset>
 	</song>
 	<song>
 		<name>1-03 Awakening</name>
