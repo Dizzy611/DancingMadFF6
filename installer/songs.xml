@@ -12,31 +12,33 @@
 	</sources>
 	<presets>
 		<preset name="ost">
-			<ost range="0-59" />
-			<spc range="60" />
+			<ost range="0-58" />
+			<spc range="59" />
 		</preset>
 		<preset name="fft">
 			<fft ramge="0-16" />
-			<ost range="17-59" />
-			<spc range="60" />
+			<ost range="17-58" />
+			<spc range="59" />
 		</preset>
 		<preset name="ssc">
 			<ssc range="0-25" />
-			<ost range="26-59" />
-			<spc range="60" />
+			<ost range="26-58" />
+			<spc range="59" />
 		</preset>
 		<preset name="ocr">
-			<ocr range="0-21,23-31,34-38,40-59" />
-			<oth range="32-33,60" />
+			<ocr range="0-21,23-31,34-38,40-58" />
+			<oth range="32-33,59" />
 			<ost range="22,39" />
 		</preset>
 		<preset name="ocr2">
-			<ocr2 range="0-21,23-31,34-38,40-59" />
-			<oth range="32-33,60" />
+			<ocr2 range="0-21,23-31,34-38,40-58" />
+			<oth range="32-33,59" />
 			<ost range="22,39" />
 		</preset>
 		<preset name="ffar">
-			<!-- TODO: Fill. -->
+            <ost range="0-1,4-5,8-9,11,13,15-16,18,20,22,24,27,29-35,37-38,42-48,52,54-56,58" />
+            <ffar range="2-3,6-7,10,12,14,17,19,21,23,25-26,28,36,39-41,49-51,53,57" />
+			<spc range="59" />
 		</preset>
 		<preset name="crc">
 			<!-- TODO: Fill. -->
@@ -70,6 +72,7 @@
 		<ssc/>
 		<ocr/>
 		<ocr2/>
+        <ffar/>
 	</song>
 	<song>
 		<name>1-04 Locke's Theme</name>
@@ -79,6 +82,7 @@
 		<ssc/>
 		<ocr/>
 		<ocr2/>
+        <ffar/>
 	</song>
 	<song>
 		<name>1-05 Battle Theme</name>
@@ -107,6 +111,7 @@
 		<ssc/>
 		<ocr/>
 		<ocr2/>
+        <ffar/>
 	</song>
 	<song>
 		<name>1-08 Kefka</name>
@@ -116,6 +121,7 @@
 		<ssc/>
 		<ocr/>
 		<ocr2/>
+        <ffar/>
 	</song>
 	<song>
 		<name>1-09 Mt Koltz</name>
@@ -143,6 +149,7 @@
 		<ssc/>
 		<ocr/>
 		<ocr2/>
+        <ffar/>
 	</song>
 	<song>
 		<name>1-12 Troops March On</name>
@@ -161,6 +168,7 @@
 		<ssc/>
 		<ocr/>
 		<ocr2/>
+        <ffar/>
 	</song>
 	<song>
 		<name>1-14 The Unforgiven</name>
@@ -179,6 +187,7 @@
 		<ssc/>
 		<ocr/>
 		<ocr2/>
+        <ffar/>
 	</song>
 	<song>
 		<name>1-16 The Phantom Train</name>
@@ -204,6 +213,7 @@
 		<ssc/>
 		<ocr/>
 		<ocr2/>
+        <ffar/>
 	</song>
 	<song>
 		<name>1-19 The Serpent Trench</name>
@@ -220,6 +230,7 @@
 		<ssc/>
 		<ocr/>
 		<ocr2/>
+        <ffar/>
 	</song>
 	<song>
 		<name>1-21 Under Martial Law</name>
@@ -234,6 +245,7 @@
 		<pcms>18</pcms>
 		<ost/>
 		<ssc/>
+        <ffar/>
 	</song>
 	<song>
 		<name>1-23 Protect the Espers!</name>
@@ -251,6 +263,7 @@
 		<ocr/>
 		<oth/>
 		<ocr2/>
+        <ffar/>
 	</song>
 	<song>
 		<name>1-25 Metamorphosis</name>
@@ -266,6 +279,7 @@
 		<ost/>
 		<ocr/>
 		<ocr2/>
+        <ffar/>
 	</song>
 	<song>
 		<name>2-02 Coin of Fate</name>
@@ -273,6 +287,7 @@
 		<ost/>
 		<ocr/>
 		<ocr2/>
+        <ffar/>
 	</song>
 	<song>
 		<name>2-03 Techno de Chocobo</name>
@@ -287,6 +302,7 @@
 		<ost/>
 		<ocr/>
 		<ocr2/>
+        <ffar/>
 	</song>
 	<song>
 		<name>2-05 Slam Shuffle</name>
@@ -341,6 +357,7 @@
 		<ost/>
 		<ocr/>
 		<ocr2/>
+        <ffar/>
 	</song>
 	<song>
 		<name>2-15 The Airship Blackjack</name>
@@ -360,6 +377,7 @@
 		<ost/>
 		<ocr/>
 		<ocr2/>
+        <ffar/>
 	</song>
 	<song>
 		<name>2-18 Strago's Theme</name>
@@ -367,6 +385,7 @@
 		<ost/>
 		<ocr/>
 		<ocr2/>
+        <ffar/>
 	</song>
 	<song>
 		<name>2-19 Relm's Theme</name>
@@ -374,6 +393,7 @@
 		<ost/>
 		<ocr/>
 		<ocr2/>
+        <ffar/>
 	</song>
 	<song>
 		<name>2-20 Esper World</name>
@@ -431,6 +451,7 @@
 		<ocr/>
 		<ocr2/>
 		<oth/>
+        <ffar/>
 	</song>
 	<song>
 		<name>3-08 Gogo's Theme</name>
@@ -438,6 +459,7 @@
 		<ost/>
 		<ocr/>
 		<ocr2/>
+        <ffar/>
 	</song>
 	<song>
 		<name>3-09 Epitaph</name>
@@ -445,6 +467,7 @@
 		<ost/>
 		<ocr/>
 		<ocr2/>
+        <ffar/>
 	</song>
 	<song>
 		<name>3-10 The Magic House</name>
@@ -459,6 +482,7 @@
 		<ost/>
 		<ocr/>
 		<ocr2/>
+        <ffar/>
 	</song>
 	<song>
 		<name>3-12 The Fanatics</name>
@@ -488,6 +512,7 @@
 		<ost/>
 		<ocr/>
 		<ocr2/>
+        <ffar/>
 	</song>
 	<song>
 		<name>3-16 The Prelude</name>
