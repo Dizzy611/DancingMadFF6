@@ -1,7 +1,14 @@
 import xml.etree.ElementTree as etree
 
 DEBUG = True
-STRICT = True
+STRICT = False
+
+class SongListException(Exception):
+    def __init__(self, value):
+        self.parameter = value
+    def __str__(self):
+        return repr(self.parameter)
+
 
 class SongList:
     def __init__(self, xmlroot):
@@ -11,7 +18,8 @@ class SongList:
         self.sources = []
         self.xmlroot = xmlroot
         self.songs_need_validation = False
-        
+        self.validity_suspect = False 
+        self.validity_warnings = []
         for element in xmlroot:
             if element.tag == "sources":
                 self.buildSources(element)
@@ -19,38 +27,48 @@ class SongList:
                 self.buildPresets(element)
             elif element.tag == "songs":
                 self.buildSongList(element)
-            elif STRICT == True:
-                raise Exception("Warning (Strict is On): Unknown tag under XML root.")
-            elif DEBUG == True:
-                print("Warning: Unknown tag under XML root.")
             else:
-                pass
+                self.validationError("Unknown tag <" + element.tag + "> under XML root.")
         self.buildDeferredPresets()
-        
+
+    def validationError(self, error, minor=False):
+        self.validity_suspect = True
+        self.validity_warnings.append(error)
+        if STRICT == True and minor == False:
+            raise SongListException("Validation Error (Strict is On): " + error)
+        elif (STRICT == True and minor == True) or DEBUG == True:
+            print("Validation Error (Strict is Off): " + error)
+                
     def buildSources(self, element):
         self.sources = []
         for source in element:
             if source.tag != "source":
-                raise Exception("Invalid tag in Sources when constructing valid source list.")
+                self.validationError("Unknown tag <" + element.tag + "> in <sources> when constructing source list.")
+                return False
             if source.text not in self.sources:
                 self.sources.append(source.text)
-            elif STRICT == True:
-                raise Exception("Warning (Strict is On): Duplicate source in valid sources list.")
-            elif DEBUG == True:
-                print("Warning: Duplicate source in valid sources list.")
+            else:
+                self.validationError("Duplicate source '" + source.text + "' in list of valid sources.")
         return True
     
     def buildPresets(self, element):
         self.presets = {}
         for preset in element:
-            thisone = preset.attrib['name']
-            if 'type' in preset.attrib and preset.attrib['type'] == "per-song":
-                self.presets[thisone] = "TMP-DEFERRED"
-            else: 
-                self.presets[thisone] = {}
-                for source in preset:
-                    raw = source.attrib['range']
-                    self.presets[thisone][source.tag] = self.parseRange(raw)
+            if preset.tag == "preset" and 'name' in preset.attrib:
+                thisone = preset.attrib['name']
+                if 'type' in preset.attrib and preset.attrib['type'] == "per-song":
+                    self.presets[thisone] = "TMP-DEFERRED"
+                else: 
+                    self.presets[thisone] = {}
+                    for source in preset:
+                        if 'range' in source.attrib:
+                            raw = source.attrib['range']
+                            self.presets[thisone][source.tag] = self.parseRange(raw)
+                        else:
+                            self.validationError("Source '" + source.tag + "' in preset '" + thisone + "' lacks 'range' tag.")
+            else:
+                self.validationError("Unknown tag or missing nam attribute in presets list.")
+                            
                 
     def buildSongList(self, element):
         songnum = 0
@@ -74,41 +92,30 @@ class SongList:
                         newsong.sources.append(songtag.tag)
                         # Mark the song list as needing validation
                         self.songs_need_validation = True
-                        if DEBUG == True and slwarn == False:
-                            print("Info: Song list parsed before sources list, or sources list empty. This is not ideal.")
+                        if slwarn == False:
+                            self.validationError("Song list parsed before sources list, or sources list empty. This is not an error but not ideal.", True)
                             slwarn = True # Suppress repeatedly printing this warning.
                     else:
                         if songtag.tag in self.sources:
                             newsong.sources.append(songtag.tag)
-                        elif STRICT == True:
-                            raise Exception("Warning (Strict is On): Received a source for a song that was not in the valid sources list. Tag skipped. Offending song: " + songnum + " Offending tag: " + songtag.tag)
-                        elif DEBUG == True:
-                            print("Warning: Received a source for a song that was not in the valid sources list. Tag skipped. Offending song: " + songnum + " Offending tag: " + songtag.tag)
                         else:
-                            pass
+                            self.validationError("Received a source for a song that was not in the valid sources list. Tag skipped. Offending song: " + songnum + " Offending tag: " + songtag.tag)
             newsong.number = songnum
             if newsong.validate():
                 self.songs.append(newsong)
             else:
-                if STRICT == True:
-                    raise Exception("Warning (Strict is On): Song failed to validate and was not added to song list!")
-                elif DEBUG == True:
-                    print("Warning: Song failed to validate and was not added to song list!")
+                self.validationError("Song '" + newsong.name + "' failed to validate and was not added to song list!")
             songnum = songnum + 1
             
     def buildDeferredPresets(self):
         if self.songs == [] or self.presets == {}: # Can't build deferred presets without a song list and presets.
-            if STRICT == True:
-                raise Exception("Warning (Strict is On): Attempted to build deferred presets without a valid song and/or preset list.")
-            elif DEBUG == True:
-                print("Warning: Attempted to build deferred presets without a valid song and/or preset list.")
+            self.validationError("Attempted to build deferred presets without a valid song and/or preset list.")
             return False
         elif self.deferredpresets == {}: # Nothing was added to the deferred presets by the song building routine!
             for key, value in self.presets.items():
                 if value == "TMP-DEFERRED":
                     self.presets[key] = { "ost" : list(range(0,59)), "spc" : [59] } # Default to OST for all but sound effects.
-                if DEBUG == True:
-                    print("Warning: Building deferred presets, but there's no data to add!")
+            self.validationError("Attempted to build deferred presets but no entries were added by songlist routine! Filling deferred presets with safe defaults.", True)
         else:
             for key, value in self.presets.items():
                 if value == "TMP-DEFERRED":
@@ -116,8 +123,7 @@ class SongList:
                         self.presets[key] = self.deferredpresets[key]
                     else:
                         self.presets[key] = { "ost" : list(range(0,59)), "spc" : [59] } # Default to OST for all but sound effects.
-                        if DEBUG == True:
-                            print("Warning: Building deferred presets, but '" + key + "' is a deferred preset without any data!")
+                        self.validationError("Attempting to build deferred presets, but preset '" + key + "' has no valid data! Filling preset with safe default.", True)
                             
     def parseRange(self, rangestring):
         ranges = []

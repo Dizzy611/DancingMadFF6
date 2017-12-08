@@ -16,24 +16,24 @@
 			<spc range="59" />
 		</preset>
 		<preset name="fft">
-			<fft range="0-16" />
-			<ost range="17-58" />
+			<fft range="0-15" />
+			<ost range="16-58" />
 			<spc range="59" />
 		</preset>
 		<preset name="ssc">
-			<ssc range="0-25" />
-			<ost range="26-58" />
+			<ssc range="0-24" />
+			<ost range="25-58" />
 			<spc range="59" />
 		</preset>
 		<preset name="ocr">
-			<ocr range="0-21,23-31,34-38,40-58" />
-			<oth range="32-33,59" />
-			<ost range="22,39" />
+			<ocr range="0-20,22-30,33-37,39-58" />
+			<oth range="31-32,59" />
+			<ost range="21,38" />
 		</preset>
 		<preset name="ocr2">
-			<ocr2 range="0-21,23-31,34-38,40-58" />
-			<oth range="32-33,59" />
-			<ost range="22,39" />
+			<ocr2 range="0-20,22-30,33-37,39-58" />
+			<oth range="31-32,59" />
+			<ost range="21,38" />
 		</preset>
 		<preset name="ffar">
 			<ost range="0-1,4-5,8-9,11,13,15-16,18,20,22,24,27,29-35,37-38,42-48,52,54-56,58" />
