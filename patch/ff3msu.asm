@@ -260,8 +260,7 @@ SpecialHandlingBack:
     ; Are we *really* playing it?
     lda MSUStatus
     and #MSUStatus_AudioPlaying
-    cmp #MSUStatus_AudioPlaying
-    bne NotPlaying
+    beq NotPlaying
     ; If so, is the volume the same?
     lda PlayVolume
     cmp MSUCurrentVolume
@@ -304,12 +303,10 @@ SetTrack:
 WaitMSU:
     lda MSUStatus
     and #MSUStatus_AudioBusy
-    cmp #MSUStatus_AudioBusy
-    beq WaitMSU
+    bne WaitMSU
     lda MSUStatus
     and #MSUStatus_BadTrack
-    cmp #MSUStatus_BadTrack
-    bne PlayMSU ; If it's not a bad track, don't jump to the SPC code 
+    beq PlayMSU ; If it's not a bad track, don't jump to the SPC code 
     lda PlayTrack ; If it's a bad track and we're playing track 65, 66, or 67 (Dancing Mad tracks), play track 3b instead (original dancing mad trio)
     cmp #$65
     beq +
@@ -422,8 +419,7 @@ Kefka5:
     bne +
     lda MSUStatus
     and #MSUStatus_AudioPlaying
-    cmp #MSUStatus_AudioPlaying
-    bne +
+    beq +
     jml SilenceAndReturn
 +
     jml SpecialHandlingBack
@@ -440,8 +436,7 @@ Ending1:
     bne +
     lda MSUStatus
     and #MSUStatus_AudioPlaying
-    cmp #MSUStatus_AudioPlaying
-    bne +
+    beq +
     jml SilenceAndReturn
 +
     jml SpecialHandlingBack
