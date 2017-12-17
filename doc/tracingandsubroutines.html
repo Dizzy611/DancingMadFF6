@@ -99,12 +99,12 @@ further down the trace for which this is not the case.</p>
 mathematically "worked on". <i>'A'</i> stands for <i>'accumulator'</i>, the register (think, simplified, "a tiny bit of memory that's part of the cpu") used for most operations. <i>'X'</i> and <i>'Y'</i> can also be used
 but are more frequently used for memory segmenting, a complicated topic to do with addressing specific areas of memory. I could not, honestly, tell you from memory what <i>'S'</i>, <i>'D'</i>, or <i>'DB'</i> are used for except that they 
 are other registers. One of the references already linked above may help with this, specifically <a href="https://en.wikibooks.org/wiki/Super_NES_Programming/65c816_reference">this</a> one, if you are curious.</p>
-<p>Fifth, next to the registers is a seemingly random collection of letters. These are 'flags' on the processor. These are also explained in the above reference, and are used to signify various states. (Dale: The 'Z' one is
+<p>Fifth, next to the registers is a seemingly random collection of letters. These are 'flags' on the processor. These are also explained in the above reference, and are used to signify various states. (edale2: The 'Z' one is
 relevant to an earlier discussion in <a href="https://github.com/Insidious611/DancingMadFF6/issues/42">this</a> closed issue.)</p>
 <p>Lastly, another list of registers. Again, I do not actually know what the <i>'V'</i> <i>'H'</i> or <i>'F'</i> registers do offhand as I have not yet had occasion to use them for anything.</p>
 <br />
 <h2>Conclusion</h2>
-<p>That, then, is how to set a breakpoint, read the disassembler, how to get a trace log, and how to read a line from a trace. Addressing the issue, Dale, to do what you want to do, you will need to look for the <i>'jsr'/'jsl'</i>
+<p>That, then, is how to set a breakpoint, read the disassembler, how to get a trace log, and how to read a line from a trace. Addressing the issue, edale2, to do what you want to do, you will need to look for the <i>'jsr'/'jsl'</i>
 and <i>'rts'/'rtl'</i> instructions and use these to follow the chain of code to find the area of ROM that is doing what you want to investigate. The reason Tracing may (will, likely) be necessary is that for example, bank 
 <i>'c5'</i> of FF3 seems to mostly contain sound code, and is not the main part of the ROM. Since you are likely looking for <i><b>'event'</b></i> code dealing with Shadow being in the pub in South Figaro, you will be looking
 for code referencing a completely different bank of ROM. Looking at ROM mappings you have linked before may help you do this, inasmuch as it will point you to what banks/addresses to look out for.</p>
