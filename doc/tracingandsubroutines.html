@@ -9,7 +9,7 @@
 <p>This document has been created to attempt to answer a side question posed by edale2 on 20171216 in <a href="http://github.com/issues/Insidious611/issues/49">this</a> issue on the Dancing Mad MSU-1 romhack GitHub.
 To be specific, this document has been created to answer the question "Can a debugger be used to trace where in the ROM a change to RAM is coming from?"</p>
 <p>Some of the information contained herein may be silly, the wrong way to go about things, or false. This is because I am not at all an expert at this, having started working with assembly language shortly before starting
-this project. <i>Caveat lectorem</i>, let the reader beware.</p>
+this project. <i>Caveat lector</i>, let the reader beware.</p>
 <p>First, to understand the question being asked we must understand that on the SNES, like most ROM cartridge based game systems of the era, the ROM is directly mapped into portions of the SNES's RAM, following a specific
 mapping scheme decided early in development of the game in question (these mapping schemes are called LoROM and HiROM, the details of which can be read <a href="https://en.wikibooks.org/wiki/Super_NES_Programming/SNES_memory_map">here</a>.
 Then, we must understand a simple, powerful set of instructions* executed by the SNES CPU. These instructions are <i>'jsr'/'jsl'</i> and <i>'rts'/'rtl'</i>. These instructions, whose names can be described as acronyms, stand for 
