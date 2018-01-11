@@ -16,6 +16,19 @@ import glob
 # Should we use the /new directory in the mirrors. Use when testing new song selections, turn off on release.
 NEW_PATH = False
 
+def _doMirrors(pcmlist):
+    try:
+        with open("mirrors.dat") as f:
+            mirrors = f.readlines()
+            mirrors = [x.strip() for x in mirrors]
+    except IOError:
+        return None
+    mirrorlist = []
+    for m in mirrors:
+        mirrorlist.append([m + i for i in pcmlist])
+    args = tuple(mirrorlist)
+    return list(zip(*args))
+    
 def _doSongMap(source, tracknum):
         if NEW_PATH == False:
             sourcestr = ""
@@ -118,11 +131,8 @@ class downloadPage(QtWidgets.QWizardPage):
                       self.songSources[59] = 6
                   
                   templist = mapSongs(self.songSources)
+                  comblist = _doMirrors(templist)
                   destination = self.field("destPath")
-                  urllist = ['http://www.somebodyelsesproblem.org/ff6data/{0}'.format(i) for i in templist]
-                  altlist = ['http://durandal.somebodyelsesproblem.org/ff6data/{0}'.format(i) for i in templist]
-                  altlist2 = ['https://saika.de-ge.so/ff6data/{0}'.format(i) for i in templist]
-                  comblist = list(zip(urllist, altlist, altlist2))
                   self.totalDownloads = len(comblist)
                   urlqueue = Queue(maxsize=self.totalDownloads)
                   for urlpair in comblist:
