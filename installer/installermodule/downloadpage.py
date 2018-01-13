@@ -7,11 +7,14 @@ import os, errno
 from installermodule.downloader import Downloader
 from installermodule import rom
 from installermodule.selections import *
+from installermodule import song 
 from decimal import Decimal
 from queue import Queue
 import ips
 import sys
 import glob
+
+mysonglist = song.parseSongXML("songs.xml")
 
 # Should we use the /new directory in the mirrors. Use when testing new song selections, turn off on release.
 NEW_PATH = False
@@ -34,41 +37,21 @@ def _doSongMap(source, tracknum):
             sourcestr = ""
         else:
             sourcestr = "new/"
-        if source == 0:
-              sourcestr = sourcestr + "OST"
-        elif source == 1:
-              sourcestr = sourcestr + "FFT"
-        elif source == 2:
-              sourcestr = sourcestr + "SSC"
-        elif source == 3:
-              sourcestr = sourcestr + "OCR"
-        elif source == 4:
-              sourcestr = sourcestr + "OTH"
-        elif source == 5:
-              sourcestr = sourcestr + "OCR2"
-        elif source == 6:
-              return ""
+        if mysonglist.sources[source] != "spc":
+            sourcestr = sourcestr + mysonglist.sources[source].upper()
         else:
-              sourcestr = sourcestr + "OST"
+            return ""
         retstr = sourcestr + "/ff3-" + str(tracknum) + ".pcm"
         return retstr
 
 
 def mapSongs(songSources):
-        retlist = list()
-        i = 0
-        with open("trackMapping.dat") as f:
-              for line in f:
-                  if line.count(",") != 0:
-                      for item in line.split(","):
-                        file = _doSongMap(songSources[i], int(item))
-                        if file != "":
-                            retlist.append(file)
-                  else:
-                      file = _doSongMap(songSources[i], int(line))
-                      if file != "":
-                          retlist.append(file)
-                  i = i + 1
+        retlist = []
+        for idx,source in enumerate(songSources):
+            for pcm in mysonglist.songs[idx].pcms:
+                file = _doSongMap(source, pcm)
+                if file != "":
+                    retlist.append(file)
         return retlist
 
 
@@ -111,24 +94,24 @@ class downloadPage(QtWidgets.QWizardPage):
                   if self.field("customButton") == True:
                       self.songSources = self.field("songList")
                   elif self.field("sidselectButton") == True:
-                      self.songSources = SELECTION_RECOMMENDED
+                      self.songSources = selectionToNumbers("sid")
                   elif self.field("ostButton") == True:
-                      self.songSources = SELECTION_OST
+                      self.songSources = selectionToNumbers("ost")
                   elif self.field("fftButton") == True:
-                      self.songSources = SELECTION_FFT
+                      self.songSources = selectionToNumbers("fft")
                   elif self.field("sschafButton") == True:
-                      self.songSources = SELECTION_SSC
+                      self.songSources = selectionToNumbers("ssc")
                   elif self.field("ocrButton") == True:
-                      self.songSources = SELECTION_OCR
+                      self.songSources = selectionToNumbers("ocr")
                   elif self.field("ocraltButton") == True:
-                      self.songSources = SELECTION_OCRALT
+                      self.songSources = selectionToNumbers("ocr2")
                   else:
-                      self.songSources = SELECTION_OST # Shouldn't get here, but ost as default anyway.
+                      self.songSources = selectionToNumbers("ost") # Shouldn't get here, but ost as default anyway.
 
                   # if self.songSources[31] == 0: # OST opera is now available. Commented this bit out. 
                       # self.songSources[31] = 6
-                  if self.songSources[59] == 0: # No OST versions of sound effects.
-                      self.songSources[59] = 6
+                  if self.songSources[59] == mysonglist.sources.index("ost"): # No OST versions of sound effects.
+                      self.songSources[59] = mysonglist.sources.index("spc")
                   
                   templist = mapSongs(self.songSources)
                   comblist = _doMirrors(templist)

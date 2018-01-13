@@ -82,17 +82,17 @@ class InstallWizard(QWizard, InstallWizard.Ui_InstallWizard):
         @pyqtSlot()
         def on_loadPreset_clicked(self):
             if self.field("ostPreset") == True:
-                self.trackSelectionWidget.reloadSources(SELECTION_OST)
+                self.trackSelectionWidget.reloadSources(selectionToNumbers("ost"))
             elif self.field("fftPreset") == True:
-                self.trackSelectionWidget.reloadSources(SELECTION_FFT)
+                self.trackSelectionWidget.reloadSources(selectionToNumbers("fft"))
             elif self.field("sscPreset") == True:
-                self.trackSelectionWidget.reloadSources(SELECTION_SSC)
+                self.trackSelectionWidget.reloadSources(selectionToNumbers("ssc"))
             elif self.field("ocrPreset") == True:
-                self.trackSelectionWidget.reloadSources(SELECTION_OCR)
+                self.trackSelectionWidget.reloadSources(selectionToNumbers("ocr"))
             elif self.field("ocraltPreset") == True:
-                self.trackSelectionWidget.reloadSources(SELECTION_OCRALT)
+                self.trackSelectionWidget.reloadSources(selectionToNumbers("ocr2"))
             elif self.field("recommendedPreset") == True:
-                self.trackSelectionWidget.reloadSources(SELECTION_RECOMMENDED)
+                self.trackSelectionWidget.reloadSources(selectionToNumbers("sid"))
 
 app = QApplication(sys.argv)
 window = InstallWizard()
