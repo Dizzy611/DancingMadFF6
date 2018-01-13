@@ -152,6 +152,10 @@ class Song:
     def sourceCheck(self, source):
         if source in self.sources:
             return True
+        elif source == "spc":
+            return True
+        else:
+            return False
             
     def validate(self):
         if self.name == "":
