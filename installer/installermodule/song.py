@@ -1,6 +1,6 @@
 import xml.etree.ElementTree as etree
 
-DEBUG = True
+DEBUG = False
 STRICT = False
 
 class SongListException(Exception):
