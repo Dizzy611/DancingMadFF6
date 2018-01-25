@@ -120,7 +120,7 @@ class downloadPage(QtWidgets.QWizardPage):
                   templist = mapSongs(self.songSources)
                   # TODO: Make this bit for the optional addons less hard coded.
                   if self.field("twueCheck") == True:
-                    templist.append("contrib/Final Fantasy VI (TWUE 1.98) + Bug Fixes, Updated Opera, & Add-Ons.ips")
+                    templist.append("contrib/twue.ips")
                   if self.field("mplayerCheck") == True:
                     if self.field("cutsongCheck") == True:
                       templist.append("contrib/mplayer-csr-main-nh.ips")
