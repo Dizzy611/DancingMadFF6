@@ -1,0 +1,619 @@
+<songlist>
+	<sources>
+		<source>ost</source>
+		<source>fft</source>
+		<source>ssc</source>
+		<source>ocr</source>
+		<source>ocr2</source>
+		<source>oth</source>
+		<source>ffar</source>
+		<source>crc</source>
+		<source>spc</source>
+	</sources>
+	<presets>
+		<preset name="ost">
+			<ost range="0-58" />
+			<spc range="59" />
+		</preset>
+		<preset name="fft">
+			<fft range="0-15" />
+			<ost range="16-58" />
+			<spc range="59" />
+		</preset>
+		<preset name="ssc">
+			<ssc range="0-24" />
+			<ost range="25-58" />
+			<spc range="59" />
+		</preset>
+		<preset name="ocr">
+			<ocr range="0-20,22-30,33-37,39-58" />
+			<oth range="31-32,59" />
+			<ost range="21,38" />
+		</preset>
+		<preset name="ocr2">
+			<ocr2 range="0-20,22-30,33-37,39-58" />
+			<oth range="31-32,59" />
+			<ost range="21,38" />
+		</preset>
+		<preset name="ffar">
+			<ost range="0-1,4-5,8-9,11,13,15-16,18,20,22,24,27,29-35,37-38,42-48,52,54-56,58" />
+			<ffar range="2-3,6-7,10,12,14,17,19,21,23,25-26,28,36,39-41,49-51,53,57" />
+			<spc range="59" />
+		</preset>
+		<preset name="crc">
+			<crc range="0-2,4,6-7,9,12,14,16,18,26,28-29,38,40,45-48,51-55" />
+			<ost range="3,5,8,10-11,13,15,17,19-25,27,30-37,39,41-44,49-50,56-58" />
+			<spc range="59" />
+		</preset>
+		<preset name="sid" type="per-song" />
+	</presets>
+	<songs>
+		<song>
+			<name>1-01 Omen</name>
+			<pcms>2,3,4</pcms>
+			<ost/>
+			<fft/>
+			<ssc/>
+			<ocr/>
+			<ocr2/>
+			<crc/>
+			<preset name="sid"><crc/></preset>
+		</song>
+		<song>
+			<name>1-02 The Mines of Narshe</name>
+			<pcms>23</pcms>
+			<ost/>
+			<fft/>
+			<ssc/>
+			<ocr/>
+			<ocr2/>
+			<crc/>
+			<preset name="sid"><ssc/></preset>
+		</song>
+		<song>
+			<name>1-03 Awakening</name>
+			<pcms>5</pcms>
+			<ost/>
+			<fft/>
+			<ssc/>
+			<ocr/>
+			<ocr2/>
+			<ffar/>
+			<oth/>
+			<crc/>
+			<preset name="sid"><crc/></preset>
+		</song>
+		<song>
+			<name>1-04 Locke's Theme</name>
+			<pcms>13</pcms>
+			<ost/>
+			<fft/>
+			<ssc/>
+			<ocr/>
+			<ocr2/>
+			<ffar/>
+			<preset name="sid"><ffar/></preset>
+		</song>
+		<song>
+			<name>1-05 Battle Theme</name>
+			<pcms>36</pcms>
+			<ost/>
+			<fft/>
+			<ssc/>
+			<ocr/>
+			<oth/>
+			<ocr2/>
+			<crc/>
+			<preset name="sid"><ssc/></preset>
+		</song>
+		<song>
+			<name>1-06 Fanfare</name>
+			<pcms>47</pcms>
+			<ost/>1
+			<fft/>
+			<ssc/>
+			<ocr/>
+			<ocr2/>
+			<preset name="sid"><ssc/></preset>
+		</song>
+		<song>
+			<name>1-07 Edgar &amp; Sabin</name>
+			<pcms>10</pcms>
+			<ost/>
+			<fft/>
+			<ssc/>
+			<ocr/>
+			<ocr2/>
+			<crc/>
+			<preset name="sid"><crc/></preset>
+		 <ffar/>
+		</song>
+		<song>
+			<name>1-08 Kefka</name>
+			<pcms>22</pcms>
+			<ost/>
+			<fft/>
+			<ssc/>
+			<ocr/>
+			<ocr2/>
+			<ffar/>
+			<crc/>
+			<preset name="sid"><crc/></preset>
+		</song>
+		<song>
+			<name>1-09 Mt Koltz</name>
+			<pcms>35</pcms>
+			<ost/>
+			<fft/>
+			<ssc/>
+			<ocr/>
+			<ocr2/>
+			<preset name="sid"><ssc/></preset>
+		</song>
+		<song>
+			<name>1-10 The Returners</name>
+			<pcms>46</pcms>
+			<ost/>
+			<fft/>
+			<ssc/>
+			<ocr/>
+			<ocr2/>
+			<crc/>
+			<preset name="sid"><crc/></preset>
+		</song>
+		<song>
+			<name>1-11 Shadow's Theme</name>
+			<pcms>7</pcms>
+			<ost/>
+			<fft/>
+			<ssc/>
+			<ocr/>
+			<ocr2/>
+			<ffar/>
+			<preset name="sid"><ocr2/></preset>
+		</song>
+		<song>
+			<name>1-12 Troops March On</name>
+			<pcms>28</pcms>
+			<ost/>
+			<fft/>
+			<ssc/>
+			<ocr/>
+			<ocr2/>
+			<preset name="sid"><ssc/></preset>
+		</song>
+		<song>
+			<name>1-13 Cyan's Theme</name>
+			<pcms>12</pcms>
+			<ost/>
+			<fft/>
+			<ssc/>
+			<ocr/>
+			<ocr2/>
+			<ffar/>
+			<crc/>
+			<preset name="sid"><crc/></preset>
+		</song>
+		<song>
+			<name>1-14 The Unforgiven</name>
+			<pcms>50</pcms>
+			<ost/>
+			<fft/>
+			<ssc/>
+			<ocr/>
+			<ocr2/>
+			<preset name="sid"><fft/></preset>
+		</song>
+		<song>
+			<name>1-15 The Phantom Forest</name>
+			<pcms>24</pcms>
+			<ost/>
+			<fft/>
+			<ssc/>
+			<ocr/>
+			<ocr2/>
+			<ffar/>
+			<crc/>
+			<preset name="sid"><crc/></preset>
+		</song>
+		<song>
+			<name>1-16 The Phantom Train</name>
+			<pcms>32</pcms>
+			<ost/>
+			<fft/>
+			<ssc/>
+			<ocr/>
+			<ocr2/>
+			<oth/>
+			<preset name="sid"><oth/></preset>
+		</song>
+		<song>
+			<name>1-17 The Veldt</name>
+			<pcms>25</pcms>
+			<ost/>
+			<ssc/>
+			<ocr/>
+			<ocr2/>
+			<crc/>
+			<preset name="sid"><crc/></preset>
+		</song>
+		<song>
+			<name>1-18 Gau's Theme</name>
+			<pcms>9</pcms>
+			<ost/>
+			<ssc/>
+			<ocr/>
+			<ocr2/>
+			<ffar/>
+			<preset name="sid"><ffar/></preset>
+		</song>
+		<song>
+			<name>1-19 The Serpent Trench</name>
+			<pcms>40</pcms>
+			<ost/>
+			<ssc/>
+			<ocr/>
+			<ocr2/>
+			<crc/>
+			<preset name="sid"><crc/></preset>
+		</song>
+		<song>
+			<name>1-20 Kids Run Through the City</name>
+			<pcms>42</pcms>
+			<ost/>
+			<ssc/>
+			<ocr/>
+			<ocr2/>
+			<ffar/>
+			<preset name="sid"><ffar/></preset>
+		</song>
+		<song>
+			<name>1-21 Under Martial Law</name>
+			<pcms>29</pcms>
+			<ost/>
+			<ssc/>
+			<ocr/>
+			<ocr2/>
+			<preset name="sid"><ssc/></preset>
+		</song>
+		<song>
+			<name>1-22 Celes</name>
+			<pcms>18</pcms>
+			<ost/>
+			<ssc/>
+			<ffar/>
+			<preset name="sid"><ssc/></preset>
+		</song>
+		<song>
+			<name>1-23 Protect the Espers!</name>
+			<pcms>26</pcms>
+			<ost/>
+			<ssc/>
+			<ocr/>
+			<ocr2/>
+			<preset name="sid"><ssc/></preset>
+		</song>
+		<song>
+			<name>1-24 The Decisive Battle</name>
+			<pcms>20</pcms>
+			<ost/>
+			<ssc/>
+			<ocr/>
+			<oth/>
+			<ocr2/>
+			<ffar/>
+			<preset name="sid"><ocr/></preset>
+		</song>
+		<song>
+			<name>1-25 Metamorphosis</name>
+			<pcms>31</pcms>
+			<ost/>
+			<ssc/>
+			<ocr/>
+			<ocr2/>
+			<preset name="sid"><ocr2/></preset>
+		</song>
+		<song>
+			<name>2-01 Terra's Theme</name>
+			<pcms>6</pcms>
+			<ost/>
+			<ocr/>
+			<ocr2/>
+			<ffar/>
+			<preset name="sid"><ffar/></preset>
+		</song>
+		<song>
+			<name>2-02 Coin of Fate</name>
+			<pcms>11</pcms>
+			<ost/>
+			<ocr/>
+			<ocr2/>
+			<ffar/>
+			<crc/>
+			<preset name="sid"><crc/></preset>
+		</song>
+		<song>
+			<name>2-03 Techno de Chocobo</name>
+			<pcms>19</pcms>
+			<ost/>
+			<ocr/>
+			<ocr2/>
+			<preset name="sid"><ocr2/></preset>
+		</song>
+		<song>
+			<name>2-04 Forever Rachel</name>
+			<pcms>14</pcms>
+			<ost/>
+			<ocr/>
+			<ocr2/>
+			<ffar/>
+			<crc/>
+			<preset name="sid"><crc/></preset>
+		</song>
+		<song>
+			<name>2-05 Slam Shuffle</name>
+			<pcms>41</pcms>
+			<ost/>
+			<ocr/>
+			<ocr2/>
+			<crc/>
+			<preset name="sid"><crc/></preset>
+		</song>
+		<song>
+			<name>2-06 Spinach Rag</name>
+			<pcms>61</pcms>
+			<ost/>
+			<ocr/>
+			<ocr2/>
+			<preset name="sid"><ocr2/></preset>
+		</song>
+		<song>
+			<name>2-07/2-08/2-09 The Opera</name>
+			<pcms>65,66,67,39,38,68,69,70</pcms>
+			<ost/>
+			<oth/>
+			<preset name="sid"><oth/></preset>
+		</song>
+		<song>
+			<name>2-10 Grand Finale?</name>
+			<pcms>34</pcms>
+			<ost/>
+			<oth/>
+			<preset name="sid"><oth/></preset>
+		</song>
+		<song>
+			<name>2-11 Setzer's Theme</name>
+			<pcms>16</pcms>
+			<ost/>
+			<ocr/>
+			<ocr2/>
+			<preset name="sid"><ost/></preset>
+		</song>
+		<song>
+			<name>2-12 Johnny C. Bad</name>
+			<pcms>21</pcms>
+			<ost/>
+			<ocr/>
+			<ocr2/>
+			<preset name="sid"><ost/></preset>
+		</song>
+		<song>
+			<name>2-13 The Gestahl Empire</name>
+			<pcms>27</pcms>
+			<ost/>
+			<ocr/>
+			<ocr2/>
+			<preset name="sid"><ocr2/></preset>
+		</song>
+		<song>
+			<name>2-14 Magitek Research Facility</name>
+			<pcms>71</pcms>
+			<ost/>
+			<ocr/>
+			<ocr2/>
+			<ffar/>
+			<preset name="sid"><ocr2/></preset>
+		</song>
+		<song>
+			<name>2-15 The Airship Blackjack</name>
+			<pcms>53</pcms>
+			<ost/>
+			<ocr/>
+			<ocr2/>
+			<preset name="sid"><ocr2/></preset>
+		</song>
+		<song>
+			<name>2-16 What??</name>
+			<pcms>43</pcms>
+			<ost/>
+			<crc/>
+			<preset name="sid"><crc/></preset>
+		</song>
+		<song>
+			<name>2-17 Mog's Theme</name>
+			<pcms>49</pcms>
+			<ost/>
+			<ocr/>
+			<ocr2/>
+			<ffar/>
+			<preset name="sid"><ffar/></preset>
+		</song>
+		<song>
+			<name>2-18 Strago's Theme</name>
+			<pcms>8</pcms>
+			<ost/>
+			<ocr/>
+			<ocr2/>
+			<ffar/>
+			<crc/>
+			<preset name="sid"><crc/></preset>
+		</song>
+		<song>
+			<name>2-19 Relm's Theme</name>
+			<pcms>15</pcms>
+			<ost/>
+			<ocr/>
+			<ocr2/>
+			<ffar/>
+			<preset name="sid"><ffar/></preset>
+		</song>
+		<song>
+			<name>2-20 Esper World</name>
+			<pcms>33</pcms>
+			<ost/>
+			<ocr/>
+			<ocr2/>
+			<preset name="sid"><ocr2/></preset>
+		</song>
+		<song>
+			<name>3-01 Floating Continent</name>
+			<pcms>75</pcms>
+			<ost/>
+			<ocr/>
+			<ocr2/>
+			<preset name="sid"><ocr/></preset>
+		</song>
+		<song>
+			<name>3-02 Catastrophe</name>
+			<pcms>54</pcms>
+			<ost/>
+			<ocr/>
+			<ocr2/>
+			<preset name="sid"><ocr2/></preset>
+		</song>
+		<song>
+			<name>3-03 Battle to the Death</name>
+			<pcms>51</pcms>
+			<ost/>
+			<ocr/>
+			<ocr2/>
+			<crc/>
+			<preset name="sid"><crc/></preset>
+		</song>
+		<song>
+			<name>3-04 Rest in Peace</name>
+			<pcms>62</pcms>
+			<ost/>
+			<ocr/>
+			<ocr2/>
+			<crc/>
+			<preset name="sid"><crc/></preset>
+		</song>
+		<song>
+			<name>3-05 Dark World</name>
+			<pcms>79</pcms>
+			<ost/>
+			<ocr/>
+			<ocr2/>
+			<crc/>
+			<preset name="sid"><crc/></preset>
+		</song>
+		<song>
+			<name>3-06 From That Day On...</name>
+			<pcms>52</pcms>
+			<ost/>
+			<ocr/>
+			<ocr2/>
+			<crc/>
+			<preset name="sid"><crc/></preset>
+		</song>
+		<song>
+			<name>3-07 Searching for Friends</name>
+			<pcms>76</pcms>
+			<ost/>
+			<ocr/>
+			<ocr2/>
+			<oth/>
+			<ffar/>
+			<preset name="sid"><oth/></preset>
+		</song>
+		<song>
+			<name>3-08 Gogo's Theme</name>
+			<pcms>45</pcms>
+			<ost/>
+			<ocr/>
+			<ocr2/>
+			<ffar/>
+			<preset name="sid"><ffar/></preset>
+		</song>
+		<song>
+			<name>3-09 Epitaph</name>
+			<pcms>17</pcms>
+			<ost/>
+			<ocr/>
+			<ocr2/>
+			<ffar/>
+			<crc/>
+			<preset name="sid"><ffar/></preset>
+		</song>
+		<song>
+			<name>3-10 The Magic House</name>
+			<pcms>55</pcms>
+			<ost/>
+			<ocr/>
+			<ocr2/>
+			<crc/>
+			<preset name="sid"><crc/></preset>
+		</song>
+		<song>
+			<name>3-11 Umaro's Theme</name>
+			<pcms>48</pcms>
+			<ost/>
+			<ocr/>
+			<ocr2/>
+			<ffar/>
+			<crc/>
+			<preset name="sid"><crc/></preset>
+		</song>
+		<song>
+			<name>3-12 The Fanatics</name>
+			<pcms>77</pcms>
+			<ost/>
+			<ocr/>
+			<ocr2/>
+			<crc/>
+			<preset name="sid"><ocr2/></preset>
+		</song>
+		<song>
+			<name>3-13 Kefka's Tower</name>
+			<pcms>78</pcms>
+			<ost/>
+			<ocr/>
+			<ocr2/>
+			<crc/>
+			<preset name="sid"><crc/></preset>
+		</song>
+		<song>
+			<name>3-14 Dancing Mad</name>
+			<pcms>101,102,103,82</pcms>
+			<ost/>
+			<ocr/>
+			<oth/>
+			<ocr2/>
+			<preset name="sid"><oth/></preset>
+		</song>
+		<song>
+			<name>3-15 Ending Theme</name>
+			<pcms>83</pcms>
+			<ost/>
+			<ocr/>
+			<ocr2/>
+			<ffar/>
+			<preset name="sid"><ffar/></preset>
+		</song>
+		<song>
+			<name>3-16 The Prelude</name>
+			<pcms>1</pcms>
+			<ost/>
+			<ocr/>
+			<ocr2/>
+			<preset name="sid"><ocr2/></preset>
+		</song>
+		<song>
+			<name>Sound Effects and Miscellany</name>
+			<pcms>30,58,74</pcms>
+			<oth/>
+			<preset name="sid"><oth/></preset>
+		</song>
+	</songs>
+</songlist>

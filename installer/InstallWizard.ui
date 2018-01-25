@@ -296,7 +296,7 @@ p, li { white-space: pre-wrap; }
       <x>20</x>
       <y>140</y>
       <width>531</width>
-      <height>181</height>
+      <height>222</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="soundtrackLayout">
@@ -353,6 +353,20 @@ p, li { white-space: pre-wrap; }
       </widget>
      </item>
      <item>
+      <widget class="QRadioButton" name="ffarButton">
+       <property name="text">
+        <string>Final Fantasy Acoustic Rendition</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="crcButton">
+       <property name="text">
+        <string>ChrystalChameleon's Remaster</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QRadioButton" name="customButton">
        <property name="text">
         <string>Custom</string>
@@ -404,27 +418,41 @@ p, li { white-space: pre-wrap; }
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="verticalLayoutWidget_3">
+   <widget class="QWidget" name="gridLayoutWidget">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>340</y>
+      <y>370</y>
       <width>531</width>
       <height>41</height>
      </rect>
     </property>
-    <layout class="QVBoxLayout" name="normalizeLayout">
-     <item>
-      <widget class="QLabel" name="normalizeLabel">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="1" column="1">
+      <widget class="QCheckBox" name="mplayerCheck">
        <property name="text">
-        <string>Lower/Normalize track volume? Highly recommended.</string>
+        <string>Madsiur's Music Player</string>
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QCheckBox" name="doNormalize">
+     <item row="1" column="0">
+      <widget class="QCheckBox" name="twueCheck">
        <property name="text">
-        <string>Use deamplified and normalized tracks</string>
+        <string>Ted Woolsey Uncensored Edition 1.98</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Choose Optional Patches (see Readme):</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QCheckBox" name="cutsongCheck">
+       <property name="text">
+        <string>edale2's Cut Songs Restoration</string>
        </property>
       </widget>
      </item>
@@ -456,7 +484,7 @@ p, li { white-space: pre-wrap; }
      <rect>
       <x>0</x>
       <y>10</y>
-      <width>551</width>
+      <width>555</width>
       <height>31</height>
      </rect>
     </property>
