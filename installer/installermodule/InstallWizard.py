@@ -296,7 +296,7 @@ class Ui_InstallWizard(object):
         self.ocrButton.setText(_translate("InstallWizard", "OCRemix Balance and Ruin"))
         self.ocraltButton.setText(_translate("InstallWizard", "OCRemix Balance and Ruin (Alternate loops by Qwertymodo)"))
         self.ffarButton.setText(_translate("InstallWizard", "Final Fantasy Acoustic Rendition"))
-        self.crcButton.setText(_translate("InstallWizard", "ChrystalChameleon\'s Remaster"))
+        self.crcButton.setText(_translate("InstallWizard", "ChrystalChameleon\'s FF6 Orchestrated"))
         self.customButton.setText(_translate("InstallWizard", "Custom"))
         self.emulatorLabel.setText(_translate("InstallWizard", "Choose what you will be running the mod on:"))
         self.higanButton.setText(_translate("InstallWizard", "Higan"))

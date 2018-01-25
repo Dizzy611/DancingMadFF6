@@ -105,6 +105,10 @@ class downloadPage(QtWidgets.QWizardPage):
                       self.songSources = selectionToNumbers("ocr")
                   elif self.field("ocraltButton") == True:
                       self.songSources = selectionToNumbers("ocr2")
+                  elif self.field("ffarButton") == True:
+                      self.songSources = selectionToNumbers("ffar")
+                  elif self.field("crcButton") == True:
+                      self.songSources = selectionToNumbers("crc")
                   else:
                       self.songSources = selectionToNumbers("ost") # Shouldn't get here, but ost as default anyway.
 
@@ -114,6 +118,19 @@ class downloadPage(QtWidgets.QWizardPage):
                       self.songSources[59] = mysonglist.sources.index("spc")
                   
                   templist = mapSongs(self.songSources)
+                  # TODO: Make this bit for the optional addons less hard coded.
+                  if self.field("twueCheck") == True:
+                    templist.append("contrib/Final Fantasy VI (TWUE 1.98) + Bug Fixes, Updated Opera, & Add-Ons.ips")
+                  if self.field("mplayerCheck") == True:
+                    if self.field("cutsongCheck") == True:
+                      templist.append("contrib/mplayer-csr-main-nh.ips")
+                    else:
+                      templist.append("contrib/mplayer-main-nh.ips")
+                  if self.field("cutsongCheck") == True:
+                    templist.append("contrib/CSR/ff3-91.pcm")
+                    templist.append("contrib/CSR/ff3-92.pcm")
+                    templist.append("contrib/CSR/ff3-93.pcm")
+                    templist.append("contrib/CSR/ff3 Cut Songs Restoration.ips")
                   comblist = _doMirrors(templist)
                   destination = self.field("destPath")
                   self.totalDownloads = len(comblist)
@@ -166,8 +183,7 @@ class downloadPage(QtWidgets.QWizardPage):
                   totalPercentage = (self.totalDownloads / (self.totalDownloads + 2)) * 100
                   self.totalBar.setValue(totalPercentage)
                   try:
-                    os.remove(os.path.join(self.field("destPath").replace("/","\\"), "ff3msu.sfc")) # Avoid a crash later on by removing any sfcs already present in the destination directory.
-                    
+                    os.remove(os.path.join(self.field("destPath").replace("/","\\"), "ff3msu.sfc")) # Avoid a crash later on by removing any sfcs already present in the destination directory.              
                   except OSError as e:
                     if e.errno != errno.ENOENT:
                         raise
@@ -204,9 +220,24 @@ class downloadPage(QtWidgets.QWizardPage):
                         self.currentLabel.setText("Patching: No SMC header found.")
                     self.currentBar.setValue(75)
                     self.currentLabel.setText("Patching: Applying patch...")
-                    # TODO: Apply different patch with SD2SNES volume values if we're installing for SD2SNES
                     ips.apply(patchPath, destromPath)
                     os.remove(patchPath)
+                    if self.field("twueCheck") == True:
+                        self.currentLabel.setText("Patching: Applying TWUE v1.98...")
+                        twuePath = os.path.join(self.field("destPath"), "Final Fantasy VI (TWUE 1.98) + Bug Fixes, Updated Opera, & Add-Ons.ips")
+                        ips.apply(twuePath, destromPath)
+                        os.remove(twuePath)
+                    if self.field("mplayerCheck") == True:
+                        self.currentLabel.setText("Patching: Applying Music Player DM Edition...")
+                        tmp = "mplayer-csr-main-nh.ips" if self.field("cutsongCheck") == True else "mplayer-main-nh.ips"
+                        mplayerPath = os.path.join(self.field("destPath"), tmp)
+                        ips.apply(mplayerPath, destromPath)
+                        os.remove(mplayerPath)
+                    if self.field("csrCheck") == True:
+                        self.currentLabel.setText("Patching: Applying Cut Songs Restoration...")
+                        csrPath = os.path.join(self.field("destPath"), "ff3 Cut Songs Restoration.ips")
+                        ips.apply(csrPath, destromPath)
+                        os.remove(csrPath)
                     self.currentLabel.setText("Patching: Patch successful!")
                     self.currentBar.setValue(100)
                     totalPercentage = (self.totalDownloads+1 / (self.totalDownloads + 2)) * 100
