@@ -127,10 +127,11 @@ class downloadPage(QtWidgets.QWizardPage):
                     else:
                       templist.append("contrib/mplayer-main-nh.ips")
                   if self.field("cutsongCheck") == True:
+                    templist.append("contrib/CSR/ff3-90.pcm")
                     templist.append("contrib/CSR/ff3-91.pcm")
                     templist.append("contrib/CSR/ff3-92.pcm")
                     templist.append("contrib/CSR/ff3-93.pcm")
-                    templist.append("contrib/CSR/ff3 Cut Songs Restoration.ips")
+                    templist.append("contrib/CSR/csr.ips")
                   comblist = _doMirrors(templist)
                   destination = self.field("destPath")
                   self.totalDownloads = len(comblist)
@@ -224,7 +225,7 @@ class downloadPage(QtWidgets.QWizardPage):
                     os.remove(patchPath)
                     if self.field("twueCheck") == True:
                         self.currentLabel.setText("Patching: Applying TWUE v1.98...")
-                        twuePath = os.path.join(self.field("destPath"), "Final Fantasy VI (TWUE 1.98) + Bug Fixes, Updated Opera, & Add-Ons.ips")
+                        twuePath = os.path.join(self.field("destPath"), "twue.ips")
                         ips.apply(twuePath, destromPath)
                         os.remove(twuePath)
                     if self.field("mplayerCheck") == True:
@@ -233,9 +234,9 @@ class downloadPage(QtWidgets.QWizardPage):
                         mplayerPath = os.path.join(self.field("destPath"), tmp)
                         ips.apply(mplayerPath, destromPath)
                         os.remove(mplayerPath)
-                    if self.field("csrCheck") == True:
+                    if self.field("cutsongCheck") == True:
                         self.currentLabel.setText("Patching: Applying Cut Songs Restoration...")
-                        csrPath = os.path.join(self.field("destPath"), "ff3 Cut Songs Restoration.ips")
+                        csrPath = os.path.join(self.field("destPath"), "csr.ips")
                         ips.apply(csrPath, destromPath)
                         os.remove(csrPath)
                     self.currentLabel.setText("Patching: Patch successful!")
