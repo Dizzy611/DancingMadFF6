@@ -11,7 +11,7 @@ copy /Y ff3msu.xml tmp
 copy /Y *.html tmp 
 copy /Y *.bml tmp
 copy /Y *.dat tmp
-copy /Y *.csv tmp
+copy /Y *.xml tmp
 copy /Y *.ico tmp
 copy /Y *.png tmp
 copy /Y *.wav tmp
