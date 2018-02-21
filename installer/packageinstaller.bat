@@ -1,7 +1,7 @@
 @echo off
 python setup.py build
 mkdir tmp
-xcopy /E /Y /Q build\exe.win-amd64-3.6 tmp
+if "%arch%"=="win32" (xcopy /E /Y /Q build\exe.win32-3.6 tmp) else (xcopy /E /Y /Q build\exe.win-amd64-3.6 tmp)
 rem Update IPS if a new one has been built but not copied into new dir.
 fc /b ff3msu.ips ..\patch\ff3msu.ips
 if errorlevel 1 copy /Y ..\patch\ff3msu.ips ff3msu.ips
@@ -17,10 +17,15 @@ copy /Y *.png tmp
 copy /Y *.wav tmp
 rem Remove pyqt5 bloat. Every DLL and such in the following dir that's *actually used* is copied into the root folder anyway.
 rem Modified: We need the "plugins" dir now due to the kefka laugh effect :P
+pause
 rmdir /S /Q tmp\PyQt5\Qt\bin
+rmdir /S /Q tmp\lib\PyQt5\Qt\bin
 rmdir /S /Q tmp\PyQt5\Qt\qml
+rmdir /S /Q tmp\lib\PyQt5\Qt\qml
 rmdir /S /Q tmp\PyQt5\Qt\resources
+rmdir /S /Q tmp\lib\PyQt5\Qt\resources
 rmdir /S /Q tmp\PyQt5\Qt\translations
+rmdir /S /Q tmp\lib\PyQt5\Qt\translations
 cd tmp
 "C:\Program Files\7-Zip\7z.exe" a -mf=off -r DancingMadInstaller.7z *.*
 move DancingMadInstaller.7z ..
