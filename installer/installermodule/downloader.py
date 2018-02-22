@@ -66,6 +66,7 @@ class Downloader():
                         sizecurl.setopt(sizecurl.NOBODY, True)
                         sizecurl.setopt(sizecurl.FAILONERROR, True)
                         sizecurl.setopt(sizecurl.CAINFO, certifi.where())
+                        sizecurl.setopt(sizecurl.TIMEOUT, 15)
                         sizecurl.perform()
                         str_error = None
                     except pycurl.error as e:
