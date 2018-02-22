@@ -13,6 +13,7 @@ from queue import Queue
 import ips
 import sys
 import glob
+import socket
 
 mysonglist = song.parseSongXML("songs.xml")
 
@@ -28,7 +29,15 @@ def _doMirrors(pcmlist):
         return None
     mirrorlist = []
     for m in mirrors:
-        mirrorlist.append([m + i for i in pcmlist])
+        domain = m.split("/")[2]
+        try:
+            socket.gethostbyname(domain)
+        except:
+            print("Unable to find host " + domain)
+            pass
+        else:
+            print("Found host " + domain)
+            mirrorlist.append([m + i for i in pcmlist])
     args = tuple(mirrorlist)
     return list(zip(*args))
     
