@@ -10,6 +10,7 @@
 
 .HIROM
 .FASTROM
+.BASE $C0 ; Needed to fix ExHiROM compat.
 
 .BACKGROUND "ff3.sfc"
 
