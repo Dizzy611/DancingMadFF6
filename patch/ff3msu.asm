@@ -68,6 +68,13 @@
 .DEFINE MSUControl_PlayLoop    %00000011
 .DEFINE MSUControl_Stop        %00000000
 
+; SPC Commands
+.DEFINE SPCSubSong $82
+.DEFINE SPCFade $81
+.DEFINE SPCPlaySong $10
+.DEFINE SPCInterrupt $14 ; TODO: Find out what this actually does. Is it a pause? A stop? Something else?
+.DEFINE SPCSFX $18
+
 ; Subroutine hooks
 
 .BANK 0
@@ -152,12 +159,20 @@ done\@:
 ; Main Code
 
 CommandHandle:
-    ; Are we being given command 82? (which appears to be switch subsong)
+    ; Check for specific commands
     lda PlayCommand
-    cmp #$82
-    beq +
-    jmp OriginalCommand
+    cmp #SPCSubSong
+    bne +
+    jmp SubSongHandle
 +
+    cmp #SPCFade
+    bne +
+    jmp FadeHandle
++
+    jmp OriginalCommand
+    
+    
+SubSongHandle:
     ; Are we currently playing a Dancing Mad part?
     lda MSULastTrackSet
     cmp #$65
@@ -177,6 +192,15 @@ CommandHandle:
 setflag:
     lda #$01
     sta DancingFlag
+    jmp OriginalCommand
+    
+FadeHandle:
+    ; We'll be doing a lot more here later, but for now, check for fades to volume 00, and silence the MSU-1 if found.
+    lda $1302
+    cmp #$00
+    bne +
+    stz MSUVolume
++
     jmp OriginalCommand
     
 DancingMadPart2:
