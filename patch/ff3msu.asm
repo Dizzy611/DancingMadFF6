@@ -41,6 +41,7 @@
 .DEFINE SPCCommandTemp     $1E23
 .DEFINE SPCVolumeTemp      $1E24
 .DEFINE DancingFlag        $1E25
+.DEFINE TrainFlag          $1E26
 .DEFINE MSULastTrackSet    $7EF001
 
 
@@ -73,6 +74,7 @@
 .DEFINE SPCFade $81
 .DEFINE SPCPlaySong $10
 .DEFINE SPCInterrupt $14 ; TODO: Find out what this actually does. Is it a pause? A stop? Something else?
+.DEFINE SPC89 $89
 .DEFINE SPCSFX $18
 
 ; Subroutine hooks
@@ -169,10 +171,14 @@ CommandHandle:
     bne +
     jmp FadeHandle
 +
+    cmp #SPC89
+    bne +
+    jmp SPC89Handle
++
     jmp OriginalCommand
     
     
-SubSongHandle:
+SubSongHandle: ; Handle subsong changes, primarily used during Dancing Mad
     ; Are we currently playing a Dancing Mad part?
     lda MSULastTrackSet
     cmp #$65
@@ -200,6 +206,18 @@ FadeHandle:
     cmp #$00
     bne +
     stz MSUVolume
++
+    jmp OriginalCommand
+
+SPC89Handle: ; Seems to be a different subsong change, used during Phantom Train to switch to the music from the sound effects.
+    lda PlayTrack
+    cmp #$20
+    bne +
+    lda #$01
+    sta TrainFlag
+    lda #$ff
+    sta PlayVolume
+    jsl MSUMain
 +
     jmp OriginalCommand
     
@@ -241,6 +259,18 @@ MSUMain:
     ; If not found, do the original SPC code
     jmp OriginalCode
 MSUFound:
+TFCheck: ; Phantom train flag clearing. Clears the phantom train flag if any track other than the phantom train is played.
+    lda TrainFlag
+    cmp #$01
+    bne BattleCheck
+    lda PlayTrack
+    cmp #$20
+    beq BattleCheck
+    cmp #$24 ; Avoid clearing the flag during battle/victory sequence.
+    beq BattleCheck
+    cmp #$2f
+    beq BattleCheck
+    stz TrainFlag
 BattleCheck:
     lda PlayTrack
     ; Special track handling section
@@ -257,13 +287,17 @@ Kefka1Check:
     lda #$65 ; Play part 1.
     sta PlayTrack
 Ending1Check: ; Ending Part 1
-    cmp #$53 ;
+    cmp #$53
     bne Ending2Check
     jml Ending1
 Ending2Check: ; Ending Part 2
-    cmp #$54 ;
-    bne SilenceCheck
+    cmp #$54 
+    bne TrainCheck
     jml Ending2
+TrainCheck: ; Phantom Train
+    cmp #$20
+    bne SilenceCheck
+    jml PhantomTrain
 SilenceCheck:
     cmp #$00 ; Silence (FF6 does a *lot* of track 0 requests, we're specifically masking this one to reduce calls to the MSU.)
     bne RePlayCheck
@@ -449,6 +483,16 @@ Kefka5:
 +
     jml SpecialHandlingBack
 
+; Phantom train handling.
+
+PhantomTrain:
+    lda TrainFlag ; If the train flag is on, play the song, otherwise, let the SPC handle it.
+    cmp #$01
+    bne +
+    jml SpecialHandlingBack 
++
+    jml ShutUpAndLetMeTalk
+    
 ; Ending part 2 handling.
 Ending2:
 ; We don't use this track, instead piggybacking onto the end of Ending Part 1, so just silence and return.
