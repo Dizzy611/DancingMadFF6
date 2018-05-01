@@ -21,8 +21,8 @@
 			<spc range="59" />
 		</preset>
 		<preset name="ssc">
-			<ssc range="0-24" />
-			<ost range="25-58" />
+			<ssc range="0-30,33-34,36,40-42" />
+			<ost range="31-32,35,37-39,43-58" />
 			<spc range="59" />
 		</preset>
 		<preset name="ocr">
@@ -317,6 +317,7 @@
 			<name>2-01 Terra's Theme</name>
 			<pcms>6</pcms>
 			<ost/>
+            <ssc/>
 			<ocr/>
 			<ocr2/>
 			<ffar/>
@@ -326,6 +327,7 @@
 			<name>2-02 Coin of Fate</name>
 			<pcms>11</pcms>
 			<ost/>
+            <ssc/>
 			<ocr/>
 			<ocr2/>
 			<ffar/>
@@ -336,6 +338,7 @@
 			<name>2-03 Techno de Chocobo</name>
 			<pcms>19</pcms>
 			<ost/>
+            <ssc/>
 			<ocr/>
 			<ocr2/>
 			<preset name="sid"><ocr2/></preset>
@@ -344,6 +347,7 @@
 			<name>2-04 Forever Rachel</name>
 			<pcms>14</pcms>
 			<ost/>
+            <ssc/>
 			<ocr/>
 			<ocr2/>
 			<ffar/>
@@ -354,6 +358,7 @@
 			<name>2-05 Slam Shuffle</name>
 			<pcms>41</pcms>
 			<ost/>
+            <ssc/>
 			<ocr/>
 			<ocr2/>
 			<crc/>
@@ -363,6 +368,7 @@
 			<name>2-06 Spinach Rag</name>
 			<pcms>61</pcms>
 			<ost/>
+            <ssc/>
 			<ocr/>
 			<ocr2/>
 			<preset name="sid"><ocr2/></preset>
@@ -385,6 +391,7 @@
 			<name>2-11 Setzer's Theme</name>
 			<pcms>16</pcms>
 			<ost/>
+            <ssc/>
 			<ocr/>
 			<ocr2/>
 			<preset name="sid"><ost/></preset>
@@ -393,6 +400,7 @@
 			<name>2-12 Johnny C. Bad</name>
 			<pcms>21</pcms>
 			<ost/>
+            <ssc/>
 			<ocr/>
 			<ocr2/>
 			<preset name="sid"><ost/></preset>
@@ -409,6 +417,7 @@
 			<name>2-14 Magitek Research Facility</name>
 			<pcms>71</pcms>
 			<ost/>
+            <ssc/>
 			<ocr/>
 			<ocr2/>
 			<ffar/>
@@ -442,6 +451,7 @@
 			<name>2-18 Strago's Theme</name>
 			<pcms>8</pcms>
 			<ost/>
+            <ssc/>
 			<ocr/>
 			<ocr2/>
 			<ffar/>
@@ -452,6 +462,7 @@
 			<name>2-19 Relm's Theme</name>
 			<pcms>15</pcms>
 			<ost/>
+            <ssc/>
 			<ocr/>
 			<ocr2/>
 			<ffar/>
@@ -461,6 +472,7 @@
 			<name>2-20 Esper World</name>
 			<pcms>33</pcms>
 			<ost/>
+            <ssc/>
 			<ocr/>
 			<ocr2/>
 			<preset name="sid"><ocr2/></preset>
