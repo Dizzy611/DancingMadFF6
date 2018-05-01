@@ -6,8 +6,12 @@ import pycurl
 import urllib
 import time
 import certifi
+import hashlib
 
-
+def file_as_bytes(file):
+    with file:
+        return file.read()
+        
 class Downloader():
         Initializing = 1
         Downloading = 2
@@ -87,10 +91,45 @@ class Downloader():
                     print("Succeeded in grabbing size of " + myurl)
                 destfilename = unquote(myurl.rsplit('/',1)[1])
                 fulldestination = os.path.join(self.destination,destfilename)
+                if os.path.isfile(fulldestination):
+                    print("File already exists. Computing MD5SUM and checking against server...")
+                    sum = hashlib.md5(file_as_bytes(open(fulldestination, 'rb'))).hexdigest()
+                    print("Current file md5sum is " + sum)
+                    try: 
+                        print("Downloading remote MD5SUM...")
+                        with open(fulldestination + ".md5sum", 'wb') as f:
+                            md5curl = pycurl.Curl()
+                            md5curl.setopt(md5curl.URL, myurl + ".md5sum")
+                            md5curl.setopt(md5curl.FAILONERROR, True)
+                            md5curl.setopt(md5curl.CAINFO, certifi.where())
+                            md5curl.setopt(md5curl.TIMEOUT, 15)
+                            md5curl.setopt(md5curl.WRITEDATA, f)
+                            md5curl.setopt(md5curl.FAILONERROR, True)
+                            md5curl.perform()
+                        str_error = None
+                    except pycurl.error as e:
+                        str_error = e
+                        pass
+                    if str_error is not None:
+                        print("Unable to grab remote MD5SUM. Downloading file anyway.")
+                    else:
+                        with open(fulldestination + ".md5sum", 'r') as f:
+                            remotemd5sum = f.read().split(" ")[0].strip()
+                            print("Remote file md5sum is " + remotemd5sum)
+                        if remotemd5sum == sum:
+                            print("Skipping URL " + myurl + " as existing file matches.")
+                            threadQueue.task_done()
+                            if threadQueue.empty():
+                                self.status = self.Complete
+                            else:
+                                self.status = self.Waiting
+                            return
+                        else:
+                            print("Existing file does not match. Downloading as normal.")
                 self.size = sizecurl.getinfo(sizecurl.CONTENT_LENGTH_DOWNLOAD)
                 try:
                         with open(fulldestination, 'wb') as f:
-                                print("Attempting to open connection to URL " + url + " to download")
+                                print("Attempting to open connection to URL " + myurl + " to download")
                                 filecurl = pycurl.Curl()
                                 filecurl.setopt(filecurl.URL, myurl)
                                 filecurl.setopt(filecurl.NOPROGRESS, False)
@@ -99,7 +138,7 @@ class Downloader():
                                 filecurl.setopt(filecurl.FAILONERROR, True)
                                 filecurl.setopt(filecurl.CAINFO, certifi.where())
                                 filecurl.perform()
-                                print("Succeeded in downloading from URL " + url)
+                                print("Succeeded in downloading from URL " + myurl)
                                 threadQueue.task_done()
                                 if threadQueue.empty():
                                         self.status = self.Complete
