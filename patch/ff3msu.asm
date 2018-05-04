@@ -108,7 +108,7 @@ jsl MSUMain
 .BANK 10
 .ORG $CD6F
 .SECTION "CUTSCENEFIX" SIZE 4 OVERWRITE
-.DB $B2 $EA $FF $08 ; Jump to $18FFEA
+.DB $B2 $EA $FF $08 ; Jump to $D2FFEA
 .ENDS
 
 ; Our free space to put our own stuff.
@@ -580,7 +580,8 @@ NMIHandle:
 .SECTION "EVENTCODE" SIZE 22 OVERWRITE
 ; Place to store event code and other miscellany.
 
-; Shadow cutscene fix: ask to play track $00 during this scene.
+; Shadow cutscene fix: ask to play track $00 during this scene. $F0 $00 is "play track 0", $3D $10 and $41 $10 are the existing code
+; from this event that I've overwritten, $FE is the event code version of an "rtl".
 .DB $F0 $00 $3D $10 $41 $10 $FE
 
 
