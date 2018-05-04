@@ -104,13 +104,18 @@ jsl MSUMain
 .ENDS
 
 
-
+; Overriding Shadow cutscene event code to add our own stuff
+.BANK 10
+.ORG $CD6F
+.SECTION "CUTSCENEFIX" SIZE 4 OVERWRITE
+.DB $B2 $EA $FF $08 ; Jump to $18FFEA
+.ENDS
 
 ; Our free space to put our own stuff.
 
 .BANK 18
 .ORG $FA72
-.SECTION "MSU" SIZE 1422 OVERWRITE
+.SECTION "MSU" SIZE 1400 OVERWRITE
 
 ; Macros
 
@@ -569,3 +574,15 @@ NMIHandle:
 
 ; End Subroutines
 .ENDS
+
+.BANK 18
+.ORG $FFEA
+.SECTION "EVENTCODE" SIZE 22 OVERWRITE
+; Place to store event code and other miscellany.
+
+; Shadow cutscene fix: ask to play track $00 during this scene.
+.DB $F0 $00 $3D $10 $41 $10 $FE
+
+
+.ENDS
+
