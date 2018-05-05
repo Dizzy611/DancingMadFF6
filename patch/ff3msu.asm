@@ -211,6 +211,7 @@ FadeHandle:
     cmp #$00
     bne +
     stz MSUVolume
+    stz MSUCurrentVolume
 +
     jmp OriginalCommand
 
