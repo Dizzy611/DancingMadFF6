@@ -116,6 +116,7 @@ class Downloader():
                         with open(fulldestination + ".md5sum", 'r') as f:
                             remotemd5sum = f.read().split(" ")[0].strip()
                             print("Remote file md5sum is " + remotemd5sum)
+                        os.remove(fulldestination + ".md5sum")
                         if remotemd5sum == sum:
                             print("Skipping URL " + myurl + " as existing file matches.")
                             threadQueue.task_done()
