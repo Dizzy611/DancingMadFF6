@@ -1,17 +1,17 @@
 # OS detection
 ifeq ($(OS),Windows_NT)
-		ASM      = ../utils/wla-dx-9.5-win32-bin-2013-SVN-rev8-WJ/wla-65816.exe
-        ASMFLAGS = -vo
-        LD       = ../utils/wla-dx-9.5-win32-bin-2013-SVN-rev8-WJ/wlalink.exe
-        LDFLAGS  = -vr
+		ASM      = ../utils/wla-dx/wla-65816.exe
+        ASMFLAGS = -v -o
+        LD       = ../utils/wla-dx/wlalink.exe
+        LDFLAGS  = -v -r
         IPS      = ../utils/flips.exe
         IPSFLAGS = --create --ips
         DELETE   = rm -f
 else
 		ASM      = wla-65816
-        ASMFLAGS = -vo
+        ASMFLAGS = -v -o
         LD       = wlalink
-        LDFLAGS  = -vr
+        LDFLAGS  = -v -r
         IPS      = flips
         IPSFLAGS = --create --ips
         DELETE   = rm -f
@@ -34,7 +34,7 @@ build: ff3msu.ips ff3msu.sfc
 
 ff3msu.obj: ff3.sfc ff3msu.asm
 	@echo "Assembling..."
-	$(AT)$(ASM) $(ASMFLAGS) ff3msu.asm ff3msu.obj
+	$(AT)$(ASM) $(ASMFLAGS) ff3msu.obj ff3msu.asm
 
 ff3msu.link:
 	@echo "Creating linker directives..."
