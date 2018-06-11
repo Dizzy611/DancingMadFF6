@@ -35,13 +35,13 @@
 ; can persist across saved games.
 
 
-.DEFINE MSUExists          $1E20
-.DEFINE MSUCurrentTrack    $1E21
-.DEFINE MSUCurrentVolume   $1E22
-.DEFINE SPCCommandTemp     $1E23
-.DEFINE SPCVolumeTemp      $1E24
-.DEFINE DancingFlag        $1E25
-.DEFINE TrainFlag          $1E26
+.DEFINE MSUExists          $1E30
+.DEFINE MSUCurrentTrack    $1E31
+.DEFINE MSUCurrentVolume   $1E32
+.DEFINE SPCCommandTemp     $1E33
+.DEFINE SPCVolumeTemp      $1E34
+.DEFINE DancingFlag        $1E35
+.DEFINE TrainFlag          $1E36
 .DEFINE MSULastTrackSet    $7EF001
 
 
