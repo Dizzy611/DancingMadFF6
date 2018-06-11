@@ -35,13 +35,13 @@
 ; can persist across saved games.
 
 
-.DEFINE MSUExists          $1E20
-.DEFINE MSUCurrentTrack    $1E21
-.DEFINE MSUCurrentVolume   $1E22
-.DEFINE SPCCommandTemp     $1E23
-.DEFINE SPCVolumeTemp      $1E24
-.DEFINE DancingFlag        $1E25
-.DEFINE TrainFlag          $1E26
+.DEFINE MSUExists          $1E30
+.DEFINE MSUCurrentTrack    $1E31
+.DEFINE MSUCurrentVolume   $1E32
+.DEFINE SPCCommandTemp     $1E33
+.DEFINE SPCVolumeTemp      $1E34
+.DEFINE DancingFlag        $1E35
+.DEFINE TrainFlag          $1E36
 .DEFINE MSULastTrackSet    $7EF001
 
 
@@ -104,13 +104,43 @@ jsl MSUMain
 .ENDS
 
 
+; Overriding Shadow cutscene event code to add our own stuff
+.BANK 10
+.ORG $CD6F
+.SECTION "CUTSCENEFIX" SIZE 4 OVERWRITE
+.DB $B2 $EA $FF $08 ; Jump to $D2FFEA
+.ENDS
+
+.BANK 10 
+.ORG $CDE7 
+.SECTION "CUTSCENEFIX2" SIZE 15 OVERWRITE
+.DB $B2 $D0 $FF $08 $FD $FD $FD $FD $FD $FD $FD $FD $FD $FD $FD ; Jump to $D2FFD0, then lots of NOPs.
+.ENDS
+
+;.BANK 10
+;.ORG $CDF6
+;.SECTION "CUTSCENEFIX2" SIZE 5 OVERWRITE
+;.DB $B2 $F1 $FF $08 $FD ; Jump to $D2FFF1, then NOP
+;.ENDS
+
+.BANK 10
+.ORG $CE5D
+.SECTION "CUTSCENEFIX3" SIZE 4 OVERWRITE
+.DB $B2 $F8 $FF $08 ; Jump to $D2FFF8
+.ENDS
+
+.BANK 10
+.ORG $CF0A
+.SECTION "CUTSCENEFIX4" SIZE 4 OVERWRITE
+.DB $B2 $E3 $FF $08 ; Jump to $D2FFE3
+.ENDS
 
 
 ; Our free space to put our own stuff.
 
 .BANK 18
 .ORG $FA72
-.SECTION "MSU" SIZE 1422 OVERWRITE
+.SECTION "MSU" SIZE 1400 OVERWRITE
 
 ; Macros
 
@@ -206,6 +236,7 @@ FadeHandle:
     cmp #$00
     bne +
     stz MSUVolume
+    stz MSUCurrentVolume
 +
     jmp OriginalCommand
 
@@ -307,9 +338,7 @@ RePlayCheck:
              ; as a signal to re-play our last track: If the code is calling for 0x51, what it's really calling for is the last track played.
     bne SpecialHandlingBack
     lda MSUCurrentTrack
-    sta PlayTrack
-    lda MSUCurrentVolume
-    sta PlayVolume
+    sta PlayTrack ; Why was I changing the volume? Let the game determine this.
 SpecialHandlingBack:
     ; Are we playing it?
     lda PlayTrack
@@ -569,3 +598,34 @@ NMIHandle:
 
 ; End Subroutines
 .ENDS
+
+; Ran out of space again...
+.BANK 18
+.ORG $FFD0
+.SECTION "YETMOREEVENTCODE" SIZE 18 OVERWRITE
+; (New) Cutscene 2 fix
+.DB $F0 $00 $B0 $1F $51 $DF $37 $37 $51 $DF $05 $05 $51 $DF $29 $29 $B1 $FE
+.ENDS 
+
+; Ran out of space... >.>
+.BANK 18
+.ORG $FFE3
+.SECTION "MOREEVENTCODE" SIZE 7 OVERWRITE
+; Cutscene 4 fix
+.DB $F0 $00 $61 $07 $04 $FF $FE
+.ENDS
+
+.BANK 18
+.ORG $FFEA
+.SECTION "EVENTCODE" SIZE 22 OVERWRITE
+; Place to store event code and other miscellany.
+
+; Shadow cutscene fix: ask to play track $00 during this scene. $F0 $00 is "play track 0", $3D $10 and $41 $10 are the existing code
+; from this event that I've overwritten, $FE is the event code version of an "rtl".
+.DB $F0 $00 $3D $10 $41 $10 $FE
+; (Old) Cutscene 2 fix. Stubbed out due to a new, much longer fix that doesn't fit here anymore.
+.DB $FD $FD $FD $FD $FD $FD $FD 
+; Cutscene 3 fix
+.DB $F0 $00 $50 $BC $52 $BC $FE
+.ENDS
+
