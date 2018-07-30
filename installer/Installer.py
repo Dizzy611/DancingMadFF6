@@ -1,3 +1,4 @@
+import os
 import sys, types
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWizard, QApplication, QWizardPage, QFileDialog
@@ -6,7 +7,8 @@ from installermodule import InstallWizard
 from installermodule.selections import *
 from enum import IntEnum
 
-sys.stdout = open("installer.log", "w")
+
+sys.stdout = open(os.path.expanduser("~/dancing-mad-installer.log"), "w")
 sys.stderr = sys.stdout
 
 class Pages(IntEnum):
