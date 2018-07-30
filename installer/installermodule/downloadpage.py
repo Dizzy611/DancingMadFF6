@@ -14,6 +14,7 @@ import ips
 import sys
 import glob
 import socket
+import urllib 
 
 mysonglist = song.parseSongXML("songs.xml")
 
@@ -29,15 +30,27 @@ def _doMirrors(pcmlist):
         return None
     mirrorlist = []
     for m in mirrors:
-        domain = m.split("/")[2]
-        try:
-            socket.gethostbyname(domain)
-        except:
-            print("Unable to find host " + domain)
-            pass
+        errorstr = ""
+        try: # Check to make sure mirror is reachable before adding it to our list.
+            retcode = urllib.request.urlopen(m).getcode()
+        except urllib.error.URLError as e:
+            retcode = -1
+            errorstr = e.reason
+        if retcode == 200:
+            domain = m.split("/")[2]
+            try:
+                socket.gethostbyname(domain)
+            except:
+                print("Unable to find host " + domain)
+                pass
+            else:
+                print("Found host " + domain)
+                mirrorlist.append([m + i for i in pcmlist])
         else:
-            print("Found host " + domain)
-            mirrorlist.append([m + i for i in pcmlist])
+            if retcode != -1:
+                print("Skipping mirror " + m + ", HTTP ERROR " + str(retcode))
+            else:
+                print("Skipping mirror " + m + ", " + errorstr)
     args = tuple(mirrorlist)
     return list(zip(*args))
     
