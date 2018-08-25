@@ -2,7 +2,7 @@ import os
 import sys, types
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWizard, QApplication, QWizardPage, QFileDialog
-from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtCore import pyqtSlot, Qt
 from installermodule import InstallWizard
 from installermodule.selections import *
 from enum import IntEnum
@@ -18,8 +18,15 @@ class Pages(IntEnum):
     destination = 3
     installtype = 4
     custom = 5
-    download = 6
-    final = 7
+    opera = 6
+    download = 7
+    final = 8
+
+
+def previewSong(songnum, source):
+    print("Previewing song " + str(songnum)+ " from source " + source)
+    print("TODO: Actually play preview.")
+
 
 class InstallWizard(QWizard, InstallWizard.Ui_InstallWizard):
         def __init__(self):
@@ -55,6 +62,11 @@ class InstallWizard(QWizard, InstallWizard.Ui_InstallWizard):
                 self.customselectionPage.registerField("sscPreset", self.sscPreset)
                 self.customselectionPage.registerField("ocrPreset", self.ocrPreset)
                 self.customselectionPage.registerField("ocraltPreset", self.ocraltPreset)
+                self.operaPage.registerField("operaMfButton", self.operaMfButton)
+                self.operaPage.registerField("operaTbmButton", self.operaTbmButton)
+                self.operaPage.registerField("operaOcrButton", self.operaOcrButton)
+                self.operaPage.registerField("operaGmcButton", self.operaGmcButton)
+                self.operaPage.registerField("operaDwButton", self.operaDwButton)
                 # Giving the Page objects access to their own widgets where necessary! Yay for the magic of python.
                 self.readmePage.readmeBrowser = self.readmeBrowser
                 self.licensePage.licenseBrowser = self.licenseBrowser
@@ -65,7 +77,13 @@ class InstallWizard(QWizard, InstallWizard.Ui_InstallWizard):
                 self.downloadPage.currentBar = self.currentBar
                 self.downloadPage.totalLabel = self.totalLabel
                 self.downloadPage.totalBar = self.totalBar
-                
+                # Giving the download page access to various widgets to redraw, enabling status updates within a function.
+                self.downloadPage.widgetsToRedraw = []
+                self.downloadPage.widgetsToRedraw.append(self.currentLabel)
+                self.downloadPage.widgetsToRedraw.append(self.currentBar)
+                self.downloadPage.widgetsToRedraw.append(self.gridLayoutWidget_3)
+                self.downloadPage.widgetsToRedraw.append(self.downloadPage)
+                self.downloadPage.widgetsToRedraw.append(self)
         def nextId(self):
                 # After the installtype page, only show the "custom track selection" page if the user has selected custom tracks. Otherwise, show the download/install page.
                 # If we're not on the installtype page, just do the default behavior by calling our base class's nextId.
@@ -75,7 +93,7 @@ class InstallWizard(QWizard, InstallWizard.Ui_InstallWizard):
                     else:
                         return Pages.download
                 else:
-                    return super().nextId();
+                    return super().nextId()
                     
         @pyqtSlot()
         def on_romPathBrowse_clicked(self):
@@ -101,7 +119,29 @@ class InstallWizard(QWizard, InstallWizard.Ui_InstallWizard):
             elif self.field("recommendedPreset") == True:
                 self.trackSelectionWidget.reloadSources(selectionToNumbers("sid"))
 
+        @pyqtSlot()
+        def on_operaOcrPreview_clicked(self):
+            previewSong(31, "ocr")
+    
+        @pyqtSlot()
+        def on_operaGmcPreview_clicked(self):
+            previewSong(31, "gmc")
+        
+        @pyqtSlot()
+        def on_operaDwPreview_clicked(self):
+            previewSong(31, "dw")
+        
+        @pyqtSlot()
+        def on_operaMfPreview_clicked(self):
+            previewSong(31, "mf")
+        
+        @pyqtSlot()
+        def on_operaTbmPreview_clicked(self):
+            previewSong(31, "tbm")
+
 app = QApplication(sys.argv)
+app.setAttribute(Qt.AA_DisableHighDpiScaling, True)
+
 window = InstallWizard()
 window.show()
 app.exec_()
