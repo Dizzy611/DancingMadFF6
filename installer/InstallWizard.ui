@@ -551,7 +551,7 @@ p, li { white-space: pre-wrap; }
     </layout>
    </widget>
   </widget>
-  <widget class="QWizardPage" name="wizardPage">
+  <widget class="operaPage" name="operaPage">
    <property name="title">
     <string>Dancing Mad Final Beta Installer</string>
    </property>
@@ -563,7 +563,7 @@ p, li { white-space: pre-wrap; }
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>301</width>
+      <width>366</width>
       <height>212</height>
      </rect>
     </property>
@@ -864,6 +864,12 @@ p, li { white-space: pre-wrap; }
    <class>selectionTableWidget</class>
    <extends>QWidget</extends>
    <header>selectiontablewidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>operaPage</class>
+   <extends>QWizardPage</extends>
+   <header>operapage.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
