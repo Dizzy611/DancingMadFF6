@@ -64,7 +64,6 @@ class InstallWizard(QWizard, InstallWizard.Ui_InstallWizard):
                 self.customselectionPage.registerField("ocraltPreset", self.ocraltPreset)
                 self.operaPage.registerField("operaMfButton", self.operaMfButton)
                 self.operaPage.registerField("operaTbmButton", self.operaTbmButton)
-                self.operaPage.registerField("operaOcrButton", self.operaOcrButton)
                 self.operaPage.registerField("operaGmcButton", self.operaGmcButton)
                 self.operaPage.registerField("operaDwButton", self.operaDwButton)
                 # Giving the Page objects access to their own widgets where necessary! Yay for the magic of python.
@@ -119,10 +118,6 @@ class InstallWizard(QWizard, InstallWizard.Ui_InstallWizard):
             elif self.field("recommendedPreset") == True:
                 self.trackSelectionWidget.reloadSources(selectionToNumbers("sid"))
 
-        @pyqtSlot()
-        def on_operaOcrPreview_clicked(self):
-            previewSong(31, "ocr")
-    
         @pyqtSlot()
         def on_operaGmcPreview_clicked(self):
             previewSong(31, "gmc")
