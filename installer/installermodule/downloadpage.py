@@ -22,39 +22,47 @@ mysonglist = song.parseSongXML("songs.xml")
 # Should we use the /new directory in the mirrors. Use when testing new song selections, turn off on release.
 NEW_PATH = False
 
-def _doMirrors(pcmlist):
-    try:
-        with open("mirrors.dat") as f:
-            mirrors = f.readlines()
-            mirrors = [x.strip() for x in mirrors]
-    except IOError:
-        return None
-    mirrorlist = []
-    for m in mirrors:
-        errorstr = ""
-        try: # Check to make sure mirror is reachable before adding it to our list.
-            retcode = urllib.request.urlopen(m,timeout=4).getcode() # 4 seconds may be too fast, but I'm trying to avoid needing to thread this call.
-        except urllib.error.URLError as e:
-            retcode = -1
-            errorstr = e.reason
-        if retcode == 200:
-            domain = m.split("/")[2]
-            try:
-                socket.gethostbyname(domain)
-            except:
-                print("Unable to find host " + domain)
-                pass
+def _doMirrors(pcmlist, mirrors = None):
+    if mirrors == None:
+        mirrors = []
+    if mirrors == []:
+        try:
+            with open("mirrors.dat") as f:
+                mirrors = f.readlines()
+                mirrors = [x.strip() for x in mirrors]
+        except IOError:
+            return None
+        mirrorlist = []
+        for m in mirrors:
+            errorstr = ""
+            try: # Check to make sure mirror is reachable before adding it to our list.
+                retcode = urllib.request.urlopen(m,timeout=4).getcode() # 4 seconds may be too fast, but I'm trying to avoid needing to thread this call.
+            except urllib.error.URLError as e:
+                retcode = -1
+                errorstr = e.reason
+            if retcode == 200:
+                domain = m.split("/")[2]
+                try:
+                    socket.gethostbyname(domain)
+                except:
+                    print("Unable to find host " + domain)
+                    pass
+                else:
+                    print("Found host " + domain)
+                    mirrorlist.append([m + i for i in pcmlist])
             else:
-                print("Found host " + domain)
-                mirrorlist.append([m + i for i in pcmlist])
-        else:
-            if retcode != -1:
-                print("Skipping mirror", m, ", HTTP ERROR ", retcode)
-            else:
-                print("Skipping mirror", m, ",", errorstr)
+                if retcode != -1:
+                    print("Skipping mirror", m, ", HTTP ERROR ", retcode)
+                else:
+                    print("Skipping mirror", m, ",", errorstr)
+    else:
+        mirrorlist = []
+        for m in mirrors:
+            mirrorlist.append([m + i for i in pcmlist])
     args = tuple(mirrorlist)
     return list(zip(*args))
     
+            
 def _doSongMap(source, tracknum):
         if NEW_PATH == False:
             sourcestr = ""
@@ -177,7 +185,7 @@ class downloadPage(QtWidgets.QWizardPage):
                     templist.append("contrib/CSR/csr.ips")
                   self.updateCurrentLabel("Checking status of mirrors, installer may appear frozen (please be patient!)...")
                   self.custRedrawWidgets()
-                  comblist = _doMirrors(templist)
+                  comblist = _doMirrors(templist, self.validmirrors)
                   destination = self.field("destPath")
                   # Rename higanified tracks back to normal name so that they can be checked for already existing
                   for filename in glob.glob(destination + "/track-*.pcm"):

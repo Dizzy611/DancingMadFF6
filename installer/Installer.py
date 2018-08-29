@@ -6,10 +6,16 @@ from PyQt5.QtCore import pyqtSlot, Qt
 from installermodule import InstallWizard
 from installermodule.selections import *
 from enum import IntEnum
-
+import tkinter
+from tkinter import messagebox
+import urllib.request
+import urllib.error
+import socket
 
 sys.stdout = open(os.path.expanduser("~/dancing-mad-installer.log"), "w")
 sys.stderr = sys.stdout
+
+validmirrors = []
 
 class Pages(IntEnum):
     welcome = 0
@@ -27,6 +33,36 @@ def previewSong(songnum, source):
     print("Previewing song " + str(songnum)+ " from source " + source)
     print("TODO: Actually play preview.")
 
+
+def mirrorCheck():
+    print("DEBUG: Checking mirrors.")
+    global validmirrors
+    validmirrors = []
+    try:
+        with open("mirrors.dat") as f:
+            mlist = f.readlines()
+            mlist = [x.strip() for x in mlist]
+    except IOError:
+        return None
+    for m in mlist:
+        print("DEBUG: Checking",m)
+        errorstr = ""
+        try: # Check to make sure mirror is reachable before adding it to our list.
+            retcode = urllib.request.urlopen(m,timeout=4).getcode() # 4 seconds may be too fast, but I'm trying to avoid needing to thread this call.
+        except urllib.error.URLError as e:
+            retcode = -1
+            errorstr = e.reason
+        if retcode == 200:
+            domain = m.split("/")[2]
+            try:
+                socket.gethostbyname(domain)
+            except:
+                print("Unable to find host " + domain)
+                pass
+            else:
+                print("Found host " + domain)
+                validmirrors.append(m)
+    print("DEBUG",repr(validmirrors))
 
 class InstallWizard(QWizard, InstallWizard.Ui_InstallWizard):
         def __init__(self):
@@ -77,6 +113,7 @@ class InstallWizard(QWizard, InstallWizard.Ui_InstallWizard):
                 self.downloadPage.currentBar = self.currentBar
                 self.downloadPage.totalLabel = self.totalLabel
                 self.downloadPage.totalBar = self.totalBar
+                self.downloadPage.validmirrors = validmirrors
                 # Giving the download page access to various widgets to redraw, enabling status updates within a function.
                 self.downloadPage.widgetsToRedraw = []
                 self.downloadPage.widgetsToRedraw.append(self.currentLabel)
@@ -134,6 +171,9 @@ class InstallWizard(QWizard, InstallWizard.Ui_InstallWizard):
         @pyqtSlot()
         def on_operaTbmPreview_clicked(self):
             previewSong(31, "tbm")
+
+#messagebox.showinfo("Checking mirrors...","The installer will now take a few seconds to check and see which of the mirrors for the .PCM files is currently up and functioning. Please press OK and be patient. The installer window will show up when this check is complete.")
+mirrorCheck()
 
 app = QApplication(sys.argv)
 app.setAttribute(Qt.AA_DisableHighDpiScaling, True)
