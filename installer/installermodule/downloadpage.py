@@ -61,7 +61,10 @@ def _doSongMap(source, tracknum):
         else:
             sourcestr = "new/"
         if mysonglist.sources[source] != "spc":
-            sourcestr = sourcestr + mysonglist.sources[source].upper()
+			if mysonglist.sources[source].startswith("x"):
+				sourcestr = sourcestr + "opera/" + mysonglist.sources[source].upper()[1:]
+			else:
+				sourcestr = sourcestr + mysonglist.sources[source].upper()
         else:
             return ""
         retstr = sourcestr + "/ff3-" + str(tracknum) + ".pcm"
