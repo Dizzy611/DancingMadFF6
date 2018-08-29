@@ -13,8 +13,11 @@ class selectionTableWidget(QtWidgets.QTableWidget):
                 self.setGeometry(QtCore.QRect(0, 10, 551, 401))
                 self.setCornerButtonEnabled(False)
                 self.setObjectName("tableWidget")
-                
-                colcount = len(self.songlist.sources)
+                i = 0
+                for src in self.songlist.sources:
+                    if src.startswith("x") == False:
+                        i += 1
+                colcount = i
                 rowcount = len(self.songlist.songs)
                 self.setColumnCount(colcount)
                 self.setRowCount(rowcount)
@@ -32,10 +35,13 @@ class selectionTableWidget(QtWidgets.QTableWidget):
                 self.verticalHeader().setMinimumSectionSize(10)
                 self.verticalHeader().setStretchLastSection(False)
                 for idx,source in enumerate(self.songlist.sources):
-                    item = self.horizontalHeaderItem(idx)
-                    print("DEBUG. Source header:", source)
-                    item.setText(source.upper())
-                    item.setTextAlignment(QtCore.Qt.AlignCenter)
+                    if source.startswith("x") == False:
+                        item = self.horizontalHeaderItem(idx)
+                        print("DEBUG. Source header:", source)
+                        item.setText(source.upper())
+                        item.setTextAlignment(QtCore.Qt.AlignCenter)
+                    else:
+                        print("DEBUG. Hidden source encountered:", source)
 
                 # Initialize selection list and fill with 0s.
                 self.selections = [0]*len(self.songlist.songs)
@@ -54,22 +60,23 @@ class selectionTableWidget(QtWidgets.QTableWidget):
                     radioGroup = QtWidgets.QButtonGroup(self)
                     selectspc = not(sng.sourceCheck("ost"))
                     for col,source in enumerate(self.songlist.sources):
-                        if source == "spc":
-                            self.spccol = col
-                        if sng.sourceCheck(source) == True:
-                            radios.append(QtWidgets.QRadioButton())
-                            radios[-1].myRowCol = (row, col)
-                            radios[-1].clicked.connect(self.buttonClicked)
-                            if col == 0 or (source == "spc" and selectspc == True):
-                                radios[-1].setChecked(True)
-                            self.setCellWidget(row, col, radios[-1])
-                            radioGroup.addButton(radios[-1])
-                            self.myButtons[row].append(radios[-1])
-                        else:
-                            item = QtWidgets.QTableWidgetItem()
-                            item.setFlags(QtCore.Qt.NoItemFlags)
-                            self.setItem(row, col, item)
-                            self.myButtons[row].append(None)
+                        if source.startswith("x") == False:
+                            if source == "spc":
+                                self.spccol = col
+                            if sng.sourceCheck(source) == True:
+                                radios.append(QtWidgets.QRadioButton())
+                                radios[-1].myRowCol = (row, col)
+                                radios[-1].clicked.connect(self.buttonClicked)
+                                if col == 0 or (source == "spc" and selectspc == True):
+                                    radios[-1].setChecked(True)
+                                self.setCellWidget(row, col, radios[-1])
+                                radioGroup.addButton(radios[-1])
+                                self.myButtons[row].append(radios[-1])
+                            else:
+                                item = QtWidgets.QTableWidgetItem()
+                                item.setFlags(QtCore.Qt.NoItemFlags)
+                                self.setItem(row, col, item)
+                                self.myButtons[row].append(None)
 
         
         @QtCore.pyqtProperty(QtCore.QVariant)
