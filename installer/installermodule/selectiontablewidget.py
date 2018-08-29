@@ -102,4 +102,6 @@ class selectionTableWidget(QtWidgets.QTableWidget):
                             self.myButtons[sng][self.spccol].setChecked(True)
                         print("DEBUG: Asked to load a source that's not available. Defaulting to OST or SPC.")
                 except TypeError as e:
-                    print("DEBUG: TypeError:", sng, source, str(e))
+                    print("DEBUG: TypeError:", sng, source, repr(e))
+                except IndexError as e:
+                    print("DEBUG: IndexError (likely hidden source):", sng, source, repr(e))

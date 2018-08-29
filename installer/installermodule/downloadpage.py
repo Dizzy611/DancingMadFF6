@@ -61,10 +61,10 @@ def _doSongMap(source, tracknum):
         else:
             sourcestr = "new/"
         if mysonglist.sources[source] != "spc":
-			if mysonglist.sources[source].startswith("x"):
-				sourcestr = sourcestr + "opera/" + mysonglist.sources[source].upper()[1:]
-			else:
-				sourcestr = sourcestr + mysonglist.sources[source].upper()
+            if mysonglist.sources[source].startswith("x"):
+                sourcestr = sourcestr + "opera/" + mysonglist.sources[source].upper()[1:]
+            else:
+                sourcestr = sourcestr + mysonglist.sources[source].upper()
         else:
             return ""
         retstr = sourcestr + "/ff3-" + str(tracknum) + ".pcm"
@@ -123,6 +123,19 @@ class downloadPage(QtWidgets.QWizardPage):
                   self.updateCurrentLabel("Initializing downloader...")
                   if self.field("customButton") == True:
                       self.songSources = self.field("songList")
+                      if self.field("operaMfButton") == True:
+                        self.songSources[31] = mysonglist.sources.index("xmf")
+                      elif self.field("operaTbmButton") == True:
+                        self.songSources[31] = mysonglist.sources.index("xtbm")
+                      elif self.field("operaOstButton") == True:
+                        self.songSources[31] = mysonglist.sources.index("xost")
+                      elif self.field("operaGmcButton") == True:
+                        self.songSources[31] = mysonglist.sources.index("xgmc")
+                      elif self.field("operaDwButton") == True:
+                        self.songSources[31] = mysonglist.sources.index("xdw")
+                      else:
+                        print("DEBUG: Invalid opera selection.")
+                        self.songSources[31] = mysonglist.sources.index("xost")
                   elif self.field("sidselectButton") == True:
                       self.songSources = selectionToNumbers("sid")
                   elif self.field("ostButton") == True:
