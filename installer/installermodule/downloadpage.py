@@ -179,6 +179,10 @@ class downloadPage(QtWidgets.QWizardPage):
                   self.custRedrawWidgets()
                   comblist = _doMirrors(templist)
                   destination = self.field("destPath")
+                  # Rename higanified tracks back to normal name so that they can be checked for already existing
+                  for filename in glob.glob(destination + "/track-*.pcm"):
+                    new_name = filename.replace("track","ff3")
+                    os.rename(filename, new_name)
                   self.totalDownloads = len(comblist)
                   urlqueue = Queue(maxsize=self.totalDownloads)
                   for urlpair in comblist:
