@@ -233,6 +233,12 @@ class downloadPage(QtWidgets.QWizardPage):
                       self.updateCurrentLabel("Download Complete!")
                       self.currentBar.setValue(0)
                       self.installstate = 3
+                  elif self.downloader.status == self.downloader.Skipping:
+                      self.updateCurrentLabel("Matched existing file, skipping...")
+                      self.currentBar.setValue(0)
+                  elif self.downloader.status == self.downloader.Summing:
+                      self.updateCurrentLabel("Checksumming existing file...")
+                      self.currentBar.setValue(0)
                   else:
                       pass
               elif self.installstate == 3:   # Patching ROM

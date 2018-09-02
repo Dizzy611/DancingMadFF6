@@ -13,6 +13,7 @@ import socket
 
 sys.stdout = open(os.path.expanduser("~/dancing-mad-installer.log"), "w")
 sys.stderr = sys.stdout
+scalefactor = 1.0
 
 validmirrors = []
 
@@ -128,6 +129,10 @@ class InstallWizard(QWizard, InstallWizard.Ui_InstallWizard):
                 self.downloadPage.widgetsToRedraw.append(self.gridLayoutWidget_3)
                 self.downloadPage.widgetsToRedraw.append(self.downloadPage)
                 self.downloadPage.widgetsToRedraw.append(self)
+                
+                # Deal with high DPIs by increasing the size of the window.
+                self.resize(585*scalefactor, 527*scalefactor)
+                    
         def nextId(self):
                 # After the installtype page, only show the "custom track selection" page if the user has selected custom tracks. Otherwise, show the download/install page.
                 # If we're not on the installtype page, just do the default behavior by calling our base class's nextId.
@@ -187,7 +192,9 @@ class InstallWizard(QWizard, InstallWizard.Ui_InstallWizard):
 mirrorCheck()
 
 app = QApplication(sys.argv)
-
+scalefactor = app.screens()[0].logicalDotsPerInch() / 96.0
+if scalefactor > 1:
+    print("DEBUG: Detected high DPI display. Scaling to %.4fx" % scalefactor)
 window = InstallWizard()
 window.show()
 app.exec_()
