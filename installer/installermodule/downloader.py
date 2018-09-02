@@ -17,6 +17,8 @@ class Downloader():
         Downloading = 2
         Waiting = 3
         Complete = 4
+        Skipping = 5
+        Summing = 6
         Error = -1
         def __init__(self, urlqueue, destination):
                 self.urlqueue = urlqueue
@@ -55,7 +57,11 @@ class Downloader():
                         return "Error"
                 elif self.status == self.Complete:
                         return "Complete"
-
+                elif self.status == self.Skipping:
+                        return "Skipping file"
+                elif self.status == self.Summing:
+                        return "Checksumming local file against remote file"
+                        
         def work(self, threadQueue):
                 self.status = self.Downloading
                 urls = threadQueue.get()
@@ -92,6 +98,7 @@ class Downloader():
                 destfilename = unquote(myurl.rsplit('/',1)[1])
                 fulldestination = os.path.join(self.destination,destfilename)
                 if os.path.isfile(fulldestination):
+                    self.status = self.Summing
                     print("File already exists. Computing MD5SUM and checking against server...")
                     sum = hashlib.md5(file_as_bytes(open(fulldestination, 'rb'))).hexdigest()
                     print("Current file md5sum is " + sum)
@@ -108,7 +115,7 @@ class Downloader():
                             md5curl.perform()
                         str_error = None
                     except pycurl.error as e:
-                        str_error = e
+                        str_error = repr(e)
                         pass
                     if str_error is not None:
                         print("Unable to grab remote MD5SUM. Downloading file anyway.")
@@ -118,6 +125,7 @@ class Downloader():
                             print("Remote file md5sum is " + remotemd5sum)
                         os.remove(fulldestination + ".md5sum")
                         if remotemd5sum == sum:
+                            self.status = self.Skipping
                             print("Skipping URL " + myurl + " as existing file matches.")
                             threadQueue.task_done()
                             if threadQueue.empty():
