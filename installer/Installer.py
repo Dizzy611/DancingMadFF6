@@ -2,7 +2,8 @@ import os
 import sys, types
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWizard, QApplication, QWizardPage, QFileDialog
-from PyQt5.QtCore import pyqtSlot, Qt
+from PyQt5.QtCore import pyqtSlot, Qt, QUrl
+from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from installermodule import InstallWizard
 from installermodule.selections import *
 from enum import IntEnum
@@ -16,6 +17,8 @@ sys.stdout = open(os.path.expanduser("~/dancing-mad-installer.log"), "w")
 sys.stderr = sys.stdout
 
 validmirrors = []
+
+previewPlayer = QMediaPlayer()
 
 class Pages(IntEnum):
     welcome = 0
@@ -31,7 +34,13 @@ class Pages(IntEnum):
 
 def previewSong(songnum, source):
     print("Previewing song " + str(songnum)+ " from source " + source)
-    print("TODO: Actually play preview.")
+    try:
+        previewPlayer.stop()
+        content = QMediaContent(QUrl.fromLocalFile("Samples/" + str(songnum) + "-" + str(source) + ".mp3"))
+        previewPlayer.setMedia(content)
+        previewPlayer.play()
+    except:
+        print("WARN: Song preview not successful, unknown error (add to less-generic exception):", repr(sys.exc_info()[0]))
 
 
 def mirrorCheck():
@@ -171,12 +180,15 @@ class InstallWizard(QWizard, InstallWizard.Ui_InstallWizard):
         @pyqtSlot()
         def on_operaTbmPreview_clicked(self):
             previewSong(31, "tbm")
+            
+        @pyqtSlot()
+        def on_operaOstPreview_clicked(self):
+            previewSong(31, "ost")
 
 #messagebox.showinfo("Checking mirrors...","The installer will now take a few seconds to check and see which of the mirrors for the .PCM files is currently up and functioning. Please press OK and be patient. The installer window will show up when this check is complete.")
 mirrorCheck()
 
 app = QApplication(sys.argv)
-app.setAttribute(Qt.AA_DisableHighDpiScaling, True)
 
 window = InstallWizard()
 window.show()
