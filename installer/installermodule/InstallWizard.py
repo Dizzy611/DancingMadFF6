@@ -357,7 +357,7 @@ class Ui_InstallWizard(object):
         self.BSNESButton.setText(_translate("InstallWizard", "BSNES"))
         self.SD2SNESButton.setText(_translate("InstallWizard", "SD2SNES/Snes9x-msu"))
         self.mplayerCheck.setText(_translate("InstallWizard", "Madsiur\'s Music Player"))
-        self.twueCheck.setText(_translate("InstallWizard", "Ted Woolsey Uncensored Edition 2.00"))
+        self.twueCheck.setText(_translate("InstallWizard", "Ted Woolsey Uncensored Edition 2.01"))
         self.label.setText(_translate("InstallWizard", "Choose Optional Patches (see Readme):"))
         self.cutsongCheck.setText(_translate("InstallWizard", "edale2\'s Cut Songs Restoration"))
         self.customselectionPage.setTitle(_translate("InstallWizard", "Dancing Mad Beta Installer"))

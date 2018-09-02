@@ -15,6 +15,8 @@ copy /Y *.xml tmp
 copy /Y *.ico tmp
 copy /Y *.png tmp
 copy /Y *.wav tmp
+mkdir tmp\Samples
+copy /Y Samples\*.mp3 tmp\Samples
 rem Remove pyqt5 bloat. Every DLL and such in the following dir that's *actually used* is copied into the root folder anyway.
 rem Modified: We need the "plugins" dir now due to the kefka laugh effect :P
 if exist tmp\PyQt5\Qt\bin\qt.conf copy tmp\PyQt5\Qt\bin\qt.conf tmp\qt.conf.nol
