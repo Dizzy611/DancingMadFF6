@@ -7,8 +7,6 @@ from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from installermodule import InstallWizard
 from installermodule.selections import *
 from enum import IntEnum
-import tkinter
-from tkinter import messagebox
 import urllib.request
 import urllib.error
 import socket
