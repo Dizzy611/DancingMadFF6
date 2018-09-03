@@ -14,40 +14,65 @@ import ips
 import sys
 import glob
 import socket
+import urllib.request
+import urllib.error
 
 mysonglist = song.parseSongXML("songs.xml")
 
 # Should we use the /new directory in the mirrors. Use when testing new song selections, turn off on release.
 NEW_PATH = False
 
-def _doMirrors(pcmlist):
-    try:
-        with open("mirrors.dat") as f:
-            mirrors = f.readlines()
-            mirrors = [x.strip() for x in mirrors]
-    except IOError:
-        return None
-    mirrorlist = []
-    for m in mirrors:
-        domain = m.split("/")[2]
+def _doMirrors(pcmlist, mirrors = None):
+    if mirrors == None:
+        mirrors = []
+    if mirrors == []:
         try:
-            socket.gethostbyname(domain)
-        except:
-            print("Unable to find host " + domain)
-            pass
-        else:
-            print("Found host " + domain)
+            with open("mirrors.dat") as f:
+                mirrors = f.readlines()
+                mirrors = [x.strip() for x in mirrors]
+        except IOError:
+            return None
+        mirrorlist = []
+        for m in mirrors:
+            errorstr = ""
+            try: # Check to make sure mirror is reachable before adding it to our list.
+                retcode = urllib.request.urlopen(m,timeout=4).getcode() # 4 seconds may be too fast, but I'm trying to avoid needing to thread this call.
+            except urllib.error.URLError as e:
+                retcode = -1
+                errorstr = e.reason
+            if retcode == 200:
+                domain = m.split("/")[2]
+                try:
+                    socket.gethostbyname(domain)
+                except:
+                    print("Unable to find host " + domain)
+                    pass
+                else:
+                    print("Found host " + domain)
+                    mirrorlist.append([m + i for i in pcmlist])
+            else:
+                if retcode != -1:
+                    print("Skipping mirror", m, ", HTTP ERROR ", retcode)
+                else:
+                    print("Skipping mirror", m, ",", errorstr)
+    else:
+        mirrorlist = []
+        for m in mirrors:
             mirrorlist.append([m + i for i in pcmlist])
     args = tuple(mirrorlist)
     return list(zip(*args))
     
+            
 def _doSongMap(source, tracknum):
         if NEW_PATH == False:
             sourcestr = ""
         else:
             sourcestr = "new/"
         if mysonglist.sources[source] != "spc":
-            sourcestr = sourcestr + mysonglist.sources[source].upper()
+            if mysonglist.sources[source].startswith("x"):
+                sourcestr = sourcestr + "opera/" + mysonglist.sources[source].upper()[1:]
+            else:
+                sourcestr = sourcestr + mysonglist.sources[source].upper()
         else:
             return ""
         retstr = sourcestr + "/ff3-" + str(tracknum) + ".pcm"
@@ -62,7 +87,6 @@ def mapSongs(songSources):
                 if file != "":
                     retlist.append(file)
         return retlist
-
 
 
 class downloadPage(QtWidgets.QWizardPage):
@@ -92,16 +116,34 @@ class downloadPage(QtWidgets.QWizardPage):
               self.checktimer.timeout.connect(self.timerEvent)
               self.compChgSgnl.connect(self.completeChanged)
               self.compChgSgnl.emit()
-
+        def custRedrawWidgets(self):
+              for i in self.widgetsToRedraw:
+                i.repaint()
+        def updateCurrentLabel(self, newtext):
+              self.currentLabel.setText(newtext)
+              self.custRedrawWidgets()
         def initializePage(self):
               self.checktimer.start(100)
 
         def timerEvent(self):
               sys.stdout.flush() # Periodically flush log to disk.
               if self.installstate == 1:   # Initializing...
-                  self.currentLabel.setText("Initializing downloader...")
+                  self.updateCurrentLabel("Initializing downloader...")
                   if self.field("customButton") == True:
                       self.songSources = self.field("songList")
+                      if self.field("operaMfButton") == True:
+                        self.songSources[31] = mysonglist.sources.index("xmf")
+                      elif self.field("operaTbmButton") == True:
+                        self.songSources[31] = mysonglist.sources.index("xtbm")
+                      elif self.field("operaOstButton") == True:
+                        self.songSources[31] = mysonglist.sources.index("xost")
+                      elif self.field("operaGmcButton") == True:
+                        self.songSources[31] = mysonglist.sources.index("xgmc")
+                      elif self.field("operaDwButton") == True:
+                        self.songSources[31] = mysonglist.sources.index("xdw")
+                      else:
+                        print("DEBUG: Invalid opera selection.")
+                        self.songSources[31] = mysonglist.sources.index("xost")
                   elif self.field("sidselectButton") == True:
                       self.songSources = selectionToNumbers("sid")
                   elif self.field("ostButton") == True:
@@ -141,8 +183,14 @@ class downloadPage(QtWidgets.QWizardPage):
                     templist.append("contrib/CSR/ff3-92.pcm")
                     templist.append("contrib/CSR/ff3-93.pcm")
                     templist.append("contrib/CSR/csr.ips")
-                  comblist = _doMirrors(templist)
+                  self.updateCurrentLabel("Checking status of mirrors, installer may appear frozen (please be patient!)...")
+                  self.custRedrawWidgets()
+                  comblist = _doMirrors(templist, self.validmirrors)
                   destination = self.field("destPath")
+                  # Rename higanified tracks back to normal name so that they can be checked for already existing
+                  for filename in glob.glob(destination + "/track-*.pcm"):
+                    new_name = filename.replace("track","ff3")
+                    os.rename(filename, new_name)
                   self.totalDownloads = len(comblist)
                   urlqueue = Queue(maxsize=self.totalDownloads)
                   for urlpair in comblist:
@@ -167,28 +215,34 @@ class downloadPage(QtWidgets.QWizardPage):
                       else:
                           percentage = (progress / size) * 100
                           labelStr = "Downloading ({0}/{1}) ({2}/{3} kB) {4}% ...".format(self.totalDownloads-self.downloader.count(),self.totalDownloads,round(progress/1024,2),round(size/1024,2),round(percentage,2))
-                      self.currentLabel.setText(labelStr)
+                      self.updateCurrentLabel(labelStr)
                       self.currentBar.setValue(percentage)
                   elif self.downloader.status == self.downloader.Waiting:
-                      self.currentLabel.setText("Connecting...")
+                      self.updateCurrentLabel("Connecting...")
                       self.currentBar.setValue(0)
                       self.downloader.start()
                   elif self.downloader.status == self.downloader.Initializing:
-                      self.currentLabel.setText("Connecting...")
+                      self.updateCurrentLabel("Connecting...")
                       self.currentBar.setValue(0)
                       self.downloader.start()
                   elif self.downloader.status == self.downloader.Error:
-                      self.currentLabel.setText("Error: " + self.downloader.errormessage)
+                      self.updateCurrentLabel("Error: " + self.downloader.errormessage)
                       self.currentBar.setValue(0)
                       self.installstate = 254
                   elif self.downloader.status == self.downloader.Complete:
-                      self.currentLabel.setText("Download Complete!")
+                      self.updateCurrentLabel("Download Complete!")
                       self.currentBar.setValue(0)
                       self.installstate = 3
+                  elif self.downloader.status == self.downloader.Skipping:
+                      self.updateCurrentLabel("Matched existing file, skipping...")
+                      self.currentBar.setValue(0)
+                  elif self.downloader.status == self.downloader.Summing:
+                      self.updateCurrentLabel("Downloading ({0}/{1}) Checksumming existing file (will skip download if match)...".format(self.totalDownloads-self.downloader.count(),self.totalDownloads))
+                      self.currentBar.setValue(0)
                   else:
                       pass
               elif self.installstate == 3:   # Patching ROM
-                  self.currentLabel.setText("Download finished. Patching ROM...")
+                  self.updateCurrentLabel("Download finished. Patching ROM...")
                   self.currentBar.setValue(0)
                   totalPercentage = (self.totalDownloads / (self.totalDownloads + 2)) * 100
                   self.totalBar.setValue(totalPercentage)
@@ -205,18 +259,18 @@ class downloadPage(QtWidgets.QWizardPage):
                   patchPath = os.path.join(self.field("destPath"), "ff3msu.ips")
                   destromPath = os.path.join(self.field("destPath"), "ff3msu.sfc")
                   try:
-                    self.currentLabel.setText("Patching: Copying ROM to destination path...")
+                    self.updateCurrentLabel("Patching: Copying ROM to destination path...")
                     shutil.copy2(self.field("romPath"), destromPath)
                     self.currentBar.setValue(25)
-                    self.currentLabel.setText("Patching: Copying Patch to destination path...")
+                    self.updateCurrentLabel("Patching: Copying Patch to destination path...")
                     shutil.copy2("ff3msu.ips", self.field("destPath"))
                     self.currentBar.setValue(50)
-                    self.currentLabel.setText("Patching: Checking for SMC header...")
+                    self.updateCurrentLabel("Patching: Checking for SMC header...")
                     myrom = rom.SNESRom(self.field("romPath"))
                     myrom.parse()
                     if myrom.has_smc_header:
                         unheaderedPath = os.path.join(self.field("destPath"), "temp.sfc")
-                        self.currentBar.setText("Patching: Found SMC header, removing...")
+                        self.updateCurrentLabel("Patching: Found SMC header, removing...")
                         newfile = open(unheaderedPath, "wb")
                         romfile = open(destromPath, "rb")
                         _ = romfile.read(512) # Skip the header
@@ -225,40 +279,40 @@ class downloadPage(QtWidgets.QWizardPage):
                         romfile.close()
                         os.remove(destromPath)
                         os.rename(unheaderedPath, destromPath)
-                        self.currentBar.setText("Patching: Header removed.")
+                        self.updateCurrentLabel("Patching: Header removed.")
                     else:
-                        self.currentLabel.setText("Patching: No SMC header found.")
+                        self.updateCurrentLabel("Patching: No SMC header found.")
                     self.currentBar.setValue(75)
-                    self.currentLabel.setText("Patching: Applying patch...")
+                    self.updateCurrentLabel("Patching: Applying patch...")
                     ips.apply(patchPath, destromPath)
                     os.remove(patchPath)
                     if self.field("twueCheck") == True:
-                        self.currentLabel.setText("Patching: Applying TWUE v1.98...")
+                        self.updateCurrentLabel("Patching: Applying TWUE v1.98...")
                         twuePath = os.path.join(self.field("destPath"), "twue.ips")
                         ips.apply(twuePath, destromPath)
                         os.remove(twuePath)
                     if self.field("mplayerCheck") == True:
-                        self.currentLabel.setText("Patching: Applying Music Player DM Edition...")
+                        self.updateCurrentLabel("Patching: Applying Music Player DM Edition...")
                         tmp = "mplayer-csr-main-nh.ips" if self.field("cutsongCheck") == True else "mplayer-main-nh.ips"
                         mplayerPath = os.path.join(self.field("destPath"), tmp)
                         ips.apply(mplayerPath, destromPath)
                         os.remove(mplayerPath)
                     if self.field("cutsongCheck") == True:
-                        self.currentLabel.setText("Patching: Applying Cut Songs Restoration...")
+                        self.updateCurrentLabel("Patching: Applying Cut Songs Restoration...")
                         csrPath = os.path.join(self.field("destPath"), "csr.ips")
                         ips.apply(csrPath, destromPath)
                         os.remove(csrPath)
-                    self.currentLabel.setText("Patching: Patch successful!")
+                    self.updateCurrentLabel("Patching: Patch successful!")
                     self.currentBar.setValue(100)
                     totalPercentage = (self.totalDownloads+1 / (self.totalDownloads + 2)) * 100
                     self.totalBar.setValue(totalPercentage)
                     self.installstate = 4
-                  except:
-                    e = sys.exc_info()[0]
-                    self.currentLabel.setText("Patching: ROM Patching Failed! Error:" + str(e))
+                  except Exception as e:
+                    self.updateCurrentLabel("Patching: ROM Patching Failed! Error:" + repr(e))
+                    print("EXCEPTION DURING PATCHING:",repr(e))
                     self.installstate = 254
               elif self.installstate == 4:   # Final copying/renaming/etc.
-                  self.currentLabel.setText("Finalizing: Copying Manifests and MSU file...")
+                  self.updateCurrentLabel("Finalizing: Copying Manifests and MSU file...")
                   self.currentBar.setValue(0)
                   if self.field("higanButton") == True:
                       shutil.copy2("ff3msu.msu", self.field("destPath"))
@@ -269,7 +323,7 @@ class downloadPage(QtWidgets.QWizardPage):
                       shutil.move(tmpRomSrc, tmpRomDst)
                       shutil.move(tmpMsuSrc, tmpMsuDst)
                       self.currentBar.setValue(50)
-                      self.currentLabel.setText("Finalizing: Higanifying track names...")
+                      self.updateCurrentLabel("Finalizing: Higanifying track names...")
                       tmpOldCwd = os.getcwd()
                       os.chdir(self.field("destPath"))
                       pcmsList = glob.glob('ff3-*.pcm')
@@ -291,7 +345,7 @@ class downloadPage(QtWidgets.QWizardPage):
                   else:
                       pass
                   self.currentBar.setValue(100)
-                  self.currentLabel.setText("Done!")
+                  self.updateCurrentLabel("Done!")
                   self.totalBar.setValue(100)
                   self.installstate = 255
               elif self.installstate == 254: # Error
