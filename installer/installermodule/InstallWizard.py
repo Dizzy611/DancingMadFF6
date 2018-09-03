@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'InstallWizard.ui'
 #
-# Created by: PyQt5 UI code generator 5.9
+# Created by: PyQt5 UI code generator 5.11.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_InstallWizard(object):
     def setupUi(self, InstallWizard):
         InstallWizard.setObjectName("InstallWizard")
-        InstallWizard.resize(575, 527)
+        InstallWizard.resize(585, 527)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("kefka-16x16.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         InstallWizard.setWindowIcon(icon)
@@ -77,7 +77,7 @@ class Ui_InstallWizard(object):
         self.installtypePage = installtypePage()
         self.installtypePage.setObjectName("installtypePage")
         self.verticalLayoutWidget = QtWidgets.QWidget(self.installtypePage)
-        self.verticalLayoutWidget.setGeometry(QtCore.QRect(20, 140, 531, 222))
+        self.verticalLayoutWidget.setGeometry(QtCore.QRect(20, 90, 521, 210))
         self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
         self.soundtrackLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
         self.soundtrackLayout.setContentsMargins(0, 0, 0, 0)
@@ -114,7 +114,7 @@ class Ui_InstallWizard(object):
         self.customButton.setObjectName("customButton")
         self.soundtrackLayout.addWidget(self.customButton)
         self.verticalLayoutWidget_2 = QtWidgets.QWidget(self.installtypePage)
-        self.verticalLayoutWidget_2.setGeometry(QtCore.QRect(20, 40, 531, 94))
+        self.verticalLayoutWidget_2.setGeometry(QtCore.QRect(20, 10, 521, 70))
         self.verticalLayoutWidget_2.setObjectName("verticalLayoutWidget_2")
         self.emulatorLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_2)
         self.emulatorLayout.setContentsMargins(0, 0, 0, 0)
@@ -133,7 +133,7 @@ class Ui_InstallWizard(object):
         self.SD2SNESButton.setObjectName("SD2SNESButton")
         self.emulatorLayout.addWidget(self.SD2SNESButton)
         self.gridLayoutWidget = QtWidgets.QWidget(self.installtypePage)
-        self.gridLayoutWidget.setGeometry(QtCore.QRect(20, 370, 531, 41))
+        self.gridLayoutWidget.setGeometry(QtCore.QRect(20, 310, 521, 40))
         self.gridLayoutWidget.setObjectName("gridLayoutWidget")
         self.gridLayout = QtWidgets.QGridLayout(self.gridLayoutWidget)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
@@ -157,7 +157,6 @@ class Ui_InstallWizard(object):
         self.trackSelectionWidget.setGeometry(QtCore.QRect(0, 40, 551, 371))
         self.trackSelectionWidget.setObjectName("trackSelectionWidget")
         self.horizontalLayoutWidget = QtWidgets.QWidget(self.customselectionPage)
-        self.horizontalLayoutWidget.setGeometry(QtCore.QRect(0, 10, 555, 31))
         self.horizontalLayoutWidget.setObjectName("horizontalLayoutWidget")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
@@ -188,6 +187,62 @@ class Ui_InstallWizard(object):
         self.loadPreset.setObjectName("loadPreset")
         self.horizontalLayout.addWidget(self.loadPreset)
         InstallWizard.addPage(self.customselectionPage)
+        self.operaPage = operaPage()
+        self.operaPage.setObjectName("operaPage")
+        self.verticalLayoutWidget_4 = QtWidgets.QWidget(self.operaPage)
+        self.verticalLayoutWidget_4.setGeometry(QtCore.QRect(10, 10, 366, 212))
+        self.verticalLayoutWidget_4.setObjectName("verticalLayoutWidget_4")
+        self.formLayout = QtWidgets.QFormLayout(self.verticalLayoutWidget_4)
+        self.formLayout.setContentsMargins(0, 0, 0, 0)
+        self.formLayout.setObjectName("formLayout")
+        self.operaLabel = QtWidgets.QLabel(self.verticalLayoutWidget_4)
+        self.operaLabel.setObjectName("operaLabel")
+        self.formLayout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.operaLabel)
+        self.operaMfButton = QtWidgets.QRadioButton(self.verticalLayoutWidget_4)
+        self.operaMfButton.setChecked(True)
+        self.operaMfButton.setObjectName("operaMfButton")
+        self.formLayout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.operaMfButton)
+        self.operaTbmButton = QtWidgets.QRadioButton(self.verticalLayoutWidget_4)
+        self.operaTbmButton.setObjectName("operaTbmButton")
+        self.formLayout.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.operaTbmButton)
+        self.operaGmcButton = QtWidgets.QRadioButton(self.verticalLayoutWidget_4)
+        self.operaGmcButton.setObjectName("operaGmcButton")
+        self.formLayout.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.operaGmcButton)
+        self.operaDwButton = QtWidgets.QRadioButton(self.verticalLayoutWidget_4)
+        self.operaDwButton.setObjectName("operaDwButton")
+        self.formLayout.setWidget(4, QtWidgets.QFormLayout.LabelRole, self.operaDwButton)
+        self.operaOstButton = QtWidgets.QRadioButton(self.verticalLayoutWidget_4)
+        self.operaOstButton.setObjectName("operaOstButton")
+        self.formLayout.setWidget(5, QtWidgets.QFormLayout.LabelRole, self.operaOstButton)
+        self.operaGmcPreview = QtWidgets.QPushButton(self.verticalLayoutWidget_4)
+        self.operaGmcPreview.setMaximumSize(QtCore.QSize(93, 16777215))
+        self.operaGmcPreview.setMouseTracking(False)
+        self.operaGmcPreview.setObjectName("operaGmcPreview")
+        self.formLayout.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.operaGmcPreview)
+        self.operaDwPreview = QtWidgets.QPushButton(self.verticalLayoutWidget_4)
+        self.operaDwPreview.setMaximumSize(QtCore.QSize(93, 16777215))
+        self.operaDwPreview.setMouseTracking(False)
+        self.operaDwPreview.setObjectName("operaDwPreview")
+        self.formLayout.setWidget(4, QtWidgets.QFormLayout.FieldRole, self.operaDwPreview)
+        self.operaMfPreview = QtWidgets.QPushButton(self.verticalLayoutWidget_4)
+        self.operaMfPreview.setMaximumSize(QtCore.QSize(93, 16777215))
+        self.operaMfPreview.setMouseTracking(False)
+        self.operaMfPreview.setObjectName("operaMfPreview")
+        self.formLayout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.operaMfPreview)
+        self.operaTbmPreview = QtWidgets.QPushButton(self.verticalLayoutWidget_4)
+        self.operaTbmPreview.setMaximumSize(QtCore.QSize(93, 16777215))
+        self.operaTbmPreview.setMouseTracking(False)
+        self.operaTbmPreview.setObjectName("operaTbmPreview")
+        self.formLayout.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.operaTbmPreview)
+        self.operaOstPreview = QtWidgets.QPushButton(self.verticalLayoutWidget_4)
+        self.operaOstPreview.setMaximumSize(QtCore.QSize(93, 16777215))
+        self.operaOstPreview.setMouseTracking(False)
+        self.operaOstPreview.setObjectName("operaOstPreview")
+        self.formLayout.setWidget(5, QtWidgets.QFormLayout.FieldRole, self.operaOstPreview)
+        self.label_4 = QtWidgets.QLabel(self.operaPage)
+        self.label_4.setGeometry(QtCore.QRect(10, 380, 341, 16))
+        self.label_4.setObjectName("label_4")
+        InstallWizard.addPage(self.operaPage)
         self.downloadPage = downloadPage()
         self.downloadPage.setObjectName("downloadPage")
         self.gridLayoutWidget_2 = QtWidgets.QWidget(self.downloadPage)
@@ -265,11 +320,10 @@ class Ui_InstallWizard(object):
         self.licenseBrowser.setHtml(_translate("InstallWizard", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'Sans Serif\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">ERROR: Could not load LICENSE file.</p></body></html>"))
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans Serif\'; font-size:9pt;\">ERROR: Could not load LICENSE file.</span></p></body></html>"))
         self.licenseLabel.setText(_translate("InstallWizard", "<html><head/><body><p>Please read the below licensing agreement.</p></body></html>"))
-        self.licenseAccepted.setText(_translate("InstallWizard", "Check here if you have read and accept the terms.\n"
-"Acceptance is necessary to complete installation."))
+        self.licenseAccepted.setText(_translate("InstallWizard", "I have read, understand, and accept this license."))
         self.readmePage.setTitle(_translate("InstallWizard", "Dancing Mad Beta Installer"))
         self.readmePage.setSubTitle(_translate("InstallWizard", "Readme"))
         self.readmeBrowser.setHtml(_translate("InstallWizard", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
@@ -303,7 +357,7 @@ class Ui_InstallWizard(object):
         self.BSNESButton.setText(_translate("InstallWizard", "BSNES"))
         self.SD2SNESButton.setText(_translate("InstallWizard", "SD2SNES/Snes9x-msu"))
         self.mplayerCheck.setText(_translate("InstallWizard", "Madsiur\'s Music Player"))
-        self.twueCheck.setText(_translate("InstallWizard", "Ted Woolsey Uncensored Edition 2.00"))
+        self.twueCheck.setText(_translate("InstallWizard", "Ted Woolsey Uncensored Edition 2.01"))
         self.label.setText(_translate("InstallWizard", "Choose Optional Patches (see Readme):"))
         self.cutsongCheck.setText(_translate("InstallWizard", "edale2\'s Cut Songs Restoration"))
         self.customselectionPage.setTitle(_translate("InstallWizard", "Dancing Mad Beta Installer"))
@@ -316,19 +370,32 @@ class Ui_InstallWizard(object):
         self.ocrPreset.setText(_translate("InstallWizard", "OCRemix"))
         self.ocraltPreset.setText(_translate("InstallWizard", "Alt OCR"))
         self.loadPreset.setText(_translate("InstallWizard", "Load"))
+        self.operaPage.setTitle(_translate("InstallWizard", "Dancing Mad Beta Installer"))
+        self.operaPage.setSubTitle(_translate("InstallWizard", "Select your opera..."))
+        self.operaLabel.setText(_translate("InstallWizard", "Choose which version of the Opera to install..."))
+        self.operaMfButton.setText(_translate("InstallWizard", "More Friends: Music from Final Fantasy (English)"))
+        self.operaTbmButton.setText(_translate("InstallWizard", "The Black Mages (Japanese)"))
+        self.operaGmcButton.setText(_translate("InstallWizard", "Game Music Concert 4 (Japanese) *"))
+        self.operaDwButton.setText(_translate("InstallWizard", "Distant Worlds (English)"))
+        self.operaOstButton.setText(_translate("InstallWizard", "OST (No Vocals)"))
+        self.operaGmcPreview.setText(_translate("InstallWizard", "🔊"))
+        self.operaDwPreview.setText(_translate("InstallWizard", "🔊"))
+        self.operaMfPreview.setText(_translate("InstallWizard", "🔊"))
+        self.operaTbmPreview.setText(_translate("InstallWizard", "🔊"))
+        self.operaOstPreview.setText(_translate("InstallWizard", "🔊"))
+        self.label_4.setText(_translate("InstallWizard", "* Developer Recommends"))
         self.downloadPage.setTitle(_translate("InstallWizard", "Dancing Mad Beta Installer"))
         self.downloadPage.setSubTitle(_translate("InstallWizard", "Downloading, Patching, and Installing..."))
         self.totalLabel.setText(_translate("InstallWizard", "Total"))
-        self.currentLabel.setText(_translate("InstallWizard", "Connecting..."))
+        self.currentLabel.setText(_translate("InstallWizard", "....................................................................................................................................................."))
         self.finalPage.setTitle(_translate("InstallWizard", "Dancing Mad Beta Installer"))
         self.finalPage.setSubTitle(_translate("InstallWizard", "Final Notes..."))
         self.finalLabel.setText(_translate("InstallWizard", "<html><head/><body><p>Install successful! Below you will find some final notes for your particular install. These will generally be things already covered in the documentation, but they\'re here for your convenience.</p></body></html>"))
         self.finalBrowser.setHtml(_translate("InstallWizard", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'Sans Serif\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans Serif\'; font-size:8.25pt;\">TO BE FILLED IN</span></p></body></html>"))
-
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8.25pt;\">TO BE FILLED IN</span></p></body></html>"))
 
 from installermodule.customselectionpage import customselectionPage
 from installermodule.readmepage import readmePage
@@ -338,3 +405,4 @@ from installermodule.licensepage import licensePage
 from installermodule.selectiontablewidget import selectionTableWidget
 from installermodule.installtypepage import installtypePage
 from installermodule.destinationpage import destinationPage
+from installermodule.operapage import operaPage
