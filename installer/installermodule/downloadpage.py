@@ -141,6 +141,8 @@ class downloadPage(QtWidgets.QWizardPage):
                         self.songSources[31] = mysonglist.sources.index("xgmc")
                       elif self.field("operaDwButton") == True:
                         self.songSources[31] = mysonglist.sources.index("xdw")
+                      elif self.field("operaSpcButton") == True:
+                        self.songSources[31] = mysonglist.sources.index("spc")
                       else:
                         print("DEBUG: Invalid opera selection.")
                         self.songSources[31] = mysonglist.sources.index("xost")

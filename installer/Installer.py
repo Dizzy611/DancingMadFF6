@@ -114,6 +114,7 @@ class InstallWizard(QWizard, InstallWizard.Ui_InstallWizard):
                 self.operaPage.registerField("operaGmcButton", self.operaGmcButton)
                 self.operaPage.registerField("operaDwButton", self.operaDwButton)
                 self.operaPage.registerField("operaOstButton", self.operaOstButton)
+                self.operaPage.registerField("operaSpcButton", self.operaSpcButton)
                 # Giving the Page objects access to their own widgets where necessary! Yay for the magic of python.
                 self.readmePage.readmeBrowser = self.readmeBrowser
                 self.licensePage.licenseBrowser = self.licenseBrowser
