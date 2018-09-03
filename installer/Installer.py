@@ -56,7 +56,10 @@ def mirrorCheck():
         print("DEBUG: Checking",m)
         errorstr = ""
         try: # Check to make sure mirror is reachable before adding it to our list.
-            retcode = urllib.request.urlopen(m,timeout=4).getcode() # 4 seconds may be too fast, but I'm trying to avoid needing to thread this call.
+            if (("cloudfront" in m) or ("s3" in m)): # AWS works a little differently, so we need to grab an actual file, not a listing.
+                retcode = urllib.request.urlopen(m + "contrib/twue.ips",timeout=4).getcode()
+            else:
+                retcode = urllib.request.urlopen(m,timeout=4).getcode() # 4 seconds may be too fast, but I'm trying to avoid needing to thread this call.
         except urllib.error.URLError as e:
             retcode = -1
             errorstr = e.reason
