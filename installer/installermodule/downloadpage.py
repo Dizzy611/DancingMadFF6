@@ -237,7 +237,7 @@ class downloadPage(QtWidgets.QWizardPage):
                       self.updateCurrentLabel("Matched existing file, skipping...")
                       self.currentBar.setValue(0)
                   elif self.downloader.status == self.downloader.Summing:
-                      self.updateCurrentLabel("Checksumming existing file...")
+                      self.updateCurrentLabel("Downloading ({0}/{1}) Checksumming existing file (will skip download if match)...".format(self.totalDownloads-self.downloader.count(),self.totalDownloads))
                       self.currentBar.setValue(0)
                   else:
                       pass

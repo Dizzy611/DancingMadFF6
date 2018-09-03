@@ -63,6 +63,7 @@ class Downloader():
                         return "Checksumming local file against remote file"
                         
         def work(self, threadQueue):
+                self.size = 0
                 self.status = self.Downloading
                 urls = threadQueue.get()
                 urls = list(urls)
@@ -125,6 +126,7 @@ class Downloader():
                             print("Remote file md5sum is " + remotemd5sum)
                         os.remove(fulldestination + ".md5sum")
                         if remotemd5sum == sum:
+                            self.size = 0
                             self.status = self.Skipping
                             print("Skipping URL " + myurl + " as existing file matches.")
                             threadQueue.task_done()
@@ -134,12 +136,13 @@ class Downloader():
                                 self.status = self.Waiting
                             return
                         else:
+                            self.status = self.Downloading
                             print("Existing file does not match. Downloading as normal.")
                 self.size = sizecurl.getinfo(sizecurl.CONTENT_LENGTH_DOWNLOAD)
                 try:
                         with open(fulldestination, 'wb') as f:
                                 print("Attempting to open connection to URL " + myurl + " to download")
-                                filecurl = pycurl.Curl()
+                                filecurl = pycurl.Curl()    
                                 filecurl.setopt(filecurl.URL, myurl)
                                 filecurl.setopt(filecurl.NOPROGRESS, False)
                                 filecurl.setopt(filecurl.PROGRESSFUNCTION, self.progressFunction)
