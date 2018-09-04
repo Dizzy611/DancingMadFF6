@@ -10,9 +10,9 @@ Welcome to the repository for Dancing Mad. Please submit any issues using the Is
 
 ### Setup ###
 
-* To set up Dancing Mad, run the installer and follow the instructions contained therein. Please use a ROM of FF3 US v1.0.
+* To set up Dancing Mad, run the installer and follow the instructions contained therein. Please use **any** ROM of FF6, provided the audio code has not been altered by a previous patch. Previously, I advised only patch **US V1.0**, but further investigation has shown that **US V1.1** and **Japanese** copies of the game should be 100% compatible. Please report any bugs you encounter running this with previously unsupported versions of the game!
 
-* If you wish to test the "master" branch, patch an unheadered, untouched ROM of FF3 US v1.0 with the IPS contained in the patch directory of that branch. Do not patch over a previously patched version of Dancing Mad as if the IPS patch grows or shrinks you could end up with undefined results. If there is demand, I may provide an incremental IPS patch which is diffed against the current beta.
+* If you wish to test the "master" branch, patch an unheadered, untouched ROM of FF6 with the IPS contained in the patch directory of that branch. Do not patch over a previously patched version of Dancing Mad as if the IPS patch grows or shrinks you could end up with undefined results. If there is demand, I may provide an incremental IPS patch which is diffed against the current beta.
 
 * If you wish to assemble patches yourself, you need copies of GNU Make, wla-dx and flips IPS patcher. Check the Makefile and make sure the paths for your assembler and copy of flips are correct (the first set are for windows, the second are for other platforms). Then stick your FF3 rom, renamed ff3.sfc, in the same directory as the Makefile and the ASM and link files, and run GNU Make. You should get as output ff3msu.sfc (the patched ROM) and ff3msu.ips (the new IPS patch.) This is my exact workflow, so if you are doing your own changes to the ASM please follow the same workflow to prevent errors.
 
