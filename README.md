@@ -10,7 +10,7 @@ Welcome to the repository for Dancing Mad. Please submit any issues using the Is
 
 ### Setup ###
 
-* To set up Dancing Mad, run the installer and follow the instructions contained therein. Please use **any** ROM of FF6, provided the audio code has not been altered by a previous patch. Previously, I advised only patch **US V1.0**, but further investigation has shown that **US V1.1** and **Japanese** copies of the game should be 100% compatible. Please report any bugs you encounter running this with previously unsupported versions of the game!
+* To set up Dancing Mad, run the installer and follow the instructions contained therein. Please use **any** ROM of FF6, provided the audio code has not been altered by a previous patch. Previously, I advised only patch **US V1.0**, but further investigation has shown that **Japanese** copies of the game should be 100% compatible. Please report any bugs you encounter running this with previously unsupported versions of the game! **US V1.1** was originally listed as being 100% compatible with the new version but has a few unexpected issues we are working through.
 
 * If you wish to test the "master" branch, patch an unheadered, untouched ROM of FF6 with the IPS contained in the patch directory of that branch. Do not patch over a previously patched version of Dancing Mad as if the IPS patch grows or shrinks you could end up with undefined results. If there is demand, I may provide an incremental IPS patch which is diffed against the current beta.
 
