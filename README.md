@@ -30,58 +30,60 @@ Welcome to the repository for Dancing Mad. Please submit any issues using the Is
 
 * Contact dylanjmorrison611@gmail.com via email or [this forum thread](http://forums.qhimm.com/index.php?topic=16077) for help, or if you want a more live conversation approach me on the project's official Discord using this [invite](https://discord.gg/ynZkNnK). I don't use IRC or Skype much anymore. 
 
-#### Credits ####
-### Musical Credits ###
-Nobuo Uematsu
-Sean Schafiaski (buy the album [here](http://https://seanschafianski.bandcamp.com/album/remastered-soundtrack-final-fantasy-vi-disc-1), support the artist who has kindly allowed us to use his work!)
-OCRemix Contributors
-FinalFanTim
-ChrystalChameleon
-The Black Mages
-Tokyo Symphony Orchestra
-The World Festival Symphony Orchestra
-The Royal Stockholm Philharmonic Orchestra
-Eiko Nichols
-edale2
+### Credits ###
+## Musical Credits ##
+* Nobuo Uematsu
+* Sean Schafiaski (buy the album [here](http://https://seanschafianski.bandcamp.com/album/remastered-soundtrack-final-fantasy-vi- disc-1), support the artist who has kindly allowed us to use his work!)
+* OCRemix Contributors
+* FinalFanTim
+* ChrystalChameleon
+* The Black Mages
+* Tokyo Symphony Orchestra
+* The World Festival Symphony Orchestra
+* The Royal Stockholm Philharmonic Orchestra
+* Eiko Nichols
+* edale2
 
-### Editing Credits ###
-Covarr
-edale2
-qwertymodo
+## Editing Credits ##
+* Covarr
+* edale2
+* qwertymodo
 
-### Patch Credits (both for Dancing Mad itself and for optional patches bundled) ###
-Myself (Dylan Morrison)
-madsiur
-qwertymodo
-Rodimus Primal & the Ted Woolsey Uncensored Patch team
-mziab
+## Patch Credits (both for Dancing Mad itself and for optional patches bundled) ##
+* Myself (Dylan Morrison)
+* madsiur
+* qwertymodo
+* Rodimus Primal & the Ted Woolsey Uncensored Patch team
+* mziab
 
-### Installer Credits ###
-Myself
+## Installer Credits ##
+* Myself
 
-### Testing Credits ###
-Covarr
-Retro Dan
-ikari
-edale2
+## Testing Credits ##
+* Covarr
+* Retro Dan
+* ikari
+* edale2
+* Too many public beta testers to name. Thank you very much!
 
-### Community Outreach Credits ###
-edale2
+## Community Outreach Credits ##
+* edale2
 
-### Special Thanks ###
-ikari
-Madsiur
-qwertymodo
-byuu
-Kawa
-DLPB
-Qhimm.com
-romhacking.net
-BitBucket
-GitHub
-My friends, family, and loved ones.
-Many others I have forgotten to name.
-You.
+## Special Thanks ##
+* Square Enix
+* ikari
+* Madsiur
+* qwertymodo
+* byuu
+* Kawa
+* DLPB
+* Qhimm.com
+* romhacking.net
+* BitBucket
+* GitHub
+* My friends, family, and loved ones.
+* Many others I have forgotten to name.
+* You.
 
 ### A final note ###
 
