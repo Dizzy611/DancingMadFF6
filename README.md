@@ -33,7 +33,7 @@ Welcome to the repository for Dancing Mad. Please submit any issues using the Is
 ### Credits ###
 ## Musical Credits ##
 * Nobuo Uematsu
-* Sean Schafiaski (buy the album [here](http://https://seanschafianski.bandcamp.com/album/remastered-soundtrack-final-fantasy-vi- disc-1), support the artist who has kindly allowed us to use his work!)
+* Sean Schafiaski (buy the album [here](http://https://seanschafianski.bandcamp.com/album/remastered-soundtrack-final-fantasy-vi-disc-1), support the artist who has kindly allowed us to use his work!)
 * OCRemix Contributors
 * FinalFanTim
 * ChrystalChameleon
