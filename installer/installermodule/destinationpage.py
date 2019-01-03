@@ -4,8 +4,7 @@ from PyQt5 import QtWidgets
 import os
 from installermodule import rom
 
-FF3_US_V1_CHECKSUM = 24370
-DM_CURR_CHECKSUM = 12763
+checksums = [24370, 41330, 35424]
 
 class destinationPage(QtWidgets.QWizardPage):
         lastRomPath = ""
@@ -33,32 +32,26 @@ class destinationPage(QtWidgets.QWizardPage):
                           self.ROMDetected.setText("Detected ROM Version: Invalid SNES ROM Detected.")
                           return False
                        computedchecksum = rom.compute_snes_checksum(self.field("romPath"))
-                       if myrom.title.decode("ASCII") == "Final Fantasy 3":
+                       if (myrom.title.decode("ASCII") == "Final Fantasy 3") or (myrom.title.decode("ASCII") == "Final Fantasy 6"):
                           print("DEBUG: ROM title correct.")
                           greenLights = greenLights + 1
-                       if myrom.destcode == 1:
-                          print("DEBUG: ROM region correct.")
-                          greenLights = greenLights + 1
-                       if myrom.version == 0:
-                          print("DEBUG: ROM version correct.")
-                          greenLights = greenLights + 1
-                       if myrom.checksum == FF3_US_V1_CHECKSUM:
+                       if myrom.checksum in checksums:
                           print("DEBUG: ROM reported checksum correct.")
                           greenLights = greenLights + 1
-                       if computedchecksum == FF3_US_V1_CHECKSUM:
+                       else:
+                          print("DEBUG: Internal checksum mismatch. Found " + str(computedchecksum))
+                       if computedchecksum in checksums:
                           print("DEBUG: ROM actual checksum correct.")
                           greenLights = greenLights + 1
                        else:
-                          print("DEBUG: ROM checksum mismatch. Found " + str(computedchecksum) + " wanted " + str(FF3_US_V1_CHECKSUM))
+                          print("DEBUG: ROM checksum mismatch. Found " + str(computedchecksum))
                        romlabel += " " + myrom.title.decode("ASCII") + " (" + rom.decode_destcode(myrom.destcode) + ") (V1." + str(myrom.version) + ") "
                        if myrom.checksum == computedchecksum:
                           romlabel += "(Sum: OK) "
                        else:
                           romlabel += "(Sum: Fail) "
-                       if computedchecksum == DM_CURR_CHECKSUM:
-                          romlabel += "(OK?: NO! Already Patched)"
                           self.romValid = False
-                       elif greenLights == 5:
+                       if greenLights >= 2:
                           romlabel += "(OK?: Yes!)"
                           self.romValid = True
                        else:
