@@ -5,6 +5,7 @@ import os
 from installermodule import rom
 
 checksums = [24370, 41330, 35424]
+us10checksum = 24370
 
 class destinationPage(QtWidgets.QWizardPage):
         lastRomPath = ""
@@ -39,7 +40,7 @@ class destinationPage(QtWidgets.QWizardPage):
                           print("DEBUG: ROM reported checksum correct.")
                           greenLights = greenLights + 1
                        else:
-                          print("DEBUG: Internal checksum mismatch. Found " + str(computedchecksum))
+                          print("DEBUG: Internal checksum mismatch. Found " + str(myrom.checksum))
                        if computedchecksum in checksums:
                           print("DEBUG: ROM actual checksum correct.")
                           greenLights = greenLights + 1
