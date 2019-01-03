@@ -80,7 +80,7 @@ class InstallWizard(QWizard, InstallWizard.Ui_InstallWizard):
                 super().__init__()
 
                 self.setupUi(self)
-
+                
                 # Register fields. Has to be done here because these are all at QWizard scope due to the way the UIC works. Thankfully, due to the way fields work, 
                 # these can then be referenced from within the individual page .py files as fields.
                 self.licensePage.registerField("licenseAccepted*", self.licenseAccepted)
@@ -121,6 +121,9 @@ class InstallWizard(QWizard, InstallWizard.Ui_InstallWizard):
                 self.finalPage.finalBrowser = self.finalBrowser
                 self.customselectionPage.trackSelectionWidget = self.trackSelectionWidget
                 self.destinationPage.ROMDetected = self.ROMDetected
+                self.installtypePage.twueCheck = self.twueCheck
+                self.installtypePage.mplayerCheck = self.mplayerCheck
+                self.installtypePage.cutsongCheck = self.cutsongCheck
                 self.downloadPage.currentLabel = self.currentLabel
                 self.downloadPage.currentBar = self.currentBar
                 self.downloadPage.totalLabel = self.totalLabel

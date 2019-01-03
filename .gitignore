@@ -31,3 +31,5 @@ utils/rr/
 utils/wla-*/
 utils/reshacker/
 patch/test/
+patch/ff3msu.ips
+installer/DancingMad-linux.tar
