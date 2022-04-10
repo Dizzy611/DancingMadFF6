@@ -79,13 +79,13 @@
 
 ; Subroutine hooks
 
-.BANK 0
-.ORG $ff10
-.SECTION "NMIOverride" SIZE 4 OVERWRITE
-
-jml NMIHandle
-
-.ENDS
+;.BANK 0
+;.ORG $ff10
+;.SECTION "NMIOverride" SIZE 4 OVERWRITE
+;
+;jml NMIHandle
+;
+;.ENDS
 
 .BANK 5
 .ORG $148
@@ -577,24 +577,24 @@ ShutUpAndLetMeTalk:
     stz MSUControl
     jmp OriginalCode
 
-NMIHandle:
-    php
-    rep #$30
-    pha
-    phx
-    phy
-    phb
-    phd
-    sep #$20
+; NMIHandle:
+;    php
+;    rep #$30
+;    pha
+;    phx
+;    phy
+;    phb
+;    phd
+;    sep #$20
 ;stuff goes here
-    rep #$30
-    pld
-    plb
-    ply
-    plx
-    pla
-    plp
-    jml OriginalNMIHandler
+;    rep #$30
+;    pld
+;    plb
+;    ply
+;    plx
+;    pla
+;    plp
+;    jml OriginalNMIHandler
 
 ; End Subroutines
 .ENDS
