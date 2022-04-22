@@ -1,7 +1,7 @@
 @echo off
 python setup.py build
 mkdir tmp
-if "%arch%"=="win32" (xcopy /E /Y /Q build\exe.win32-3.6 tmp) else (xcopy /E /Y /Q build\exe.win-amd64-3.6 tmp)
+if "%arch%"=="win32" (xcopy /E /Y /Q build\exe.win32-3.10 tmp) else (xcopy /E /Y /Q build\exe.win-amd64-3.10 tmp)
 rem Update IPS if a new one has been built but not copied into new dir.
 fc /b ff3msu.ips ..\patch\ff3msu.ips
 if errorlevel 1 copy /Y ..\patch\ff3msu.ips ff3msu.ips
@@ -19,22 +19,22 @@ mkdir tmp\Samples
 copy /Y Samples\*.mp3 tmp\Samples
 rem Remove pyqt5 bloat. Every DLL and such in the following dir that's *actually used* is copied into the root folder anyway.
 rem Modified: We need the "plugins" dir now due to the kefka laugh effect :P
-if exist tmp\PyQt5\Qt\bin\qt.conf copy tmp\PyQt5\Qt\bin\qt.conf tmp\qt.conf.nol
-if exist tmp\lib\PyQt5\Qt\bin\qt.conf copy tmp\lib\PyQt5\Qt\bin\qt.conf tmp\qt.conf.l
+if exist tmp\PyQt5\Qt\bin\qt.conf copy tmp\PyQt5\Qt5\bin\qt.conf tmp\qt.conf.nol
+if exist tmp\lib\PyQt5\Qt\bin\qt.conf copy tmp\lib\PyQt5\Qt5\bin\qt.conf tmp\qt.conf.l
 rmdir /S /Q tmp\PyQt5\Qt\bin
-if exist tmp\qt.conf.nol mkdir tmp\PyQt5\Qt\bin
-if exist tmp\qt.conf.nol copy tmp\qt.conf.nol tmp\PyQt5\Qt\bin\qt.conf
+if exist tmp\qt.conf.nol mkdir tmp\PyQt5\Qt5\bin
+if exist tmp\qt.conf.nol copy tmp\qt.conf.nol tmp\PyQt5\Qt5\bin\qt.conf
 if exist tmp\qt.conf.nol del tmp\qt.conf.nol
 rmdir /S /Q tmp\lib\PyQt5\Qt\bin
-if exist tmp\qt.conf.l mkdir tmp\lib\PyQt5\Qt\bin
-if exist tmp\qt.conf.l copy tmp\qt.conf.l tmp\lib\PyQt5\Qt\bin\qt.conf
+if exist tmp\qt.conf.l mkdir tmp\lib\PyQt5\Qt5\bin
+if exist tmp\qt.conf.l copy tmp\qt.conf.l tmp\lib\PyQt5\Qt5\bin\qt.conf
 if exist tmp\qt.conf.l del tmp\qt.conf.l
-rmdir /S /Q tmp\PyQt5\Qt\qml
-rmdir /S /Q tmp\lib\PyQt5\Qt\qml
-rmdir /S /Q tmp\PyQt5\Qt\resources
-rmdir /S /Q tmp\lib\PyQt5\Qt\resources
-rmdir /S /Q tmp\PyQt5\Qt\translations
-rmdir /S /Q tmp\lib\PyQt5\Qt\translations
+rmdir /S /Q tmp\PyQt5\Qt5\qml
+rmdir /S /Q tmp\lib\PyQt5\Qt5\qml
+rmdir /S /Q tmp\PyQt5\Qt5\resources
+rmdir /S /Q tmp\lib\PyQt5\Qt5\resources
+rmdir /S /Q tmp\PyQt5\Qt5\translations
+rmdir /S /Q tmp\lib\PyQt5\Qt5\translations
 cd tmp
 "C:\Program Files\7-Zip\7z.exe" a -mf=off -r DancingMadInstaller.7z *.*
 move DancingMadInstaller.7z ..
