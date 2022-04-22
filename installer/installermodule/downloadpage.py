@@ -55,6 +55,8 @@ def _doMirrors(pcmlist, mirrors = None):
                     print("Skipping mirror", m, ", HTTP ERROR ", retcode)
                 else:
                     print("Skipping mirror", m, ",", errorstr)
+        if mirrorlist == []:
+            raise IndexError("Unable to find working mirrors.")
     else:
         mirrorlist = []
         for m in mirrors:
@@ -187,21 +189,26 @@ class downloadPage(QtWidgets.QWizardPage):
                     templist.append("contrib/CSR/csr.ips")
                   self.updateCurrentLabel("Checking status of mirrors, installer may appear frozen (please be patient!)...")
                   self.custRedrawWidgets()
-                  comblist = _doMirrors(templist, self.validmirrors)
-                  destination = self.field("destPath")
-                  # Rename higanified tracks back to normal name so that they can be checked for already existing
-                  for filename in glob.glob(destination + "/track-*.pcm"):
-                    new_name = filename.replace("track","ff3")
-                    os.rename(filename, new_name)
-                  self.totalDownloads = len(comblist)
-                  urlqueue = Queue(maxsize=self.totalDownloads)
-                  for urlpair in comblist:
-                      urlqueue.put(urlpair)  
-                  self.downloader = Downloader(urlqueue, destination)
-                  if self.totalDownloads != 0:
-                    self.installstate = 2
+                  try:
+                      comblist = _doMirrors(templist, self.validmirrors)
+                  except IndexError as e:
+                      self.updateCurrentLabel("Error: Unable to find valid mirror.")
+                      self.installstate = 254
                   else:
-                    self.installstate = 3
+                      destination = self.field("destPath")
+                      # Rename higanified tracks back to normal name so that they can be checked for already existing
+                      for filename in glob.glob(destination + "/track-*.pcm"):
+                        new_name = filename.replace("track","ff3")
+                        os.rename(filename, new_name)
+                      self.totalDownloads = len(comblist)
+                      urlqueue = Queue(maxsize=self.totalDownloads)
+                      for urlpair in comblist:
+                          urlqueue.put(urlpair)  
+                      self.downloader = Downloader(urlqueue, destination)
+                      if self.totalDownloads != 0:
+                        self.installstate = 2
+                      else:
+                        self.installstate = 3
               elif self.installstate == 2:   # Downloading PCMs
                   if self.totalDownloads-self.downloader.count() > 0:
                     totalPercentage = ((self.totalDownloads-self.downloader.count()-1) / (self.totalDownloads+2)) * 100

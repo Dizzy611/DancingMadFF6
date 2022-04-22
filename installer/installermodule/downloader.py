@@ -162,6 +162,7 @@ class Downloader():
                         self.errormessage = "IOError: " + e.strerror
                         threadQueue.task_done()
                 except pycurl.error as e:
+                        str_error = None
                         for url in urls:
                             try:
                                 os.remove(self.destination)
@@ -191,16 +192,16 @@ class Downloader():
                                 threadQueue.task_done()
                                 break
                             except pycurl.error as e:
-                                str_error = e
+                                str_error = e.args[1]
                                 pass
                             if str_error:
-                                time.sleep(2)
+                                time.sleep(1)
                             else:
                                 break
                         if str_error:
                             self.status = self.Error
                             print("DEBUG: Downloader encountered ERROR Details: URL: " + url +"," + " Destination: " + fulldestination)
-                            self.errormessage = "cURL Error: " + e.args[1] 
+                            self.errormessage = "All mirrors failed. Last error: cURL Error: " + str_error
                             threadQueue.task_done()
                             
         def progressFunction(self, download_t, download_d, upload_t, upload_d):
