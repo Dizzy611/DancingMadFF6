@@ -138,7 +138,7 @@ class InstallWizard(QWizard, InstallWizard.Ui_InstallWizard):
                 self.downloadPage.widgetsToRedraw.append(self)
                 
                 # Deal with high DPIs by increasing the size of the window.
-                self.resize(585*scalefactor, 527*scalefactor)
+                self.resize(int(585*scalefactor), int(527*scalefactor))
                     
         def nextId(self):
                 # After the installtype page, only show the "custom track selection" page if the user has selected custom tracks. Otherwise, show the download/install page.
