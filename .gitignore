@@ -33,3 +33,4 @@ utils/reshacker/
 patch/test/
 patch/ff3msu.ips
 installer/DancingMad-linux.tar
+*.bak
