@@ -74,7 +74,7 @@ Welcome to the repository for Dancing Mad. Please submit any issues using the Is
 * ikari
 * Madsiur
 * qwertymodo
-* byuu
+* Near
 * Kawa
 * Qhimm.com
 * romhacking.net
