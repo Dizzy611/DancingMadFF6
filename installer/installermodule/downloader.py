@@ -172,8 +172,9 @@ class Downloader():
                                     print("Attempting to open connection to URL " + url + " to download")
                                     filecurl = pycurl.Curl()
                                     filecurl.setopt(filecurl.URL, url)
-                                    filecurl.setopt(filecurl.NOPROGRESS, false)
+                                    filecurl.setopt(filecurl.NOPROGRESS, False)
                                     filecurl.setopt(filecurl.PROGRESSFUNCTION, self.progressFunction)
+                                    filecurl.setopt(filecurl.WRITEDATA, f)
                                     filecurl.setopt(filecurl.FAILONERROR, True)
                                     filecurl.perform()
                                     print("Succeeded in downloading from URL " + url)
@@ -193,7 +194,7 @@ class Downloader():
                                 str_error = e
                                 pass
                             if str_error:
-                                sleep(2)
+                                time.sleep(2)
                             else:
                                 break
                         if str_error:
