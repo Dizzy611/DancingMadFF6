@@ -20,6 +20,7 @@ music/
 **/*.7z
 **/*.exe
 installer/dist/
+installer/tmp/
 *.srm
 *.log
 patch/ff3msu.link
