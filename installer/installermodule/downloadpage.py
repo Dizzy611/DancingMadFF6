@@ -307,7 +307,7 @@ class downloadPage(QtWidgets.QWizardPage):
                     self.updateCurrentLabel("Patching: Patch successful!")
                     self.currentBar.setValue(100)
                     totalPercentage = (self.totalDownloads+1 / (self.totalDownloads + 2)) * 100
-                    self.totalBar.setValue(totalPercentage)
+                    self.totalBar.setValue(int(totalPercentage))
                     self.installstate = 4
                   except Exception as e:
                     self.updateCurrentLabel("Patching: ROM Patching Failed! Error:" + repr(e))
