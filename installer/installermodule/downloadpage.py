@@ -207,7 +207,7 @@ class downloadPage(QtWidgets.QWizardPage):
                     totalPercentage = ((self.totalDownloads-self.downloader.count()-1) / (self.totalDownloads+2)) * 100
                   else:
                     totalPercentage = 0
-                  self.totalBar.setValue(totalPercentage)
+                  self.totalBar.setValue(int(totalPercentage))
                   if self.downloader.status == self.downloader.Downloading:
                       progress = Decimal(self.downloader.progress)
                       size = Decimal(self.downloader.size)
@@ -218,7 +218,7 @@ class downloadPage(QtWidgets.QWizardPage):
                           percentage = (progress / size) * 100
                           labelStr = "Downloading ({0}/{1}) ({2}/{3} kB) {4}% ...".format(self.totalDownloads-self.downloader.count(),self.totalDownloads,round(progress/1024,2),round(size/1024,2),round(percentage,2))
                       self.updateCurrentLabel(labelStr)
-                      self.currentBar.setValue(percentage)
+                      self.currentBar.setValue(int(percentage))
                   elif self.downloader.status == self.downloader.Waiting:
                       self.updateCurrentLabel("Connecting...")
                       self.currentBar.setValue(0)
@@ -247,7 +247,7 @@ class downloadPage(QtWidgets.QWizardPage):
                   self.updateCurrentLabel("Download finished. Patching ROM...")
                   self.currentBar.setValue(0)
                   totalPercentage = (self.totalDownloads / (self.totalDownloads + 2)) * 100
-                  self.totalBar.setValue(totalPercentage)
+                  self.totalBar.setValue(int(totalPercentage))
                   try:
                     os.remove(os.path.join(self.field("destPath").replace("/","\\"), "ff3msu.sfc")) # Avoid a crash later on by removing any sfcs already present in the destination directory.              
                   except OSError as e:
