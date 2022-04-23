@@ -91,12 +91,19 @@ Welcome to the repository for Dancing Mad. Please submit any issues using the Is
 The following are 7zip files with all the data needed (.pcm, .msu, and .ips/.bps files) for your chosen song preset. Read the included "README.prepack.txt" for details.
 
 [Developer's Recommendation](https://d9z02nz0xcifk.cloudfront.net/DancingMad-DR.7z)
+
 [Original Soundtrack](https://d9z02nz0xcifk.cloudfront.net/DancingMad-OST.7z)
+
 [ChrystalChameleon's remasters](https://d9z02nz0xcifk.cloudfront.net/DancingMad-CRC.7z)
+
 [Sean Schafianski Final Fantasy VI Remaster](https://d9z02nz0xcifk.cloudfront.net/DancingMad-SSC.7z) 
+
 [Final Fantasy Acoustic Rendition](https://d9z02nz0xcifk.cloudfront.net/DancingMad-FFAR.7z) 
+
 [OCRemix Balance & Ruin](https://d9z02nz0xcifk.cloudfront.net/DancingMad-OCR.7z) 
+
 [OCRemix Balance & Ruin Qwertymodo's loops](https://d9z02nz0xcifk.cloudfront.net/DancingMad-OCR2.7z)  
+
 
 ### A final note ###
 
