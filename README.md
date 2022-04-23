@@ -1,3 +1,5 @@
+## UPDATE: Prepackaged song presets are here! Use of the installer is still recommended for most users, but users familiar with patching a ROM themselves, check [Here](#prepacks)
+
 # Dancing Mad FF6 MSU-1 Music Replacer #
 
 Welcome to the repository for Dancing Mad. Please submit any issues using the Issues tab on the left. 
@@ -84,6 +86,20 @@ Welcome to the repository for Dancing Mad. Please submit any issues using the Is
 * Many others I have forgotten to name.
 * You.
 
+## Prepacks ##
+
+The following are 7zip files with all the data needed (.pcm, .msu, and .ips/.bps files) for your chosen song preset. Read the included "README.prepack.txt" for details.
+
+[Developer's Recommendation](https://d9z02nz0xcifk.cloudfront.net/DancingMad-DR.7z)
+[Original Soundtrack](https://d9z02nz0xcifk.cloudfront.net/DancingMad-OST.7z)
+[ChrystalChameleon's remasters](https://d9z02nz0xcifk.cloudfront.net/DancingMad-CRC.7z)
+[Sean Schafianski Final Fantasy VI Remaster](https://d9z02nz0xcifk.cloudfront.net/DancingMad-SSC.7z) 
+[Final Fantasy Acoustic Rendition](https://d9z02nz0xcifk.cloudfront.net/DancingMad-FFAR.7z) 
+[OCRemix Balance & Ruin](https://d9z02nz0xcifk.cloudfront.net/DancingMad-OCR.7z) 
+[OCRemix Balance & Ruin Qwertymodo's loops](https://d9z02nz0xcifk.cloudfront.net/DancingMad-OCR2.7z)  
+
 ### A final note ###
 
 * Due to personal issues outside my control, I may take unscheduled hiatuses from this project for months at a time. Please continue to report issues during this time.
+
+
