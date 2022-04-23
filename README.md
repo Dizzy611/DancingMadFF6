@@ -1,4 +1,4 @@
-## UPDATE: Prepackaged song presets are here! Use of the installer is still recommended for most users, but users familiar with patching a ROM themselves, check [Here](#prepacks)
+## UPDATE: Prepackaged song presets are [here](#prepacks)! Use of the installer is still recommended for most users, but users familiar with patching a ROM themselves might be interested. 
 
 # Dancing Mad FF6 MSU-1 Music Replacer #
 
