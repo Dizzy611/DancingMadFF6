@@ -1,0 +1,5 @@
+;!@Install@!UTF-8!
+Title="Dancing Mad version 20220422 Installer"
+BeginPrompt="Do you want to install Dancing Mad?"
+RunProgram="Installer.exe"
+;!@InstallEnd@!
