@@ -36,18 +36,16 @@ This patch is intended to be used only with a legally obtained copy of Final Fan
 #include <QFileDialog>
 
 #include "rom_validator.h"
+#include "song_parser.h"
 
 #include <ostream>
 #include <iostream>
-
-void ROMValidate(QString filename) {
-
-}
 
 DMInst::DMInst(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::DMInst)
 {
+    parseSongsXML("./songs.xml");
     ui->setupUi(this);
 }
 

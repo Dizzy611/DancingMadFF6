@@ -22,6 +22,8 @@ private slots:
 
     void on_ROMSelectLine_textChanged(const QString &arg1);
 
+    void on_goButton_clicked();
+
 private:
     Ui::DMInst *ui;
 };
