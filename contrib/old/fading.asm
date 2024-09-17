@@ -1,5 +1,7 @@
 hirom
 
+; Credit goes to Conn
+
 ; MSUCurrentVolume   $1E32
 ; PlayVolume $1302 (target volume)
 ; fade Flag $130b (01: zero, 02: down, 03: up)
