@@ -45,6 +45,8 @@ This patch is intended to be used only with a legally obtained copy of Final Fan
 #include <sstream>
 #include <cstring>
 
+
+
 DMInst::DMInst(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::DMInst)
@@ -57,11 +59,6 @@ DMInst::DMInst(QWidget *parent)
     dmgr = new DownloadManager(mirrorsUrl, this);
     this->gostage = 0;
     connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
-    
-    //std::tuple<std::vector<std::string>, std::vector<struct Preset>, std::vector<struct Song>> xmlparse = parseSongsXML("./songs.xml");
-    //std::vector<struct Song> songs = std::get<2>(xmlparse);
-    //std::vector<struct Preset> presets = std::get<1>(xmlparse);
-    //std::vector<std::string> sources = std::get<0>(xmlparse);
 
     ui->setupUi(this);
 
@@ -131,12 +128,14 @@ void DMInst::on_goButton_clicked()
     if (this->gostage == 2 && !this->selections.empty()) {
         for (int i = 0; i < songs.size(); i++) {
             for (auto & pcm : songs[i].pcms) {
-                std::string uppersource = this->selections.at(i);
-                std::transform(uppersource.begin(), uppersource.end(), uppersource.begin(), ::toupper);
-                if (uppersource.rfind("X", 0) == std::string::npos) {
-                    this->songurls.push_back(this->mirrors[selectedmirror] + uppersource + "/ff3-" + std::to_string(pcm) + ".pcm");
-                } else {
-                    this->songurls.push_back(this->mirrors[selectedmirror] + "opera/" + uppersource.substr(1, uppersource.size()) + "/ff3-" + std::to_string(pcm) + ".pcm");
+                if (this->selections.at(i) != "spc") { // skip download if SPC
+                    std::string uppersource = this->selections.at(i);
+                    std::transform(uppersource.begin(), uppersource.end(), uppersource.begin(), ::toupper);
+                    if (uppersource.rfind("X", 0) == std::string::npos) {
+                        this->songurls.push_back(this->mirrors[selectedmirror] + uppersource + "/ff3-" + std::to_string(pcm) + ".pcm");
+                    } else {
+                        this->songurls.push_back(this->mirrors[selectedmirror] + "opera/" + uppersource.substr(1, uppersource.size()) + "/ff3-" + std::to_string(pcm) + ".pcm");
+                    }
                 }
             }
         }
@@ -182,10 +181,11 @@ void DMInst::nextStage() {
             }
         }
 
-        // messy, but the best way to avoid code duplication: Manually fire off soundtrack selection changed with default index of 0
+        // messy, but the best way to avoid code duplication: Manually fire off soundtrack/opera selection changed with default index of 0
         this->on_soundtrackSelectBox_currentIndexChanged(0);
+        this->on_operaSelectBox_currentIndexChanged(0);
 
-        // TODO: Populate song and preset lists
+        // TODO: Populate customized soundtrack dropdowns
         this->gostage = 2;
 
         // DEBUG
@@ -265,8 +265,17 @@ void DMInst::on_soundtrackSelectBox_currentIndexChanged(int index)
     // DEBUG
     std::cout << "SELECTION INDEX: " << index << std::endl;
 
+    // preserve opera source, if set
+    std::string opera_source = "spc";
+    if (this->selections.count(31) != 0) {
+        opera_source = this->selections.at(31);
+    }
+
     // clear selection map
     this->selections.clear();
+
+    // re-set opera source
+    this->selections.insert({31, opera_source});
 
     if (index < this->presets.size()) {
         struct Preset mypreset = this->presets[index];
@@ -275,14 +284,21 @@ void DMInst::on_soundtrackSelectBox_currentIndexChanged(int index)
                 int rangemin = source.second.at(i);
                 int rangemax = source.second.at(i+1);
                 for (int j = rangemin; j <= rangemax; j++) {
-                    this->selections.insert({j, source.first});
+                    // skip opera tracks, these are handled by the other dropdown
+                    if (j != 31) {
+                        this->selections.insert({j, source.first});
+                    }
                 }
             }
         }
     } else {
         for (int i = 0; i <= 59; i++) {
-            // Too high index means SPC/Do Not Download was selected.
-            this->selections.insert({i, "spc"});
+            // skip opera tracks, these are handled by the other dropdown
+            if (i != 31) {
+                // Too high index means SPC/Do Not Download was selected.
+                this->selections.insert({i, "spc"});
+            }
+
         }
     }
     // DEBUG
@@ -296,6 +312,19 @@ void DMInst::on_soundtrackSelectBox_currentIndexChanged(int index)
 
 void DMInst::on_operaSelectBox_currentIndexChanged(int index)
 {
-
+    // build map of valid opera sources
+    std::map<int, std::string> opera_sources;
+    opera_sources.insert({0, "spc"});
+    int i = 1;
+    for (auto & element : this->sources) {
+        if (element.first.rfind("x", 0) != std::string::npos) {
+            opera_sources.insert({i, element.first});
+            i++;
+        }
+    }
+    // find selected source
+    std::string selected_source = opera_sources.at(index);
+    // set selected source in selections map
+    this->selections[31] = opera_sources.at(index);
 }
 
