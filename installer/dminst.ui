@@ -108,10 +108,10 @@
           <bool>false</bool>
          </property>
          <property name="currentText">
-          <string>Pixel Remaster Soundtrack</string>
+          <string>Developer's Recommendation</string>
          </property>
          <property name="currentIndex">
-          <number>1</number>
+          <number>0</number>
          </property>
          <property name="placeholderText">
           <string/>
@@ -169,6 +169,11 @@
          <item>
           <property name="text">
            <string>None/SPC</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>12</string>
           </property>
          </item>
         </widget>
