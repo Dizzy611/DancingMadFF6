@@ -5,12 +5,12 @@
 		<source friendly="Sean Schafianski's FFVI Remastered">ssc</source>
 		<source friendly="OCRemix Balance &amp; Ruin">ocr</source>
 		<source friendly="OCRemix Balance &amp; Ruin (qwertymodo's loops)">ocr2</source>
-		<source friendly="Other Source">oth</source>
-		<source friendly="Eiko's Acoustic Rendition">ffar</source>
 		<source friendly="ChrystalChameleon's Orchestrated">crc</source>
+		<source friendly="Eiko's Acoustic Rendition">ffar</source>
 		<source friendly="Kara Comparetti's Piano Soundtrack">kct</source>
 		<source friendly="Matthew Valenti's Synthetic Origins">sno</source>
 		<source friendly="Pixel Remaster Soundtrack">prm</source>
+		<source friendly="Other Source">oth</source>
 		<source friendly="SPC/Do Not Download">spc</source>
 		<source friendly="Official Soundtrack (No Voices)">xost</source>
 		<source friendly="Game Music Concert 4 (Japanese)">xgmc</source>
@@ -25,6 +25,7 @@
 		<source friendly="Pixel Reamster (Korean)">xprk</source>
 	</sources>
 	<presets>
+		<preset name="sid" friendly="Developer's Recommendation" type="per-song" />
 		<preset name="ost" friendly="Official Soundtrack">
 			<ost range="0-30,32-58" />
 			<xost range="31" />
@@ -66,7 +67,6 @@
 			<xost range="31" />
 			<spc range="59" />
 		</preset>
-		<preset name="sid" friendly="Developer's Recommendation" type="per-song" />
 		<preset name="prm" friendly="Pixel Remaster Soundtrack" type="per-song" />
 		<preset name="sno" friendly="Matthew Valenti's Synthetic Origins" type="per-song" />
 		<preset name="kct" friendly="Kara Comparetti's Piano Soundtrack" type="per-song" />
