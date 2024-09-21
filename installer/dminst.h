@@ -2,6 +2,13 @@
 #define DMINST_H
 
 #include <QMainWindow>
+#include "downloadmanager.h"
+#include "song_parser.h"
+
+// data path will depend on whether we're running in an AppImage/a MacOS .app bundle or directly on Linux/Windows. Should be "." for the latter, set as default here.
+#define DATA_PATH "."
+#define MIRRORS_URL "https://github.com/Dizzy611/DancingMadFF6/raw/refs/heads/master/installer/mirrors.dat"
+#define XML_URL "https://github.com/Dizzy611/DancingMadFF6/raw/refs/heads/master/installer/songs.xml"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -24,7 +31,16 @@ private slots:
 
     void on_goButton_clicked();
 
+    void downloadFinished();
+
 private:
     Ui::DMInst *ui;
+    qint8 gostage;
+    DownloadManager *dmgr;
+    std::vector<std::string> mirrors;
+    std::vector<struct Song> songs;
+    std::vector<struct Preset> presets;
+    std::vector<std::string> sources;
+    void nextStage();
 };
 #endif // DMINST_H
