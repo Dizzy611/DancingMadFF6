@@ -22,29 +22,32 @@ std::pair<int, int> parseRange(std::string input) {
     }
 }
 
-std::tuple<std::vector<std::string>, std::vector<struct Preset>, std::vector<struct Song>> parseSongsXML(const QByteArray &data) {
+std::tuple<std::map<std::string, std::string>, std::vector<struct Preset>, std::vector<struct Song>> parseSongsXML(const QByteArray &data) {
     QDomDocument songxml;
-    std::vector<std::string> sources;
+    std::map<std::string, std::string> sources;
     std::vector<struct Preset> presets;
     std::vector<struct Song> songs;
+
     if (!songxml.setContent(data)) {
         return std::tuple(sources, presets, songs);
     }
-    //QFile file(filename);
-    //if (!file.open(QIODevice::ReadOnly) || !songxml.setContent(&file))
-    //    return std::tuple(sources, presets, songs);
 
     // Get list of all sources
     QDomNodeList sources_xml = songxml.elementsByTagName("source");
     for (int i = 0; i < sources_xml.size(); i++) {
         QDomNode source_xml = sources_xml.item(i);
-        sources.push_back(source_xml.toElement().text().toStdString());
+        std::string name = source_xml.toElement().text().toStdString();
+        std::string friendly_name = "";
+        if (source_xml.toElement().hasAttribute("friendly")) {
+            friendly_name = source_xml.toElement().attribute("friendly").toStdString();
+        }
+        sources.insert({name, friendly_name});
     }
 
     // DEBUG
     std::cout << "SOURCE LIST:" << std::endl;
-    for (auto & element : sources) {
-        std::cout << "\t" << element << std::endl;
+    for (auto & keyval : sources) {
+        std::cout << "\t" << keyval.first << ":" << keyval.second << std::endl;
     }
     // END DEBUG
 
@@ -57,6 +60,9 @@ std::tuple<std::vector<std::string>, std::vector<struct Preset>, std::vector<str
             struct Preset newpreset;
             if (preset.hasAttribute("name")) {
                 newpreset.name = preset.attribute("name").toStdString();
+                if (preset.hasAttribute("friendly")) {
+                    newpreset.friendly_name = preset.attribute("friendly").toStdString();
+                }
                 QDomNodeList selections_xml = preset.childNodes();
                 for (int j = 0; j < selections_xml.size(); j++) {
                     QDomNode selection = selections_xml.item(j);
@@ -125,6 +131,7 @@ std::tuple<std::vector<std::string>, std::vector<struct Preset>, std::vector<str
         song.pcms = pcms;
 
         // Build vector of sources
+        // TODO: Figure out why this vector is building alphabetically instead of in file order
         std::vector<std::string> sources;
         QDomNodeList song_nodes = root.childNodes();
         for (int j = 0; j < song_nodes.size(); j++) {
@@ -170,7 +177,7 @@ std::tuple<std::vector<std::string>, std::vector<struct Preset>, std::vector<str
     // DEBUG
     std::cout << "PRESET LIST:" << std::endl;
     for (auto & element : presets) {
-        std::cout << "\t" << element.name << std::endl;
+        std::cout << "\t" << element.name << ":" << element.friendly_name << std::endl;
         for (auto & keyval : element.selections) {
             std::cout << "\t\t";
             std::cout << keyval.first << ":";

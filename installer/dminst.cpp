@@ -49,6 +49,7 @@ DMInst::DMInst(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::DMInst)
 {
+
     // intentional bad URL to test error handling
     //QUrl mirrorsUrl("https://gorthub.com/Dizzy611/DancingMadFF6/raw/refs/heads/master/installer/mirrors.dat");
 
@@ -63,8 +64,15 @@ DMInst::DMInst(QWidget *parent)
     //std::vector<std::string> sources = std::get<0>(xmlparse);
 
     ui->setupUi(this);
+
+    // Set up initial status
     this->findChild<QLabel*>("statusLabel")->setText("Downloading mirror data from GitHub...");
+
+
+    // Disable browse and go buttons until mirrors and songs are loaded
     this->findChild<QPushButton*>("goButton")->setEnabled(false);
+    this->findChild<QPushButton*>("ROMSelectBrowse")->setEnabled(false);
+
 }
 
 DMInst::~DMInst()
@@ -133,6 +141,25 @@ void DMInst::nextStage() {
     }
     case 1: {
         this->findChild<QLabel*>("statusLabel")->setText("Populating song and preset lists from downloaded data...");
+        int i = 0;
+
+        // Set presets in soundtrack list
+        for (auto & element : this->presets) {
+            this->findChild<QComboBox*>("soundtrackSelectBox")->setItemText(i, QString::fromStdString(element.friendly_name));
+            i++;
+        }
+        this->findChild<QComboBox*>("soundtrackSelectBox")->setItemText(i, "None/SPC");
+
+        // Set opera selections
+        this->findChild<QComboBox*>("operaSelectBox")->setItemText(0, "SPC/Do Not Download");
+        i = 1;
+        for (auto & element : this->sources) {
+            if (element.first.rfind("x", 0) != std::string::npos) {
+                this->findChild<QComboBox*>("operaSelectBox")->setItemText(i, QString::fromStdString(element.second));
+                i++;
+            }
+        }
+
         // TODO: Populate song and preset lists
         this->gostage = 2;
 
@@ -143,6 +170,7 @@ void DMInst::nextStage() {
         }
 
         this->findChild<QLabel*>("statusLabel")->setText("Waiting on user... Select your ROM, soundtrack, and patches and press GO when ready!");
+        this->findChild<QPushButton*>("ROMSelectBrowse")->setEnabled(true);
     }
     default:
         break;
@@ -192,7 +220,7 @@ void DMInst::downloadFinished() {
                 xmlData = songsXml.readAll();
             }
         }
-        std::tuple<std::vector<std::string>, std::vector<struct Preset>, std::vector<struct Song>> xmlparse = parseSongsXML(xmlData);
+        std::tuple<std::map<std::string, std::string>, std::vector<struct Preset>, std::vector<struct Song>> xmlparse = parseSongsXML(xmlData);
         this->songs = std::get<2>(xmlparse);
         this->presets = std::get<1>(xmlparse);
         this->sources = std::get<0>(xmlparse);
