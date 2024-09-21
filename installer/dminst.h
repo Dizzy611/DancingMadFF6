@@ -36,6 +36,10 @@ private slots:
 
     void downloadFinished();
 
+    void on_soundtrackSelectBox_currentIndexChanged(int index);
+
+    void on_operaSelectBox_currentIndexChanged(int index);
+
 private:
     Ui::DMInst *ui;
     qint8 gostage;
@@ -44,6 +48,8 @@ private:
     std::vector<struct Song> songs;
     std::vector<struct Preset> presets;
     std::map<std::string, std::string> sources;
+    std::map<int, std::string> selections;
+    std::vector<std::string> songurls;
     void nextStage();
 };
 #endif // DMINST_H
