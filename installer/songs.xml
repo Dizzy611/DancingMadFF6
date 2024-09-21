@@ -1,63 +1,75 @@
 <songlist>
 	<sources>
-		<source>ost</source>
-		<source>fft</source>
-		<source>ssc</source>
-		<source>ocr</source>
-		<source>ocr2</source>
-		<source>oth</source>
-		<source>ffar</source>
-		<source>crc</source>
-		<source>spc</source>
-		<source>xost</source>
-		<source>xgmc</source>
-		<source>xmf</source>
-		<source>xdw</source>
-		<source>xtbm</source>
+		<source friendly="Official Soundtrack">ost</source>
+		<source friendly="FinalFanTim's Arrangements">fft</source>
+		<source friendly="Sean Schafianski's FFVI Remastered">ssc</source>
+		<source friendly="OCRemix Balance & Ruin">ocr</source>
+		<source friendly="OCRemix Balance & Ruin (qwertymodo's loops">ocr2</source>
+		<source friendly="Other Source">oth</source>
+		<source friendly="Eiko's Acoustic Rendition">ffar</source>
+		<source friendly="ChrystalChameleon's Orchestrated">crc</source>
+		<source friendly="Kara Comparetti's Piano Soundtrack">kct</source>
+		<source friendly="Matthew Valenti's Synthetic Origins">sno</source>
+		<source friendly="Pixel Remaster Soundtrack">prm</source>
+		<source friendly="SPC/Do Not Download">spc</source>
+		<source friendly="Official Soundtrack (No Voices)">xost</source>
+		<source friendly="Game Music Concert 4 (Japanese)">xgmc</source>
+		<source friendly="More Friends: Music From Final Fantasy (English)">xmf</source>
+		<source friendly="Distant Worlds (English)">xdw</source>
+		<source friendly="The Black Mages (Japanese)">xtbm</source>
+		<source friendly="Pixel Remaster (English)">xpre</source>
+		<source friendly="Pixel Remaster (Japanese)">xprj</source>
+		<source friendly="Pixel Remaster (Italian)">xpri</source>
+		<source friendly="Pixel Remaster (German)">xprg</source>
+		<source friendly="Pixel Remaster (Spanish)">xprs</source>
+		<source friendly="Pixel Reamster (Korean)">xprk</source>
 	</sources>
 	<presets>
-		<preset name="ost">
+		<preset name="ost" friendly="Official Soundtrack">
 			<ost range="0-30,32-58" />
 			<xost range="31" />
 			<spc range="59" />
 		</preset>
-		<preset name="fft">
+		<preset name="fft" friendly="FinalFanTim's Arrangements">
 			<fft range="0-15" />
 			<ost range="16-30,32-58" />
 			<xost range="31" />
 			<spc range="59" />
 		</preset>
-		<preset name="ssc">
+		<preset name="ssc" friendly="Sean Schafianski's FFVI Remastered">
 			<ssc range="0-30,33-34,36,40-42" />
 			<xost range="31" />
 			<ost range="32,35,37-39,43-58" />
 			<spc range="59" />
 		</preset>
-		<preset name="ocr">
+		<preset name="ocr" friendly="OCRemix Balance & Ruin">
 			<ocr range="0-20,22-30,33-37,39-58" />
 			<xgmc range="31" />
 			<oth range="32,59" />
 			<ost range="21,38" />
 		</preset>
-		<preset name="ocr2">
+		<preset name="ocr2" friendly="OCRemix Balance & Ruin (qwertymodo loops)">
 			<ocr2 range="0-20,22-30,33-37,39-58" />
 			<xgmc range="31" />
 			<oth range="32,59" />
 			<ost range="21,38" />
 		</preset>
-		<preset name="ffar">
+		<preset name="ffar" friendly="Eiko's Acoustic Rendition">
 			<ost range="0-1,4-5,8-9,11,13,15-16,18,20,22,24,27,29-30,32-35,37-38,42-48,52,54-56,58" />
 			<ffar range="2-3,6-7,10,12,14,17,19,21,23,25-26,28,36,39-41,49-51,53,57" />
 			<xost range="31" />
 			<spc range="59" />
 		</preset>
-		<preset name="crc">
+		<preset name="crc" friendly="ChrystalChameleon's Orchestrated">
 			<crc range="0-2,4,6-7,9,12,14,16,18,21,22,25,26,28-29,33,38,40,45-49,51-55" />
 			<ost range="3,5,8,10-11,13,15,19,20,23,24,27,30,32,34-37,39,41-44,50,56-58" />
 			<xost range="31" />
 			<spc range="59" />
 		</preset>
-		<preset name="sid" type="per-song" />
+		<preset name="sid" friendly="Developer's Recommendation" type="per-song" />
+		<preset name="prm" friendly="Pixel Remaster Soundtrack" type="per-song" />
+		<preset name="sno" friendly="Matthew Valenti's Synthetic Origins" type="per-song" />
+		<preser name="kct" friendly="Kara Comparetti's Piano Soundtrack" type="per-song" />
 	</presets>
 	<songs>
 		<song>
