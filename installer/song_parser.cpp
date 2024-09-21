@@ -2,18 +2,9 @@
 #include <QFile>
 #include <sstream>
 #include <iostream>
+#include <fstream>
 #include <map>
-
-struct Preset {
-    std::string name;
-    std::map<std::string, std::vector<int>> selections;
-};
-
-struct Song {
-    std::string name;
-    std::vector<int> pcms;
-    std::vector<std::string> sources;
-};
+#include "song_parser.h"
 
 std::pair<int, int> parseRange(std::string input) {
     std::pair<int, int> retval;
@@ -31,15 +22,18 @@ std::pair<int, int> parseRange(std::string input) {
     }
 }
 
-void parseSongsXML(const QString &filename) {
+std::tuple<std::vector<std::string>, std::vector<struct Preset>, std::vector<struct Song>> parseSongsXML(const QByteArray &data) {
     QDomDocument songxml;
+    QByteArray test;
     std::vector<std::string> sources;
     std::vector<struct Preset> presets;
     std::vector<struct Song> songs;
-
-    QFile file(filename);
-    if (!file.open(QIODevice::ReadOnly) || !songxml.setContent(&file))
-        return;
+    if (!songxml.setContent(data)) {
+        return std::tuple(sources, presets, songs);
+    }
+    //QFile file(filename);
+    //if (!file.open(QIODevice::ReadOnly) || !songxml.setContent(&file))
+    //    return std::tuple(sources, presets, songs);
 
     // Get list of all sources
     QDomNodeList sources_xml = songxml.elementsByTagName("source");
@@ -203,4 +197,6 @@ void parseSongsXML(const QString &filename) {
         }
         std::cout << std::endl;
     }
+
+    return std::tuple(sources, presets, songs);
 }
