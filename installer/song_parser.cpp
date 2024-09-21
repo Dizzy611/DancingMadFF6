@@ -24,7 +24,6 @@ std::pair<int, int> parseRange(std::string input) {
 
 std::tuple<std::vector<std::string>, std::vector<struct Preset>, std::vector<struct Song>> parseSongsXML(const QByteArray &data) {
     QDomDocument songxml;
-    QByteArray test;
     std::vector<std::string> sources;
     std::vector<struct Preset> presets;
     std::vector<struct Song> songs;
