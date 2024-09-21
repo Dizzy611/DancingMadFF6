@@ -3,8 +3,8 @@
 		<source friendly="Official Soundtrack">ost</source>
 		<source friendly="FinalFanTim's Arrangements">fft</source>
 		<source friendly="Sean Schafianski's FFVI Remastered">ssc</source>
-		<source friendly="OCRemix Balance & Ruin">ocr</source>
-		<source friendly="OCRemix Balance & Ruin (qwertymodo's loops">ocr2</source>
+		<source friendly="OCRemix Balance &amp; Ruin">ocr</source>
+		<source friendly="OCRemix Balance &amp; Ruin (qwertymodo's loops">ocr2</source>
 		<source friendly="Other Source">oth</source>
 		<source friendly="Eiko's Acoustic Rendition">ffar</source>
 		<source friendly="ChrystalChameleon's Orchestrated">crc</source>
@@ -42,13 +42,13 @@
 			<ost range="32,35,37-39,43-58" />
 			<spc range="59" />
 		</preset>
-		<preset name="ocr" friendly="OCRemix Balance & Ruin">
+		<preset name="ocr" friendly="OCRemix Balance &amp; Ruin">
 			<ocr range="0-20,22-30,33-37,39-58" />
 			<xgmc range="31" />
 			<oth range="32,59" />
 			<ost range="21,38" />
 		</preset>
-		<preset name="ocr2" friendly="OCRemix Balance & Ruin (qwertymodo loops)">
+		<preset name="ocr2" friendly="OCRemix Balance &amp; Ruin (qwertymodo loops)">
 			<ocr2 range="0-20,22-30,33-37,39-58" />
 			<xgmc range="31" />
 			<oth range="32,59" />
@@ -69,7 +69,7 @@
 		<preset name="sid" friendly="Developer's Recommendation" type="per-song" />
 		<preset name="prm" friendly="Pixel Remaster Soundtrack" type="per-song" />
 		<preset name="sno" friendly="Matthew Valenti's Synthetic Origins" type="per-song" />
-		<preser name="kct" friendly="Kara Comparetti's Piano Soundtrack" type="per-song" />
+		<preset name="kct" friendly="Kara Comparetti's Piano Soundtrack" type="per-song" />
 	</presets>
 	<songs>
 		<song>
