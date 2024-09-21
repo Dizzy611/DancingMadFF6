@@ -34,19 +34,37 @@ This patch is intended to be used only with a legally obtained copy of Final Fan
 #include "dminst.h"
 #include "./ui_dminst.h"
 #include <QFileDialog>
+#include <QMessageBox>
+
 
 #include "rom_validator.h"
 #include "song_parser.h"
 
 #include <ostream>
 #include <iostream>
+#include <sstream>
+
 
 DMInst::DMInst(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::DMInst)
 {
-    parseSongsXML("./songs.xml");
+    // intentional bad URL to test error handling
+    //QUrl mirrorsUrl("https://gorthub.com/Dizzy611/DancingMadFF6/raw/refs/heads/master/installer/mirrors.dat");
+
+    QUrl mirrorsUrl(MIRRORS_URL);
+    dmgr = new DownloadManager(mirrorsUrl, this);
+    this->gostage = 0;
+    connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
+    
+    //std::tuple<std::vector<std::string>, std::vector<struct Preset>, std::vector<struct Song>> xmlparse = parseSongsXML("./songs.xml");
+    //std::vector<struct Song> songs = std::get<2>(xmlparse);
+    //std::vector<struct Preset> presets = std::get<1>(xmlparse);
+    //std::vector<std::string> sources = std::get<0>(xmlparse);
+
     ui->setupUi(this);
+    this->findChild<QLabel*>("statusLabel")->setText("Downloading mirror data from GitHub...");
+    this->findChild<QPushButton*>("goButton")->setEnabled(false);
 }
 
 DMInst::~DMInst()
@@ -103,3 +121,86 @@ void DMInst::on_goButton_clicked()
 
 }
 
+void DMInst::nextStage() {
+    switch(this->gostage) {
+    case 0: {
+        this->findChild<QLabel*>("statusLabel")->setText("Downloading song and preset lists from GitHub...");
+        QUrl xmlUrl(XML_URL);
+        dmgr = new DownloadManager(xmlUrl, this);
+        this->gostage = 1;
+        connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
+        break;
+    }
+    case 1: {
+        this->findChild<QLabel*>("statusLabel")->setText("Populating song and preset lists from downloaded data...");
+        // TODO: Populate song and preset lists
+        this->gostage = 2;
+
+        // DEBUG
+        std::cout << "MIRROR LIST:" << std::endl;
+        for (auto & element : this->mirrors) {
+            std::cout << "\t" << element << std::endl;
+        }
+
+        this->findChild<QLabel*>("statusLabel")->setText("Waiting on user... Select your ROM, soundtrack, and patches and press GO when ready!");
+    }
+    default:
+        break;
+    }
+}
+void DMInst::downloadFinished() {
+    switch(this->gostage) {
+    case 0: {
+        QByteArray mirrorData = dmgr->downloadedData();
+        if (mirrorData.isEmpty()) {
+            // mirror data failed to download for one reason or another, response code will have been logged to stdout. use local mirror data if available, else fatal.
+            QFile mirrorDat(DATA_PATH "/mirrors.dat");
+            if(!mirrorDat.open(QIODevice::ReadOnly)) {
+                QMessageBox msgBox;
+                msgBox.setText("Unable to download list of mirrors or read local list of mirrors. Installation cannot continue.");
+                msgBox.setStandardButtons(QMessageBox::Ok);
+                msgBox.setDefaultButton(QMessageBox::Ok);
+                msgBox.exec();
+                QCoreApplication::exit(1); // Quit, as we can't continue
+                return;
+            } else {
+                mirrorData = mirrorDat.readAll();
+            }
+        }
+        std::istringstream in(mirrorData.toStdString());
+        std::string line;
+        while (std::getline(in, line)) {
+            this->mirrors.push_back(line);
+        }
+        this->nextStage();
+        break;
+    }
+    case 1: {
+        QByteArray xmlData = dmgr->downloadedData();
+        if (xmlData.isEmpty()) {
+            // xml data failed to download for one reason or another, response code will have been logged to stdout. use local mirror data if available, else fatal.
+            QFile songsXml(DATA_PATH "/songs.xml");
+            if(!songsXml.open(QIODevice::ReadOnly)) {
+                QMessageBox msgBox;
+                msgBox.setText("Unable to download list of songs and presets or read local copy. Installation cannot continue.");
+                msgBox.setStandardButtons(QMessageBox::Ok);
+                msgBox.setDefaultButton(QMessageBox::Ok);
+                msgBox.exec();
+                QCoreApplication::exit(1); // Quit, as we can't continue
+                return;
+            } else {
+                xmlData = songsXml.readAll();
+            }
+        }
+        std::tuple<std::vector<std::string>, std::vector<struct Preset>, std::vector<struct Song>> xmlparse = parseSongsXML(xmlData);
+        this->songs = std::get<2>(xmlparse);
+        this->presets = std::get<1>(xmlparse);
+        this->sources = std::get<0>(xmlparse);
+        this->nextStage();
+        break;
+    }
+    default:
+        break;
+
+    }
+}
