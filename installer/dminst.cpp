@@ -43,7 +43,7 @@ This patch is intended to be used only with a legally obtained copy of Final Fan
 #include <ostream>
 #include <iostream>
 #include <sstream>
-
+#include <cstring>
 
 DMInst::DMInst(QWidget *parent)
     : QMainWindow(parent)
@@ -72,6 +72,7 @@ DMInst::DMInst(QWidget *parent)
     // Disable browse and go buttons until mirrors and songs are loaded
     this->findChild<QPushButton*>("goButton")->setEnabled(false);
     this->findChild<QPushButton*>("ROMSelectBrowse")->setEnabled(false);
+
 
 }
 
@@ -126,7 +127,28 @@ void DMInst::on_ROMSelectLine_textChanged(const QString &arg1)
 
 void DMInst::on_goButton_clicked()
 {
-
+    int selectedmirror = 0; // test value
+    if (this->gostage == 2 && !this->selections.empty()) {
+        for (int i = 0; i < songs.size(); i++) {
+            for (auto & pcm : songs[i].pcms) {
+                std::string uppersource = this->selections.at(i);
+                std::transform(uppersource.begin(), uppersource.end(), uppersource.begin(), ::toupper);
+                if (uppersource.rfind("X", 0) == std::string::npos) {
+                    this->songurls.push_back(this->mirrors[selectedmirror] + uppersource + "/ff3-" + std::to_string(pcm) + ".pcm");
+                } else {
+                    this->songurls.push_back(this->mirrors[selectedmirror] + "opera/" + uppersource.substr(1, uppersource.size()) + "/ff3-" + std::to_string(pcm) + ".pcm");
+                }
+            }
+        }
+        // DEBUG
+        std::cout << "SONG URLS:" << std::endl;
+        for (auto & url : songurls) {
+            std::cout << url << std::endl;
+        }
+    } else {
+        // Not ready to continue.
+        return;
+    }
 }
 
 void DMInst::nextStage() {
@@ -159,6 +181,9 @@ void DMInst::nextStage() {
                 i++;
             }
         }
+
+        // messy, but the best way to avoid code duplication: Manually fire off soundtrack selection changed with default index of 0
+        this->on_soundtrackSelectBox_currentIndexChanged(0);
 
         // TODO: Populate song and preset lists
         this->gostage = 2;
@@ -198,6 +223,8 @@ void DMInst::downloadFinished() {
         std::istringstream in(mirrorData.toStdString());
         std::string line;
         while (std::getline(in, line)) {
+            // remove whitespace
+            line.erase(std::remove_if(line.begin(), line.end(), ::isspace), line.end());
             this->mirrors.push_back(line);
         }
         this->nextStage();
@@ -232,3 +259,43 @@ void DMInst::downloadFinished() {
 
     }
 }
+
+void DMInst::on_soundtrackSelectBox_currentIndexChanged(int index)
+{
+    // DEBUG
+    std::cout << "SELECTION INDEX: " << index << std::endl;
+
+    // clear selection map
+    this->selections.clear();
+
+    if (index < this->presets.size()) {
+        struct Preset mypreset = this->presets[index];
+        for (auto & source : mypreset.selections) {
+            for (int i = 0; i < source.second.size()-1; i+=2) {
+                int rangemin = source.second.at(i);
+                int rangemax = source.second.at(i+1);
+                for (int j = rangemin; j <= rangemax; j++) {
+                    this->selections.insert({j, source.first});
+                }
+            }
+        }
+    } else {
+        for (int i = 0; i <= 59; i++) {
+            // Too high index means SPC/Do Not Download was selected.
+            this->selections.insert({i, "spc"});
+        }
+    }
+    // DEBUG
+    std::cout << "SELECTIONS:" << std::endl;
+    for (auto & selection : this->selections) {
+        std::cout << this->songs[selection.first].name << " [#" << selection.first << "]: " << selection.second << std::endl;
+    }
+}
+
+
+
+void DMInst::on_operaSelectBox_currentIndexChanged(int index)
+{
+
+}
+
