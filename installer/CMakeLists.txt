@@ -62,7 +62,6 @@ else()
 endif()
 
 target_link_libraries(DanceMonkey PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Xml Qt${QT_VERSION_MAJOR}::Network)
-
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
 # explicit, fixed bundle identifier manually though.
@@ -80,6 +79,11 @@ set_target_properties(DanceMonkey PROPERTIES
 include(GNUInstallDirs)
 # explicitly include G++14 stuff, as Qt Creator is being dumb
 include_directories("/usr/include/x86_64-linux-gnu/c++/14/")
+
+# explicitly include local includes and libraries
+#include_directories("/usr/local/include/")
+#link_directories("/usr/local/lib/")
+
 install(TARGETS DanceMonkey
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -89,3 +93,9 @@ install(TARGETS DanceMonkey
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(DanceMonkey)
 endif()
+
+if(WIN32)
+    set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
+    target_link_options(DanceMonkey PRIVATE "-static")
+endif()
+
