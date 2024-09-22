@@ -37,6 +37,8 @@ This patch is intended to be used only with a legally obtained copy of Final Fan
 #include <QMessageBox>
 #include <QDesktopServices>
 #include <QWindow>
+#include <QSound>
+
 #include "rom_validator.h"
 #include "song_parser.h"
 #include "ips-patcher-master/IPSPatcherHandler.h"
@@ -285,7 +287,17 @@ void DMInst::nextStage() {
             this->gostage = 4;
             this->findChild<QLabel*>("statusLabel")->setText("Downloading " + QUrl(QString::fromStdString(this->mmoptpatchqueue.at(this->curropt)[0])).fileName() + " ...");
         }
+        break;
     }
+    case 4:
+        this->findChild<QLabel*>("statusLabel")->setText("Finished! You may quit the installer or do another install at this time.");
+        this->findChild<QPushButton*>("goButton")->setEnabled(true);
+        this->gostage = 2;
+        this->mmsongurls.clear();
+        this->optpatchqueue.clear();
+        QSound::play("kefkalaugh.wav");
+        this->findChild<QProgressBar*>("downloadProgressBar")->setRange(0, 100);
+        this->findChild<QProgressBar*>("downloadProgressBar")->setValue(100);
     default:
         break;
     }
