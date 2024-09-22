@@ -53,6 +53,30 @@ This patch is intended to be used only with a legally obtained copy of Final Fan
 // DEBUG
 #define LOG_TO_STDERR true
 
+const char *ff3msuxml = R"(
+<?xml version="1.0" encoding="UTF-8"?><cartridge region="NTSC">
+    <rom>
+        <map mode="shadow" address="00-3f:8000-ffff"/>
+        <map mode="linear" address="40-7f:0000-ffff"/>
+        <map mode="shadow" address="80-bf:8000-ffff"/>
+        <map mode="linear" address="c0-ff:0000-ffff"/>
+    </rom>
+    <ram size="0x2000">
+        <map mode="linear" address="20-3f:6000-7fff"/>
+        <map mode="linear" address="a0-bf:6000-7fff"/>
+        <map mode="linear" address="70-7f:0000-7fff"/>
+    </ram>
+  <msu1>
+    <map address="00-3f:2000-2007"/>
+        <map address="80-bf:2000-2007"/>
+    <mmio>
+      <map address="00-3f:2000-2007"/>
+      <map address="80-bf:2000-2007"/>
+    </mmio>
+  </msu1>
+</cartridge>
+)";
+
 DMInst::DMInst(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::DMInst) {
@@ -433,6 +457,15 @@ void DMInst::downloadFinished() {
         patcher->applyPatch((this->destdir + "ff3msu.ips").c_str(), this->findChild<QLineEdit*>("ROMSelectLine")->text().toStdString().c_str(), (this->destdir + "ff3.sfc").c_str());
         this->findChild<QProgressBar*>("downloadProgressBar")->setValue(100);
         this->findChild<QLabel*>("statusLabel")->setText("ROM patched.");
+        // create empty .msu file
+        QFile msufile(QString::fromStdString(this->destdir) + "ff3.msu");
+        msufile.open(QIODevice::WriteOnly);
+        msufile.close();
+        // create ff3.xml file for bsnes
+        QFile ff3xmlfile(QString::fromStdString(this->destdir) + "ff3.xml");
+        ff3xmlfile.open(QIODevice::WriteOnly);
+        ff3xmlfile.write(ff3msuxml);
+        ff3xmlfile.close();
         this->nextStage();
         break;
     }
