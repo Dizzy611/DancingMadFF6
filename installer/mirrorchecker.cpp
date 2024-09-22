@@ -1,9 +1,11 @@
 #include "mirrorchecker.h"
 
 
-MirrorChecker::MirrorChecker(QObject *parent)
+MirrorChecker::MirrorChecker(QObject *parent, DMLogger *logger)
     : QObject{parent}
-{}
+{
+    this->logger = logger;
+}
 
 void MirrorChecker::setUrl(std::string newUrl) {
     this->urls.push_back(newUrl);

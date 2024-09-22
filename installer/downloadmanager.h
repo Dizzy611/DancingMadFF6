@@ -6,12 +6,13 @@
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
+#include "dmlogger.h"
 
 class DownloadManager : public QObject
 {
     Q_OBJECT
 public:
-    explicit DownloadManager(QUrl targetUrl, QObject *parent = nullptr);
+    explicit DownloadManager(QUrl targetUrl, QObject *parent = nullptr, DMLogger *logger = nullptr);
     virtual ~DownloadManager();
     QByteArray downloadedData() const;
 
@@ -25,6 +26,7 @@ private slots:
 private:
     QNetworkAccessManager m_WebCtrl;
     QByteArray m_DownloadedData;
+    DMLogger *logger;
 };
 
 #endif // DOWNLOADMANAGER_H

@@ -54,6 +54,7 @@ else()
             customtrackselection.h customtrackselection.cpp customtrackselection.ui
             ips-patcher-master/IPSPatcherHandler.h ips-patcher-master/IPSPatcherHandler.cpp
             mirrorchecker.h mirrorchecker.cpp
+            dmlogger.h dmlogger.cpp
         )
     endif()
 

@@ -22,7 +22,7 @@ std::pair<int, int> parseRange(std::string input) {
     }
 }
 
-std::tuple<std::map<std::string, std::string>, std::vector<struct Preset>, std::vector<struct Song>> parseSongsXML(const QByteArray &data) {
+std::tuple<std::map<std::string, std::string>, std::vector<struct Preset>, std::vector<struct Song>> parseSongsXML(const QByteArray &data, DMLogger *logger) {
     QDomDocument songxml;
     std::map<std::string, std::string> sources;
     std::vector<struct Preset> presets;
@@ -45,9 +45,9 @@ std::tuple<std::map<std::string, std::string>, std::vector<struct Preset>, std::
     }
 
     // DEBUG
-    std::cout << "SOURCE LIST:" << std::endl;
+    logger->doLog("SOURCE LIST:");
     for (auto & keyval : sources) {
-        std::cout << "\t" << keyval.first << ":" << keyval.second << std::endl;
+        logger->doLog("\t" + keyval.first + ":" + keyval.second);
     }
     // END DEBUG
 
@@ -175,33 +175,32 @@ std::tuple<std::map<std::string, std::string>, std::vector<struct Preset>, std::
     }
 
     // DEBUG
-    std::cout << "PRESET LIST:" << std::endl;
+    logger->doLog("PRESET LIST:");
     for (auto & element : presets) {
-        std::cout << "\t" << element.name << ":" << element.friendly_name << std::endl;
+        logger->doLog("\t" + element.name + ":" + element.friendly_name);
         for (auto & keyval : element.selections) {
-            std::cout << "\t\t";
-            std::cout << keyval.first << ":";
+            std::string outStr = "";
             for (auto & rangeval : keyval.second) {
-                std::cout << rangeval << ",";
+                outStr += std::to_string(rangeval) + ",";
             }
-            std::cout << std::endl;
+            logger->doLog("\t\t" + keyval.first + ":" + outStr);
         }
     }
 
     // DEBUG
-    std::cout << "SONG LIST:" << std::endl;
+    logger->doLog("SONG LIST:");
     for (auto & element : songs) {
-        std::cout << "\t" << element.name << std::endl;
-        std::cout << "\t\tPCMs:";
+        logger->doLog("\t" + element.name);
+        std::string outStr = "\t\tPCMs:";
         for (auto & element2 : element.pcms) {
-            std::cout << element2 << ",";
+            outStr+= std::to_string(element2) + ",";
         }
-        std::cout << std::endl;
-        std::cout << "\t\tSources:";
+        logger->doLog(outStr);
+        outStr = "\t\tSources:";
         for (auto & element2 : element.sources) {
-            std::cout << element2 << ",";
+            outStr+= element2 + ",";
         }
-        std::cout << std::endl;
+        logger->doLog(outStr);
     }
 
     return std::tuple(sources, presets, songs);
