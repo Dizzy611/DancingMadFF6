@@ -72,11 +72,6 @@ This patch is intended to be used only with a legally obtained copy of Final Fan
 #include <QFile>
 #include <QCryptographicHash>
 
-#define LOROM 0
-#define HIROM 1
-
-
-
 struct ROMValid validate_rom(std::string filename) {
     struct ROMValid output;
     memset(&output, 0, sizeof(struct ROMValid));
@@ -309,33 +304,15 @@ struct ROMValid validate_rom(std::string filename) {
     QFile file(QString::fromStdString(filename));
     file.open(QIODevice::ReadOnly);
     QCryptographicHash hash(QCryptographicHash::Sha256);
-    hash.addData(&file);
+    if (!has_copier_header) {
+        hash.addData(&file);
+    } else {
+        file.seek(512);
+        QByteArray myData = file.readAll();
+        hash.addData(myData);
+    }
     QByteArray hash_string = hash.result().toHex();
     file.close();
-    // replaced by QCryptographicHash, hopefully
-    //if (!has_copier_header) {
-    //    cppfile.seekg(0, std::ios::beg);
-    //} else {
-    //    cppfile.seekg(512, std::ios::beg);
-    //}
-
-    //SHA256_CTX sha256;
-    //SHA256_Init(&sha256);
-    //const std::streamsize buffer_size = 8192;
-    //char buffer[buffer_size];
-
-    //while (cppfile.read(buffer, buffer_size)) {
-        //SHA256_Update(&sha256, buffer, cppfile.gcount());
-    //}
-
-    //unsigned char hash[SHA256_DIGEST_LENGTH];
-    //SHA256_Final(hash, &sha256);
-
-    //std::ostringstream hash_stringstream;
-    //for (const auto& byte : hash) {
-    //    hash_stringstream << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(byte);
-    //}
-    //std::string hash_string = hash_stringstream.str();
 
     if (hash_string.toStdString() != correct_sha256sum) {
         output.return_code = WARN_PATCHED;
