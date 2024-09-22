@@ -126,6 +126,9 @@ void DMInst::on_ROMSelectLine_textChanged(const QString &arg1)
 
 void DMInst::on_goButton_clicked()
 {
+    this->destdir = QFileDialog::getExistingDirectory(this, tr("Choose destination directory"), QDir::homePath()).toStdString() + "/";
+    std::cout << "DEBUG:" << this->destdir << std::endl;
+
     // check if mirror list has been validated and at least one valid mirror has been returned.
     if (mc.isDone()) {
         if (mc.getMirror() != "") {
@@ -337,7 +340,7 @@ void DMInst::downloadFinished() {
             QCoreApplication::exit(1); // Quit, as we can't continue
             return;
         } else {
-            QFile file(QString::fromStdString("./" + QUrl(QString::fromStdString(this->songurls.at(this->currsong))).fileName().toStdString()));
+            QFile file(QString::fromStdString(this->destdir + QUrl(QString::fromStdString(this->songurls.at(this->currsong))).fileName().toStdString()));
             file.open(QIODevice::WriteOnly);
             file.write(songData);
             file.close();
@@ -374,13 +377,13 @@ void DMInst::downloadFinished() {
         this->findChild<QLabel*>("statusLabel")->setText("Patching ROM...");
         this->findChild<QProgressBar*>("downloadProgressBar")->setRange(0, 100);
         this->findChild<QProgressBar*>("downloadProgressBar")->setValue(0);
-        QFile file("./ff3msu.ips");
+        QFile file(QString::fromStdString(this->destdir) + "ff3msu.ips");
         file.open(QIODevice::WriteOnly);
         file.write(patchData);
         file.close();
         this->findChild<QProgressBar*>("downloadProgressBar")->setValue(50);
         IPSPatcherHandler* patcher = new IPSPatcherHandler();
-        patcher->applyPatch("./ff3msu.ips", this->findChild<QLineEdit*>("ROMSelectLine")->text().toStdString().c_str(), "./ff3.sfc");
+        patcher->applyPatch((this->destdir + "ff3msu.ips").c_str(), this->findChild<QLineEdit*>("ROMSelectLine")->text().toStdString().c_str(), (this->destdir + "ff3.sfc").c_str());
         this->findChild<QProgressBar*>("downloadProgressBar")->setValue(100);
         this->findChild<QLabel*>("statusLabel")->setText("ROM patched.");
         this->nextStage();
@@ -396,7 +399,7 @@ void DMInst::downloadFinished() {
             msgBox.setDefaultButton(QMessageBox::Ok);
             msgBox.exec();
         } else {
-            QFile file(QString::fromStdString("./" + QUrl(QString::fromStdString(this->optpatchqueue.at(this->curropt))).fileName().toStdString()));
+            QFile file(QString::fromStdString(this->destdir + QUrl(QString::fromStdString(this->optpatchqueue.at(this->curropt))).fileName().toStdString()));
             this->findChild<QProgressBar*>("downloadProgressBar")->setRange(0, 100);
             this->findChild<QProgressBar*>("downloadProgressBar")->setValue(0);
             file.open(QIODevice::WriteOnly);
@@ -406,7 +409,7 @@ void DMInst::downloadFinished() {
                 this->findChild<QLabel*>("statusLabel")->setText("Patching with optional patch...");
                 this->findChild<QProgressBar*>("downloadProgressBar")->setValue(50);
                 IPSPatcherHandler* patcher = new IPSPatcherHandler();
-                patcher->applyPatch(("./" + QUrl(QString::fromStdString(this->optpatchqueue.at(this->curropt))).fileName().toStdString()).c_str(), "./ff3.sfc", "./ff3.sfc");
+                patcher->applyPatch((this->destdir + QUrl(QString::fromStdString(this->optpatchqueue.at(this->curropt))).fileName().toStdString()).c_str(), (this->destdir + "ff3.sfc").c_str(), (this->destdir + "ff3.sfc").c_str());
                 this->findChild<QProgressBar*>("downloadProgressBar")->setValue(100);
             } else {
                 this->findChild<QProgressBar*>("downloadProgressBar")->setValue(100);
