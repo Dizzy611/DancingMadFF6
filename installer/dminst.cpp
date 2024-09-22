@@ -131,7 +131,7 @@ void DMInst::on_goButton_clicked()
                 if (this->selections.at(i) != "spc") { // skip download if SPC
                     std::string uppersource = this->selections.at(i);
                     std::transform(uppersource.begin(), uppersource.end(), uppersource.begin(), ::toupper);
-                    if (uppersource.rfind("X", 0) == std::string::npos) {
+                    if (uppersource.starts_with("X")) {
                         this->songurls.push_back(this->mirrors[selectedmirror] + uppersource + "/ff3-" + std::to_string(pcm) + ".pcm");
                     } else {
                         this->songurls.push_back(this->mirrors[selectedmirror] + "opera/" + uppersource.substr(1, uppersource.size()) + "/ff3-" + std::to_string(pcm) + ".pcm");
@@ -144,6 +144,14 @@ void DMInst::on_goButton_clicked()
         for (auto & url : songurls) {
             std::cout << url << std::endl;
         }
+
+        // start the downloads!
+        QUrl songUrl = QString::fromStdString(songurls.at(0));
+        dmgr = new DownloadManager(songUrl, this);
+        connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
+        this->currsong = 0;
+        this->findChild<QLabel*>("statusLabel")->setText("Downloading " + QUrl(QString::fromStdString(this->songurls.at(this->currsong))).fileName() + " ...");
+
     } else {
         // Not ready to continue.
         return;
@@ -175,7 +183,7 @@ void DMInst::nextStage() {
         this->findChild<QComboBox*>("operaSelectBox")->setItemText(0, "SPC/Do Not Download");
         i = 1;
         for (auto & element : this->sources) {
-            if (element.first.rfind("x", 0) != std::string::npos) {
+            if (element.first.starts_with("x")) {
                 this->findChild<QComboBox*>("operaSelectBox")->setItemText(i, QString::fromStdString(element.second));
                 i++;
             }
@@ -193,7 +201,10 @@ void DMInst::nextStage() {
         for (auto & element : this->mirrors) {
             std::cout << "\t" << element << std::endl;
         }
-
+        // test
+        if (this->mirrors[0].starts_with("http")) {
+            std::cout << "C++20 features working" << std::endl;
+        }
         this->findChild<QLabel*>("statusLabel")->setText("Waiting on user... Select your ROM, soundtrack, and patches and press GO when ready!");
         this->findChild<QPushButton*>("ROMSelectBrowse")->setEnabled(true);
     }
@@ -253,6 +264,35 @@ void DMInst::downloadFinished() {
         this->sources = std::get<0>(xmlparse);
         this->nextStage();
         break;
+    }
+    case 2: {
+        QByteArray songData = dmgr->downloadedData();
+        if (songData.isEmpty()) {
+            // song data failed to download for one reason or another. TODO: Explain reason in text box, attempt other mirror or allow user to continue.
+            QMessageBox msgBox;
+            msgBox.setText("Unable to download " + QString::fromStdString(this->songurls.at(this->currsong)) + ". Installation cannot continue.");
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.setDefaultButton(QMessageBox::Ok);
+            msgBox.exec();
+            QCoreApplication::exit(1); // Quit, as we can't continue
+            return;
+        } else {
+            QFile file(QString::fromStdString("./" + QUrl(QString::fromStdString(this->songurls.at(this->currsong))).fileName().toStdString()));
+            file.open(QIODevice::WriteOnly);
+            file.write(songData);
+            file.close();
+        }
+        if (this->currsong >= this->songurls.size()) {
+            this->nextStage();
+            break;
+        } else {
+            // next song please!
+            this->currsong++;
+            this->findChild<QLabel*>("statusLabel")->setText("Downloading " + QUrl(QString::fromStdString(this->songurls.at(this->currsong))).fileName() + " ...");
+            QUrl songUrl = QString::fromStdString(songurls.at(this->currsong));
+            dmgr = new DownloadManager(songUrl, this);
+            connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
+        }
     }
     default:
         break;
@@ -317,7 +357,7 @@ void DMInst::on_operaSelectBox_currentIndexChanged(int index)
     opera_sources.insert({0, "spc"});
     int i = 1;
     for (auto & element : this->sources) {
-        if (element.first.rfind("x", 0) != std::string::npos) {
+        if (element.first.starts_with("x")) {
             opera_sources.insert({i, element.first});
             i++;
         }

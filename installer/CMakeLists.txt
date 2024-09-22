@@ -6,7 +6,7 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets LinguistTools Xml Network)
@@ -52,6 +52,7 @@ else()
             song_parser.cpp
             song_parser.h
             downloadmanager.h downloadmanager.cpp
+            customtrackselection.h customtrackselection.cpp customtrackselection.ui
         )
     endif()
 
@@ -75,6 +76,8 @@ set_target_properties(DanceMonkey PROPERTIES
 )
 
 include(GNUInstallDirs)
+# explicitly include G++14 stuff, as Qt Creator is being dumb
+include_directories("/usr/include/x86_64-linux-gnu/c++/14/")
 install(TARGETS DanceMonkey
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
