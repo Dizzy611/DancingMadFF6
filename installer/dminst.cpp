@@ -379,14 +379,26 @@ void DMInst::downloadFinished() {
     case 3: {
         QByteArray patchData = dmgr->downloadedData();
         if (patchData.isEmpty()) {
-            // patch data failed to download for one reason or another. This is definitely a fatal unless we decide to mirror the patch elsewhere.
-            QMessageBox msgBox;
-            msgBox.setText("Unable to download main patch. Installation cannot continue.");
-            msgBox.setStandardButtons(QMessageBox::Ok);
-            msgBox.setDefaultButton(QMessageBox::Ok);
-            msgBox.exec();
-            QCoreApplication::exit(1); // Quit, as we can't continue
-            break;
+            // patch data failed to download for one reason or another. Try local copy (potentially out of date)
+            QFile patchFile(DATA_PATH "/ff3msu.ips");
+            if(!patchFile.open(QIODevice::ReadOnly)) {
+                QMessageBox msgBox;
+                msgBox.setText("Unable to download main patch or find local copy. Installation cannot continue.");
+                msgBox.setStandardButtons(QMessageBox::Ok);
+                msgBox.setDefaultButton(QMessageBox::Ok);
+                msgBox.exec();
+                QCoreApplication::exit(1); // Quit, as we can't continue
+                break;
+                return;
+            } else {
+                QMessageBox msgBox;
+                msgBox.setText("Warning: Using local copy of patch, possibly out of date.");
+                msgBox.setStandardButtons(QMessageBox::Ok);
+                msgBox.setDefaultButton(QMessageBox::Ok);
+                msgBox.exec();
+                patchData = patchFile.readAll();
+                patchFile.close();
+            }
         }
         this->findChild<QLabel*>("statusLabel")->setText("Patching ROM...");
         this->findChild<QProgressBar*>("downloadProgressBar")->setRange(0, 100);
