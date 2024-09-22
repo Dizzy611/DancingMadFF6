@@ -39,6 +39,7 @@ This patch is intended to be used only with a legally obtained copy of Final Fan
 
 #include "rom_validator.h"
 #include "song_parser.h"
+#include "ips-patcher-master/IPSPatcherHandler.h"
 
 #include <ostream>
 #include <iostream>
@@ -131,7 +132,7 @@ void DMInst::on_goButton_clicked()
                 if (this->selections.at(i) != "spc") { // skip download if SPC
                     std::string uppersource = this->selections.at(i);
                     std::transform(uppersource.begin(), uppersource.end(), uppersource.begin(), ::toupper);
-                    if (uppersource.starts_with("X")) {
+                    if (!uppersource.starts_with("X")) {
                         this->songurls.push_back(this->mirrors[selectedmirror] + uppersource + "/ff3-" + std::to_string(pcm) + ".pcm");
                     } else {
                         this->songurls.push_back(this->mirrors[selectedmirror] + "opera/" + uppersource.substr(1, uppersource.size()) + "/ff3-" + std::to_string(pcm) + ".pcm");
@@ -201,12 +202,18 @@ void DMInst::nextStage() {
         for (auto & element : this->mirrors) {
             std::cout << "\t" << element << std::endl;
         }
-        // test
-        if (this->mirrors[0].starts_with("http")) {
-            std::cout << "C++20 features working" << std::endl;
-        }
+
         this->findChild<QLabel*>("statusLabel")->setText("Waiting on user... Select your ROM, soundtrack, and patches and press GO when ready!");
         this->findChild<QPushButton*>("ROMSelectBrowse")->setEnabled(true);
+        break;
+    }
+    case 2: {
+        this->findChild<QLabel*>("statusLabel")->setText("Downloading patches...");
+        QUrl patchUrl(PATCH_URL);
+        dmgr = new DownloadManager(patchUrl, this);
+        this->gostage = 3;
+        connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
+        break;
     }
     default:
         break;
@@ -282,7 +289,7 @@ void DMInst::downloadFinished() {
             file.write(songData);
             file.close();
         }
-        if (this->currsong >= this->songurls.size()) {
+        if (this->currsong+1 >= this->songurls.size()) {
             this->nextStage();
             break;
         } else {
@@ -293,6 +300,27 @@ void DMInst::downloadFinished() {
             dmgr = new DownloadManager(songUrl, this);
             connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
         }
+        break;
+    }
+    case 3: {
+        QByteArray patchData = dmgr->downloadedData();
+        if (patchData.isEmpty()) {
+            // patch data failed to download for one reason or another. This is definitely a fatal unless we decide to mirror the patch elsewhere.
+            QMessageBox msgBox;
+            msgBox.setText("Unable to download main patch. Installation cannot continue.");
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.setDefaultButton(QMessageBox::Ok);
+            msgBox.exec();
+            QCoreApplication::exit(1); // Quit, as we can't continue
+            break;
+        }
+        QFile file("./ff3msu.ips");
+        file.open(QIODevice::WriteOnly);
+        file.write(patchData);
+        file.close();
+        IPSPatcherHandler* patcher = new IPSPatcherHandler();
+        patcher->applyPatch("./ff3msu.ips", this->findChild<QLineEdit*>("ROMSelectLine")->text().toStdString().c_str(), "./ff3.sfc");
+        break;
     }
     default:
         break;

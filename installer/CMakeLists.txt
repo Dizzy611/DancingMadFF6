@@ -53,6 +53,7 @@ else()
             song_parser.h
             downloadmanager.h downloadmanager.cpp
             customtrackselection.h customtrackselection.cpp customtrackselection.ui
+            ips-patcher-master/IPSPatcherHandler.h ips-patcher-master/IPSPatcherHandler.cpp
         )
     endif()
 
