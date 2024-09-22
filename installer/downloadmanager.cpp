@@ -1,17 +1,24 @@
 #include "downloadmanager.h"
 #include <iostream>
+#include <QProgressBar>
 
 DownloadManager::DownloadManager(QUrl targetUrl, QObject *parent)
     : QObject{parent} {
     connect(&m_WebCtrl, SIGNAL(finished(QNetworkReply*)), this, SLOT(fileDownloaded(QNetworkReply*)));
-
     QNetworkRequest request(targetUrl);
     request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
 
-    m_WebCtrl.get(request);
+    QNetworkReply* reply = m_WebCtrl.get(request);
+
+    connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(downloadProgress(qint64, qint64)));
 }
 
 DownloadManager::~DownloadManager() {}
+
+void DownloadManager::downloadProgress(qint64 ist, qint64 max) {
+    this->parent()->findChild<QProgressBar*>("downloadProgressBar")->setRange(0, max);
+    this->parent()->findChild<QProgressBar*>("downloadProgressBar")->setValue(ist);
+}
 
 void DownloadManager::fileDownloaded(QNetworkReply* pReply) {
     QVariant test = pReply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
