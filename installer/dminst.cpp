@@ -36,7 +36,7 @@ This patch is intended to be used only with a legally obtained copy of Final Fan
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QDesktopServices>
-
+#include <QWindow>
 #include "rom_validator.h"
 #include "song_parser.h"
 #include "ips-patcher-master/IPSPatcherHandler.h"
@@ -53,8 +53,10 @@ This patch is intended to be used only with a legally obtained copy of Final Fan
 
 DMInst::DMInst(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::DMInst)
-{   this->mc = new MirrorChecker(this, this->logger);
+    , ui(new Ui::DMInst) {
+    setWindowIcon(QIcon("./kefka-16x16.png"));
+
+    this->mc = new MirrorChecker(this, this->logger);
     this->logger = new DMLogger("./install.log", LOG_TO_STDERR);
     this->logger->doLog("Dancing Mad installer (DanceMonkey alpha) loaded...");
 

@@ -43,6 +43,19 @@ else()
         )
 # Define properties for Android with Qt 5 after find_package() calls as:
 #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
+    elseif(WIN32)
+        add_executable(DanceMonkey
+            ${PROJECT_SOURCES}
+            rom_validator.cpp
+            rom_validator.h
+            song_parser.cpp
+            song_parser.h
+            downloadmanager.h downloadmanager.cpp
+            customtrackselection.h customtrackselection.cpp customtrackselection.ui
+            ips-patcher-master/IPSPatcherHandler.h ips-patcher-master/IPSPatcherHandler.cpp
+            mirrorchecker.h mirrorchecker.cpp
+            dmlogger.h dmlogger.cpp dminst.rc
+        )
     else()
         add_executable(DanceMonkey
             ${PROJECT_SOURCES}
@@ -94,6 +107,7 @@ if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(DanceMonkey)
 endif()
 
+# statically link on windows
 if(WIN32)
     set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
     target_link_options(DanceMonkey PRIVATE "-static")
