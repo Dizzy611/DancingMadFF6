@@ -68,8 +68,9 @@ This patch is intended to be used only with a legally obtained copy of Final Fan
 #include <fstream>
 #include <vector>
 #include <cstdint>
-#include <openssl/sha.h>
 #include <iomanip>
+#include <QFile>
+#include <QCryptographicHash>
 
 #define LOROM 0
 #define HIROM 1
@@ -125,10 +126,7 @@ struct ROMValid validate_rom(std::string filename) {
     fseek(fp, offset, SEEK_SET);
 
     // check for LoROM or HiROM
-    bool rom_type = LOROM;
-    if ((snesheader.checksum + snesheader.checksum_c ) == 0xffff && (snesheader.checksum != 0) && (snesheader.checksum_c != 0)) {
-        rom_type = LOROM;
-    } else {
+    if (!((snesheader.checksum + snesheader.checksum_c ) == 0xffff && (snesheader.checksum != 0) && (snesheader.checksum_c != 0))) {
         // seek past any copier header and to HiROM internal header
         offset = 0xffb0 + has_copier_header * 512;
         fseek(fp, offset, SEEK_SET);
@@ -138,14 +136,11 @@ struct ROMValid validate_rom(std::string filename) {
             output.return_code = ERROR_NO_HEADER;
             output.error_string = "Invalid ROM: No valid header found in ROM.";
             return output;
-        } else {
-            rom_type = HIROM;
         }
     }
     fclose(fp);
 
     // begin validity checks vs FF3 ROM
-    bool extheader_present;
 
     // check country (done early to simplify later code)
     bool japanese;
@@ -168,7 +163,6 @@ struct ROMValid validate_rom(std::string filename) {
         }
         if ((company_id[0] == 0x43) && (company_id[1] == 0x33)) {
             std::cout << "DEBUG: Company ID is correct (U)" << std::endl;
-            extheader_present = true;
         } else {
             output.return_code = ERROR_WRONG_COMPANY;
             output.error_string = "Not a Final Fantasy 3/6 ROM: Company ID does not match.";
@@ -298,7 +292,7 @@ struct ROMValid validate_rom(std::string filename) {
         output.error_string = "Possible patched ROM: Computed checksum does not match value.";
         return output;
     }
-
+    cppfile.close();
     // compute SHA256 sum
 
 
@@ -310,30 +304,40 @@ struct ROMValid validate_rom(std::string filename) {
     } else {
         correct_sha256sum = "0f51b4fca41b7fd509e4b8f9d543151f68efa5e97b08493e4b2a0c06f5d8d5e2";
     }
-    if (!has_copier_header) {
-        cppfile.seekg(0, std::ios::beg);
-    } else {
-        cppfile.seekg(512, std::ios::beg);
-    }
 
-    SHA256_CTX sha256;
-    SHA256_Init(&sha256);
-    const std::streamsize buffer_size = 8192;
-    char buffer[buffer_size];
+    // new SHA256 using QCryptographicHash
+    QFile file(QString::fromStdString(filename));
+    file.open(QIODevice::ReadOnly);
+    QCryptographicHash hash(QCryptographicHash::Sha256);
+    hash.addData(&file);
+    QByteArray hash_string = hash.result().toHex();
+    file.close();
+    // replaced by QCryptographicHash, hopefully
+    //if (!has_copier_header) {
+    //    cppfile.seekg(0, std::ios::beg);
+    //} else {
+    //    cppfile.seekg(512, std::ios::beg);
+    //}
 
-    while (cppfile.read(buffer, buffer_size)) {
-        SHA256_Update(&sha256, buffer, cppfile.gcount());
-    }
+    //SHA256_CTX sha256;
+    //SHA256_Init(&sha256);
+    //const std::streamsize buffer_size = 8192;
+    //char buffer[buffer_size];
 
-    unsigned char hash[SHA256_DIGEST_LENGTH];
-    SHA256_Final(hash, &sha256);
+    //while (cppfile.read(buffer, buffer_size)) {
+        //SHA256_Update(&sha256, buffer, cppfile.gcount());
+    //}
 
-    std::ostringstream hash_stringstream;
-    for (const auto& byte : hash) {
-        hash_stringstream << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(byte);
-    }
-    std::string hash_string = hash_stringstream.str();
-    if (hash_string != correct_sha256sum) {
+    //unsigned char hash[SHA256_DIGEST_LENGTH];
+    //SHA256_Final(hash, &sha256);
+
+    //std::ostringstream hash_stringstream;
+    //for (const auto& byte : hash) {
+    //    hash_stringstream << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(byte);
+    //}
+    //std::string hash_string = hash_stringstream.str();
+
+    if (hash_string.toStdString() != correct_sha256sum) {
         output.return_code = WARN_PATCHED;
         output.error_string = "Possible patched ROM: Computed SHA256 hash does not match expected value.";
         return output;
