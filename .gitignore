@@ -19,6 +19,7 @@ music/
 **/*.pyc
 **/*.7z
 **/*.exe
+**/videoscript
 installer/dist/
 installer/tmp/
 *.srm
