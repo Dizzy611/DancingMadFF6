@@ -130,50 +130,61 @@ void DMInst::on_ROMSelectLine_textChanged(const QString &arg1)
 
 void DMInst::on_goButton_clicked()
 {
-    this->destdir = QFileDialog::getExistingDirectory(this, tr("Choose destination directory"), QDir::homePath()).toStdString() + "/";
+    if (this->gostage == 2 && !this->selections.empty()) {
+        // disable pressing the button twice
+        this->findChild<QPushButton*>("goButton")->setEnabled(false);
+        this->destdir = QFileDialog::getExistingDirectory(this, tr("Choose destination directory"), QDir::homePath()).toStdString() + "/";
 
-    // check if mirror list has been validated and at least one valid mirror has been returned.
-    if (mc->isDone()) {
-        if (mc->getMirror() != "") {
-            std::string selectedmirror = mc->getMirror();
-            if (this->gostage == 2 && !this->selections.empty()) {
-                for (int i = 0; i < songs.size(); i++) {
-                    for (auto & pcm : songs[i].pcms) {
-                        if (this->selections.at(i) != "spc") { // skip download if SPC
-                            std::string uppersource = this->selections.at(i);
-                            std::transform(uppersource.begin(), uppersource.end(), uppersource.begin(), ::toupper);
-                            if (!uppersource.starts_with("X")) {
-                                this->songurls.push_back(selectedmirror + uppersource + "/ff3-" + std::to_string(pcm) + ".pcm");
-                            } else {
-                                this->songurls.push_back(selectedmirror + "opera/" + uppersource.substr(1, uppersource.size()) + "/ff3-" + std::to_string(pcm) + ".pcm");
+        // check if mirror list has been validated and at least one valid mirror has been returned.
+        if (mc->isDone()) {
+            if (mc->getMirror() != "") {
+                //std::string selectedmirror = mc->getMirror();
+                std::vector<std::string> mirrorList = mc->getMirrors();
+                    for (int i = 0; i < songs.size(); i++) {
+                        for (auto & pcm : songs[i].pcms) {
+                            if (this->selections.at(i) != "spc") { // skip download if SPC
+                                std::string uppersource = this->selections.at(i);
+                                std::transform(uppersource.begin(), uppersource.end(), uppersource.begin(), ::toupper);
+                                if (!uppersource.starts_with("X")) {
+                                    this->mmsongurls.push_back(buildMirroredUrls(mirrorList, uppersource + "/ff3-" + std::to_string(pcm) + ".pcm"));
+                                    //this->songurls.push_back(selectedmirror + uppersource + "/ff3-" + std::to_string(pcm) + ".pcm");
+                                } else {
+                                    this->mmsongurls.push_back(buildMirroredUrls(mirrorList, "opera/" + uppersource.substr(1, uppersource.size()) + "/ff3-" + std::to_string(pcm) + ".pcm"));
+                                    //this->songurls.push_back(selectedmirror + "opera/" + uppersource.substr(1, uppersource.size()) + "/ff3-" + std::to_string(pcm) + ".pcm");
+                                }
                             }
                         }
                     }
-                }
-                // DEBUG
-                this->logger->doLog("SONG URLS:");
-                for (auto & url : songurls) {
-                    this->logger->doLog(url);
-                }
+                    // DEBUG
+                    this->logger->doLog("SONG URLS:");
+                    for (auto & url : mmsongurls) {
+                        std::string outstr = "[";
+                        for (auto & murl : url) {
+                           outstr += murl + ",";
+                        }
+                        outstr.pop_back();
+                        outstr += "]";
+                        this->logger->doLog(outstr);
+                    }
 
-                // start the downloads!
-                QUrl songUrl = QString::fromStdString(songurls.at(0));
-                dmgr = new DownloadManager(songUrl, this, this->logger);
-                connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
-                this->currsong = 0;
-                this->findChild<QLabel*>("statusLabel")->setText("Downloading " + QUrl(QString::fromStdString(this->songurls.at(this->currsong))).fileName() + " ...");
-
+                    // start the downloads!
+                    //QUrl songUrl = QString::fromStdString(songurls.at(0));
+                    dmgr = new DownloadManager(mmsongurls.at(0), this, this->logger);
+                    connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
+                    this->currsong = 0;
+                    this->findChild<QLabel*>("statusLabel")->setText("Downloading " + QUrl(QString::fromStdString(this->mmsongurls.at(this->currsong)[0])).fileName() + " ...");
             } else {
-                // Not ready to continue.
-                return;
+                this->findChild<QLabel*>("statusLabel")->setText("ERROR: No valid mirrors found. Try again or report to developer.");
+                    this->findChild<QPushButton*>("goButton")->setEnabled(true);
             }
         } else {
-            this->findChild<QLabel*>("statusLabel")->setText("ERROR: No valid mirrors found. Try again or report to developer.");
+            this->findChild<QLabel*>("statusLabel")->setText("Still checking for valid mirrors, please wait...");
+            this->findChild<QPushButton*>("goButton")->setEnabled(true);
         }
     } else {
-        this->findChild<QLabel*>("statusLabel")->setText("Still checking for valid mirrors, please wait...");
+        // Not ready to continue.
+        return;
     }
-
 }
 
 void DMInst::nextStage() {
@@ -242,28 +253,28 @@ void DMInst::nextStage() {
             this->nextStage();
             break;
         } else {
-            std::string selectedmirror = this->mc->getMirror(); // if we got this far, we should have at least one valid mirror, so testing is not necessary (song download is necessary first)
+            //std::string selectedmirror = this->mc->getMirror(); // if we got this far, we should have at least one valid mirror, so testing is not necessary (song download is necessary first)
+            std::vector<std::string> mirrorList = mc->getMirrors();
             if (twue) {
-                this->optpatchqueue.push_back(selectedmirror + "contrib/twue.ips");
+                this->mmoptpatchqueue.push_back(buildMirroredUrls(mirrorList, "contrib/twue.ips"));
             }
             if (mp && csr) {
-                this->optpatchqueue.push_back(selectedmirror + "contrib/mplayer-csr-main-nh.ips");
+                this->mmoptpatchqueue.push_back(buildMirroredUrls(mirrorList, "contrib/mplayer-csr-main-nh.ips"));
             } else if (mp) {
-                this->optpatchqueue.push_back(selectedmirror + "contrib/mplayer-main-nh.ips");
+                this->mmoptpatchqueue.push_back(buildMirroredUrls(mirrorList, "contrib/mplayer-main-nh.ips"));
             }
             if (csr) {
-                this->optpatchqueue.push_back(selectedmirror + "contrib/CSR/csr.ips");
-                this->optpatchqueue.push_back(selectedmirror + "contrib/CSR/ff3-90.pcm");
-                this->optpatchqueue.push_back(selectedmirror + "contrib/CSR/ff3-91.pcm");
-                this->optpatchqueue.push_back(selectedmirror + "contrib/CSR/ff3-92.pcm");
-                this->optpatchqueue.push_back(selectedmirror + "contrib/CSR/ff3-93.pcm");
+                this->mmoptpatchqueue.push_back(buildMirroredUrls(mirrorList, "contrib/CSR/csr.ips"));
+                this->mmoptpatchqueue.push_back(buildMirroredUrls(mirrorList, "contrib/CSR/ff3-90.pcm"));
+                this->mmoptpatchqueue.push_back(buildMirroredUrls(mirrorList, "contrib/CSR/ff3-91.pcm"));
+                this->mmoptpatchqueue.push_back(buildMirroredUrls(mirrorList, "contrib/CSR/ff3-92.pcm"));
+                this->mmoptpatchqueue.push_back(buildMirroredUrls(mirrorList, "contrib/CSR/ff3-93.pcm"));
             }
-            QUrl optUrl = QString::fromStdString(optpatchqueue.at(0));
-            dmgr = new DownloadManager(optUrl, this, this->logger);
+            dmgr = new DownloadManager(this->mmoptpatchqueue.at(0), this, this->logger);
             connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
             this->curropt = 0;
             this->gostage = 4;
-            this->findChild<QLabel*>("statusLabel")->setText("Downloading " + QUrl(QString::fromStdString(this->optpatchqueue.at(this->curropt))).fileName() + " ...");
+            this->findChild<QLabel*>("statusLabel")->setText("Downloading " + QUrl(QString::fromStdString(this->mmoptpatchqueue.at(this->curropt)[0])).fileName() + " ...");
         }
     }
     default:
@@ -336,19 +347,19 @@ void DMInst::downloadFinished() {
         if (songData.isEmpty()) {
             // song data failed to download for one reason or another. TODO: Explain reason in text box, attempt other mirror or allow user to continue.
             QMessageBox msgBox;
-            msgBox.setText("Unable to download " + QString::fromStdString(this->songurls.at(this->currsong)) + ". Installation cannot continue.");
+            msgBox.setText("Unable to download " + QString::fromStdString(this->mmsongurls.at(this->currsong)[0]) + ". Installation cannot continue.");
             msgBox.setStandardButtons(QMessageBox::Ok);
             msgBox.setDefaultButton(QMessageBox::Ok);
             msgBox.exec();
             QCoreApplication::exit(1); // Quit, as we can't continue
             return;
         } else {
-            QFile file(QString::fromStdString(this->destdir + QUrl(QString::fromStdString(this->songurls.at(this->currsong))).fileName().toStdString()));
+            QFile file(QString::fromStdString(this->destdir + QUrl(QString::fromStdString(this->mmsongurls.at(this->currsong)[0])).fileName().toStdString()));
             file.open(QIODevice::WriteOnly);
             file.write(songData);
             file.close();
         }
-        if (this->currsong+1 >= this->songurls.size()) {
+        if (this->currsong+1 >= this->mmsongurls.size()) {
             this->findChild<QProgressBar*>("downloadProgressBar")->setRange(0, 100);
             this->findChild<QProgressBar*>("downloadProgressBar")->setValue(0);
             this->nextStage();
@@ -356,9 +367,9 @@ void DMInst::downloadFinished() {
         } else {
             // next song please!
             this->currsong++;
-            this->findChild<QLabel*>("statusLabel")->setText("Downloading " + QUrl(QString::fromStdString(this->songurls.at(this->currsong))).fileName() + " ...");
-            QUrl songUrl = QString::fromStdString(songurls.at(this->currsong));
-            dmgr = new DownloadManager(songUrl, this, this->logger);
+            this->findChild<QLabel*>("statusLabel")->setText("Downloading " + QUrl(QString::fromStdString(this->mmsongurls.at(this->currsong)[0])).fileName() + " ...");
+            //QUrl songUrl = QString::fromStdString(songurls.at(this->currsong));
+            dmgr = new DownloadManager(mmsongurls.at(this->currsong), this, this->logger);
             connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
         }
         this->findChild<QProgressBar*>("downloadProgressBar")->setRange(0, 100);
@@ -397,28 +408,28 @@ void DMInst::downloadFinished() {
         if (optData.isEmpty()) {
             // optional patch data failed to download, warn user but continue
             QMessageBox msgBox;
-            msgBox.setText("Unable to download " + QUrl(QString::fromStdString(this->optpatchqueue.at(this->curropt))).fileName() + ". Continuing without...");
+            msgBox.setText("Unable to download " + QUrl(QString::fromStdString(this->mmoptpatchqueue.at(this->curropt)[0])).fileName() + ". Continuing without...");
             msgBox.setStandardButtons(QMessageBox::Ok);
             msgBox.setDefaultButton(QMessageBox::Ok);
             msgBox.exec();
         } else {
-            QFile file(QString::fromStdString(this->destdir + QUrl(QString::fromStdString(this->optpatchqueue.at(this->curropt))).fileName().toStdString()));
+            QFile file(QString::fromStdString(this->destdir + QUrl(QString::fromStdString(this->mmoptpatchqueue.at(this->curropt)[0])).fileName().toStdString()));
             this->findChild<QProgressBar*>("downloadProgressBar")->setRange(0, 100);
             this->findChild<QProgressBar*>("downloadProgressBar")->setValue(0);
             file.open(QIODevice::WriteOnly);
             file.write(optData);
             file.close();
-            if (QUrl(QString::fromStdString(this->optpatchqueue.at(this->curropt))).fileName().toStdString().ends_with(".ips")) {
+            if (QUrl(QString::fromStdString(this->mmoptpatchqueue.at(this->curropt)[0])).fileName().toStdString().ends_with(".ips")) {
                 this->findChild<QLabel*>("statusLabel")->setText("Patching with optional patch...");
                 this->findChild<QProgressBar*>("downloadProgressBar")->setValue(50);
                 IPSPatcherHandler* patcher = new IPSPatcherHandler();
-                patcher->applyPatch((this->destdir + QUrl(QString::fromStdString(this->optpatchqueue.at(this->curropt))).fileName().toStdString()).c_str(), (this->destdir + "ff3.sfc").c_str(), (this->destdir + "ff3.sfc").c_str());
+                patcher->applyPatch((this->destdir + QUrl(QString::fromStdString(this->mmoptpatchqueue.at(this->curropt)[0])).fileName().toStdString()).c_str(), (this->destdir + "ff3.sfc").c_str(), (this->destdir + "ff3.sfc").c_str());
                 this->findChild<QProgressBar*>("downloadProgressBar")->setValue(100);
             } else {
                 this->findChild<QProgressBar*>("downloadProgressBar")->setValue(100);
             }
         }
-        if (this->curropt+1 >= this->optpatchqueue.size()) {
+        if (this->curropt+1 >= this->mmoptpatchqueue.size()) {
             this->findChild<QProgressBar*>("downloadProgressBar")->setRange(0, 100);
             this->findChild<QProgressBar*>("downloadProgressBar")->setValue(0);
             this->nextStage();
@@ -426,9 +437,8 @@ void DMInst::downloadFinished() {
         } else {
             // next patch please
             this->curropt++;
-            this->findChild<QLabel*>("statusLabel")->setText("Downloading " + QUrl(QString::fromStdString(this->optpatchqueue.at(this->curropt))).fileName() + " ...");
-            QUrl optUrl = QString::fromStdString(optpatchqueue.at(this->curropt));
-            dmgr = new DownloadManager(optUrl, this, this->logger);
+            this->findChild<QLabel*>("statusLabel")->setText("Downloading " + QUrl(QString::fromStdString(this->mmoptpatchqueue.at(this->curropt)[0])).fileName() + " ...");
+            dmgr = new DownloadManager(mmoptpatchqueue.at(this->curropt), this, this->logger);
             connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
         }
         this->findChild<QProgressBar*>("downloadProgressBar")->setRange(0, 100);

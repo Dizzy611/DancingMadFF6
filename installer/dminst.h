@@ -52,7 +52,9 @@ private:
     std::map<std::string, std::string> sources;
     std::map<int, std::string> selections;
     std::vector<std::string> songurls;
+    std::vector<std::vector<std::string>> mmsongurls;
     std::vector<std::string> optpatchqueue;
+    std::vector<std::vector<std::string>> mmoptpatchqueue;
     std::string destdir;
     qint8 currsong;
     qint8 curropt;
