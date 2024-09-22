@@ -52,6 +52,7 @@ private:
     std::map<int, std::string> selections;
     std::vector<std::string> songurls;
     std::vector<std::string> optpatchqueue;
+    std::string destdir;
     qint8 currsong;
     qint8 curropt;
     MirrorChecker mc;
