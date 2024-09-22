@@ -20,7 +20,7 @@ DownloadManager::DownloadManager(QUrl targetUrl, QObject *parent, DMLogger *logg
     connect(&m_WebCtrl, SIGNAL(finished(QNetworkReply*)), this, SLOT(fileDownloaded(QNetworkReply*)));
     QNetworkRequest request(targetUrl);
     request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
-    request.setTransferTimeout(10000);
+    request.setTransferTimeout(30000);
     QNetworkReply* reply = m_WebCtrl.get(request);
 
     connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(downloadProgress(qint64, qint64)));
@@ -34,7 +34,7 @@ DownloadManager::DownloadManager(std::vector<std::string> targetUrls, QObject *p
     connect(&m_WebCtrl, SIGNAL(finished(QNetworkReply*)), this, SLOT(fileDownloadedMulti(QNetworkReply*)));
     QNetworkRequest request(QUrl(QString::fromStdString(this->targetUrls.at(this->currmirror))));
     request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
-    request.setTransferTimeout(10000);
+    request.setTransferTimeout(30000);
     QNetworkReply* reply = m_WebCtrl.get(request);
 
     connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(downloadProgress(qint64, qint64)));
@@ -84,7 +84,7 @@ void DownloadManager::fileDownloadedMulti(QNetworkReply* pReply) {
                 std::cout << "Trying " << this->targetUrls.at(this->currmirror) << std::endl;
                 QNetworkRequest request(QUrl(QString::fromStdString(this->targetUrls.at(this->currmirror))));
                 request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
-                request.setTransferTimeout(10000);
+                request.setTransferTimeout(30000);
                 QNetworkReply* reply = m_WebCtrl.get(request);
                 connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(downloadProgress(qint64, qint64)));
             } else {
@@ -107,7 +107,7 @@ void DownloadManager::fileDownloadedMulti(QNetworkReply* pReply) {
             std::cout << "Trying " << this->targetUrls.at(this->currmirror) << std::endl;
             QNetworkRequest request(QUrl(QString::fromStdString(this->targetUrls.at(this->currmirror))));
             request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
-            request.setTransferTimeout(10000);
+            request.setTransferTimeout(30000);
             QNetworkReply* reply = m_WebCtrl.get(request);
             connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(downloadProgress(qint64, qint64)));
         } else {
