@@ -42,6 +42,12 @@ private slots:
 
     void on_operaSelectBox_currentIndexChanged(int index);
 
+    void on_actionContact_Info_About_triggered();
+
+    void on_actionJoin_our_Discord_triggered();
+
+    void on_actionGitHub_Issue_Tracker_triggered();
+
 private:
     Ui::DMInst *ui;
     qint8 gostage;

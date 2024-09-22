@@ -108,7 +108,7 @@
           <bool>false</bool>
          </property>
          <property name="currentText">
-          <string>Developer's Recommendation</string>
+          <string>Initializing preset list, please wait...</string>
          </property>
          <property name="currentIndex">
           <number>0</number>
@@ -118,7 +118,7 @@
          </property>
          <item>
           <property name="text">
-           <string comment="Recommended" extracomment="Recommended">Developer's Recommendation</string>
+           <string comment="Recommended" extracomment="Recommended">Initializing preset list, please wait...</string>
           </property>
          </item>
          <item>
@@ -228,7 +228,7 @@
          </property>
          <item>
           <property name="text">
-           <string>SPC/Do Not Download (No MSU-1)</string>
+           <string>Initializing source list, please wait...</string>
           </property>
          </item>
          <item>
@@ -472,12 +472,30 @@
    </property>
    <widget class="QMenu" name="menuDancing_Mad_Installer">
     <property name="title">
-     <string>Dancing Mad Installer</string>
+     <string>Help</string>
     </property>
+    <addaction name="actionContact_Info_About"/>
+    <addaction name="actionJoin_our_Discord"/>
+    <addaction name="actionGitHub_Issue_Tracker"/>
    </widget>
    <addaction name="menuDancing_Mad_Installer"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionContact_Info_About">
+   <property name="text">
+    <string>Contact Info/About...</string>
+   </property>
+  </action>
+  <action name="actionJoin_our_Discord">
+   <property name="text">
+    <string>Join our Discord</string>
+   </property>
+  </action>
+  <action name="actionGitHub_Issue_Tracker">
+   <property name="text">
+    <string>GitHub Issue Tracker</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

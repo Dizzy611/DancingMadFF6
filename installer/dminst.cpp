@@ -35,7 +35,7 @@ This patch is intended to be used only with a legally obtained copy of Final Fan
 #include "./ui_dminst.h"
 #include <QFileDialog>
 #include <QMessageBox>
-
+#include <QDesktopServices>
 
 #include "rom_validator.h"
 #include "song_parser.h"
@@ -142,15 +142,17 @@ void DMInst::on_goButton_clicked()
                 std::vector<std::string> mirrorList = mc->getMirrors();
                     for (int i = 0; i < songs.size(); i++) {
                         for (auto & pcm : songs[i].pcms) {
-                            if (this->selections.at(i) != "spc") { // skip download if SPC
-                                std::string uppersource = this->selections.at(i);
-                                std::transform(uppersource.begin(), uppersource.end(), uppersource.begin(), ::toupper);
-                                if (!uppersource.starts_with("X")) {
-                                    this->mmsongurls.push_back(buildMirroredUrls(mirrorList, uppersource + "/ff3-" + std::to_string(pcm) + ".pcm"));
-                                    //this->songurls.push_back(selectedmirror + uppersource + "/ff3-" + std::to_string(pcm) + ".pcm");
-                                } else {
-                                    this->mmsongurls.push_back(buildMirroredUrls(mirrorList, "opera/" + uppersource.substr(1, uppersource.size()) + "/ff3-" + std::to_string(pcm) + ".pcm"));
-                                    //this->songurls.push_back(selectedmirror + "opera/" + uppersource.substr(1, uppersource.size()) + "/ff3-" + std::to_string(pcm) + ".pcm");
+                            if (this->selections.contains(i)) {
+                                if (this->selections.at(i) != "spc") { // skip download if SPC
+                                    std::string uppersource = this->selections.at(i);
+                                    std::transform(uppersource.begin(), uppersource.end(), uppersource.begin(), ::toupper);
+                                    if (!uppersource.starts_with("X")) {
+                                        this->mmsongurls.push_back(buildMirroredUrls(mirrorList, uppersource + "/ff3-" + std::to_string(pcm) + ".pcm"));
+                                        //this->songurls.push_back(selectedmirror + uppersource + "/ff3-" + std::to_string(pcm) + ".pcm");
+                                    } else {
+                                        this->mmsongurls.push_back(buildMirroredUrls(mirrorList, "opera/" + uppersource.substr(1, uppersource.size()) + "/ff3-" + std::to_string(pcm) + ".pcm"));
+                                        //this->songurls.push_back(selectedmirror + "opera/" + uppersource.substr(1, uppersource.size()) + "/ff3-" + std::to_string(pcm) + ".pcm");
+                                    }
                                 }
                             }
                         }
@@ -174,8 +176,13 @@ void DMInst::on_goButton_clicked()
                     this->currsong = 0;
                     this->findChild<QLabel*>("statusLabel")->setText("Downloading " + QUrl(QString::fromStdString(this->mmsongurls.at(this->currsong)[0])).fileName() + " ...");
             } else {
+                QMessageBox msgBox;
+                msgBox.setText("No download mirrors could be contacted. Please try again in 5 minutes. If this error persists, please contact the developer.");
+                msgBox.setStandardButtons(QMessageBox::Ok);
+                msgBox.setDefaultButton(QMessageBox::Ok);
+                msgBox.exec();
                 this->findChild<QLabel*>("statusLabel")->setText("ERROR: No valid mirrors found. Try again or report to developer.");
-                    this->findChild<QPushButton*>("goButton")->setEnabled(true);
+                this->findChild<QPushButton*>("goButton")->setEnabled(true);
             }
         } else {
             this->findChild<QLabel*>("statusLabel")->setText("Still checking for valid mirrors, please wait...");
@@ -529,5 +536,30 @@ void DMInst::on_operaSelectBox_currentIndexChanged(int index)
     std::string selected_source = opera_sources.at(index);
     // set selected source in selections map
     this->selections[31] = opera_sources.at(index);
+}
+
+
+void DMInst::on_actionContact_Info_About_triggered()
+{
+    QMessageBox msgBox;
+    msgBox.setTextFormat(Qt::RichText);
+    msgBox.setWindowTitle("About/Contact...");
+    msgBox.setText("Dancing Mad MSU-1 is by Dylan \"Dizzy\" O'Malley-Morrison &lt;dizzy@domad.science&gt;, Copyright (C)2017-2024, licensed under the <a href=\"https://raw.githubusercontent.com/Dizzy611/DancingMadFF6/refs/heads/master/LICENSE\">BSD 2-clause license.</a><br /><br />\"Final Fantasy\",\"Final Fantasy III\", and \"Final Fantasy VI\" are registered trademarks of Square Enix Holdings Co., Ltd, hereafter \"Square Enix\". This is NOT a licensed product of Square Enix. The developers are not affiliated with or sponsored by Square Enix or any other rights holders.<br /><br />Issues? Contact Dizzy on Discord at <a href=\"https://discord.gg/ynZkNnK\">https://discord.gg/ynZkNnK</a>, open an issue on GitHub at <a href=\"https://github.com/Dizzy611/DancingMadFF6/issues\">https://github.com/Dizzy611/DancingMadFF6/issues</a>, or contact me by email at <a href=\"mailto:dizzy@domad.science.\">dizzy@domad.science</a>");
+    msgBox.setStandardButtons(QMessageBox::Ok);
+    msgBox.setDefaultButton(QMessageBox::Ok);
+    msgBox.exec();
+}
+
+
+
+void DMInst::on_actionJoin_our_Discord_triggered()
+{
+    QDesktopServices::openUrl(QUrl("https://discord.gg/ynZkNnK"));
+}
+
+
+void DMInst::on_actionGitHub_Issue_Tracker_triggered()
+{
+    QDesktopServices::openUrl(QUrl("https://github.com/Dizzy611/DancingMadFF6/issues"));
 }
 
