@@ -215,10 +215,45 @@ void DMInst::nextStage() {
         connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
         break;
     }
+    case 3: {
+        // check if any optional patches have been selected
+        bool twue = this->findChild<QCheckBox*>("patchCheck_1")->checkState();
+        bool mp   = this->findChild<QCheckBox*>("patchCheck_2")->checkState();
+        bool csr  = this->findChild<QCheckBox*>("patchCheck_3")->checkState();
+        if ((!twue) && (!mp) && (!csr)) {
+            this->gostage = 4;
+            this->nextStage();
+            break;
+        } else {
+            int selectedmirror = 0; // test value
+            if (twue) {
+                this->optpatchqueue.push_back(this->mirrors[selectedmirror] + "contrib/twue.ips");
+            }
+            if (mp && csr) {
+                this->optpatchqueue.push_back(this->mirrors[selectedmirror] + "contrib/mplayer-csr-main-nh.ips");
+            } else if (mp) {
+                this->optpatchqueue.push_back(this->mirrors[selectedmirror] + "contrib/mplayer-main-nh.ips");
+            }
+            if (csr) {
+                this->optpatchqueue.push_back(this->mirrors[selectedmirror] + "contrib/CSR/csr.ips");
+                this->optpatchqueue.push_back(this->mirrors[selectedmirror] + "contrib/CSR/ff3-90.pcm");
+                this->optpatchqueue.push_back(this->mirrors[selectedmirror] + "contrib/CSR/ff3-91.pcm");
+                this->optpatchqueue.push_back(this->mirrors[selectedmirror] + "contrib/CSR/ff3-92.pcm");
+                this->optpatchqueue.push_back(this->mirrors[selectedmirror] + "contrib/CSR/ff3-93.pcm");
+            }
+            QUrl optUrl = QString::fromStdString(optpatchqueue.at(0));
+            dmgr = new DownloadManager(optUrl, this);
+            connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
+            this->curropt = 0;
+            this->gostage = 4;
+            this->findChild<QLabel*>("statusLabel")->setText("Downloading " + QUrl(QString::fromStdString(this->optpatchqueue.at(this->curropt))).fileName() + " ...");
+        }
+    }
     default:
         break;
     }
 }
+
 void DMInst::downloadFinished() {
     switch(this->gostage) {
     case 0: {
@@ -245,6 +280,8 @@ void DMInst::downloadFinished() {
             line.erase(std::remove_if(line.begin(), line.end(), ::isspace), line.end());
             this->mirrors.push_back(line);
         }
+        this->findChild<QProgressBar*>("downloadProgressBar")->setRange(0, 100);
+        this->findChild<QProgressBar*>("downloadProgressBar")->setValue(0);
         this->nextStage();
         break;
     }
@@ -269,6 +306,8 @@ void DMInst::downloadFinished() {
         this->songs = std::get<2>(xmlparse);
         this->presets = std::get<1>(xmlparse);
         this->sources = std::get<0>(xmlparse);
+        this->findChild<QProgressBar*>("downloadProgressBar")->setRange(0, 100);
+        this->findChild<QProgressBar*>("downloadProgressBar")->setValue(0);
         this->nextStage();
         break;
     }
@@ -290,6 +329,8 @@ void DMInst::downloadFinished() {
             file.close();
         }
         if (this->currsong+1 >= this->songurls.size()) {
+            this->findChild<QProgressBar*>("downloadProgressBar")->setRange(0, 100);
+            this->findChild<QProgressBar*>("downloadProgressBar")->setValue(0);
             this->nextStage();
             break;
         } else {
@@ -300,6 +341,8 @@ void DMInst::downloadFinished() {
             dmgr = new DownloadManager(songUrl, this);
             connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
         }
+        this->findChild<QProgressBar*>("downloadProgressBar")->setRange(0, 100);
+        this->findChild<QProgressBar*>("downloadProgressBar")->setValue(0);
         break;
     }
     case 3: {
@@ -314,12 +357,62 @@ void DMInst::downloadFinished() {
             QCoreApplication::exit(1); // Quit, as we can't continue
             break;
         }
+        this->findChild<QLabel*>("statusLabel")->setText("Patching ROM...");
+        this->findChild<QProgressBar*>("downloadProgressBar")->setRange(0, 100);
+        this->findChild<QProgressBar*>("downloadProgressBar")->setValue(0);
         QFile file("./ff3msu.ips");
         file.open(QIODevice::WriteOnly);
         file.write(patchData);
         file.close();
+        this->findChild<QProgressBar*>("downloadProgressBar")->setValue(50);
         IPSPatcherHandler* patcher = new IPSPatcherHandler();
         patcher->applyPatch("./ff3msu.ips", this->findChild<QLineEdit*>("ROMSelectLine")->text().toStdString().c_str(), "./ff3.sfc");
+        this->findChild<QProgressBar*>("downloadProgressBar")->setValue(100);
+        this->findChild<QLabel*>("statusLabel")->setText("ROM patched.");
+        this->nextStage();
+        break;
+    }
+    case 4: {
+        QByteArray optData = dmgr->downloadedData();
+        if (optData.isEmpty()) {
+            // optional patch data failed to download, warn user but continue
+            QMessageBox msgBox;
+            msgBox.setText("Unable to download " + QUrl(QString::fromStdString(this->optpatchqueue.at(this->curropt))).fileName() + ". Continuing without...");
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.setDefaultButton(QMessageBox::Ok);
+            msgBox.exec();
+        } else {
+            QFile file(QString::fromStdString("./" + QUrl(QString::fromStdString(this->optpatchqueue.at(this->curropt))).fileName().toStdString()));
+            this->findChild<QProgressBar*>("downloadProgressBar")->setRange(0, 100);
+            this->findChild<QProgressBar*>("downloadProgressBar")->setValue(0);
+            file.open(QIODevice::WriteOnly);
+            file.write(optData);
+            file.close();
+            if (QUrl(QString::fromStdString(this->optpatchqueue.at(this->curropt))).fileName().toStdString().ends_with(".ips")) {
+                this->findChild<QLabel*>("statusLabel")->setText("Patching with optional patch...");
+                this->findChild<QProgressBar*>("downloadProgressBar")->setValue(50);
+                IPSPatcherHandler* patcher = new IPSPatcherHandler();
+                patcher->applyPatch(("./" + QUrl(QString::fromStdString(this->optpatchqueue.at(this->curropt))).fileName().toStdString()).c_str(), "./ff3.sfc", "./ff3.sfc");
+                this->findChild<QProgressBar*>("downloadProgressBar")->setValue(100);
+            } else {
+                this->findChild<QProgressBar*>("downloadProgressBar")->setValue(100);
+            }
+        }
+        if (this->curropt+1 >= this->optpatchqueue.size()) {
+            this->findChild<QProgressBar*>("downloadProgressBar")->setRange(0, 100);
+            this->findChild<QProgressBar*>("downloadProgressBar")->setValue(0);
+            this->nextStage();
+            break;
+        } else {
+            // next patch please
+            this->curropt++;
+            this->findChild<QLabel*>("statusLabel")->setText("Downloading " + QUrl(QString::fromStdString(this->optpatchqueue.at(this->curropt))).fileName() + " ...");
+            QUrl optUrl = QString::fromStdString(optpatchqueue.at(this->curropt));
+            dmgr = new DownloadManager(optUrl, this);
+            connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
+        }
+        this->findChild<QProgressBar*>("downloadProgressBar")->setRange(0, 100);
+        this->findChild<QProgressBar*>("downloadProgressBar")->setValue(0);
         break;
     }
     default:

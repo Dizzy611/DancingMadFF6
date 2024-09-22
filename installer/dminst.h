@@ -50,7 +50,9 @@ private:
     std::map<std::string, std::string> sources;
     std::map<int, std::string> selections;
     std::vector<std::string> songurls;
+    std::vector<std::string> optpatchqueue;
     qint8 currsong;
+    qint8 curropt;
     void nextStage();
 };
 #endif // DMINST_H
