@@ -71,8 +71,9 @@ This patch is intended to be used only with a legally obtained copy of Final Fan
 #include <iomanip>
 #include <QFile>
 #include <QCryptographicHash>
+#include "dmlogger.h"
 
-struct ROMValid validate_rom(std::string filename) {
+struct ROMValid validate_rom(std::string filename, DMLogger *logger) {
     struct ROMValid output;
     memset(&output, 0, sizeof(struct ROMValid));
 
@@ -157,7 +158,7 @@ struct ROMValid validate_rom(std::string filename) {
             company_id[i] = snesheader.extended[i];
         }
         if ((company_id[0] == 0x43) && (company_id[1] == 0x33)) {
-            std::cout << "DEBUG: Company ID is correct (U)" << std::endl;
+            logger->doLog("DEBUG: Company ID is correct (U)");
         } else {
             output.return_code = ERROR_WRONG_COMPANY;
             output.error_string = "Not a Final Fantasy 3/6 ROM: Company ID does not match.";
@@ -165,7 +166,7 @@ struct ROMValid validate_rom(std::string filename) {
         }
     } else {
         if (snesheader.license == 0xC3) {
-            std::cout << "DEBUG: Licensor ID is correct (J)" << std::endl;
+            logger->doLog("DEBUG: Licensor ID is correct (J)");
         } else {
             output.return_code = ERROR_WRONG_COMPANY;
             output.error_string = "Not a Final Fantasy 3/6 ROM: Licensor ID does not match.";
@@ -184,7 +185,7 @@ struct ROMValid validate_rom(std::string filename) {
             output.error_string = "Not a Final Fantasy 3/6 ROM: ROM ID does not match";
             return output;
         } else {
-            std::cout << "DEBUG: ROM ID is correct (US V1.0 or V1.1 ROM)" << std::endl;
+            logger->doLog("DEBUG: ROM ID is correct (US V1.0 or V1.1 ROM)");
         }
     }
 
@@ -195,9 +196,9 @@ struct ROMValid validate_rom(std::string filename) {
     }
     title[21] = '\0';
     if (japanese && (strcmp(title, "FINAL FANTASY 6      ") == 0)) {
-        std::cout << "DEBUG: Title is correct for Japanese ROM." << std::endl;
+        logger->doLog("DEBUG: Title is correct for Japanese ROM.");
     } else if (strcmp(title, "FINAL FANTASY 3      ") == 0) {
-        std::cout << "DEBUG: Title is correct for US ROM." << std::endl;
+        logger->doLog("DEBUG: Title is correct for US ROM.");
     } else {
         output.return_code = ERROR_WRONG_TITLE;
         output.error_string = "Not a Final Fantasy 3/6 ROM: Title does not match.";
@@ -208,7 +209,7 @@ struct ROMValid validate_rom(std::string filename) {
     int version = 0;
     if (!japanese) { // japanese ROM only has one version
         if (snesheader.version == 1) {
-            std::cout << "DEBUG: Version is 1.1" << std::endl;
+            logger->doLog("DEBUG: Version is 1.1");
             version = 1;
         }
     }
@@ -220,7 +221,7 @@ struct ROMValid validate_rom(std::string filename) {
         output.error_string = "Not a Final Fantasy 3/6 ROM: LoROM type instead of HiROM.";
         return output;
     } else {
-        std::cout << "DEBUG: ROM type is correct." << std::endl;
+        logger->doLog("DEBUG: ROM type is correct.");
     }
 
     // check ROM size
@@ -229,7 +230,7 @@ struct ROMValid validate_rom(std::string filename) {
         output.error_string = "Not a Final Fantasy 3/6 ROM: Wrong ROM size.";
         return output;
     } else {
-        std::cout << "DEBUG: ROM size is correct." << std::endl;
+        logger->doLog("DEBUG: ROM size is correct.");
     }
 
     // check SRAM size
@@ -237,7 +238,7 @@ struct ROMValid validate_rom(std::string filename) {
         output.return_code = ERROR_WRONG_SRAM;
         output.error_string = "Not a Final Fantasy 3/6 ROM: Wrong SRAM size.";
     } else {
-        std::cout << "DEBUG: SRAM size is correct." << std::endl;
+        logger->doLog("DEBUG: SRAM size is correct.");
     }
 
     // check checksum
@@ -254,7 +255,7 @@ struct ROMValid validate_rom(std::string filename) {
         output.error_string = "Possible patched ROM: Checksum value not recognized.";
         return output;
     } else {
-        std::cout << "DEBUG: Checksum value is correct." << std::endl;
+        logger->doLog("DEBUG: Checksum value is correct.");
     }
 
     // compute checksum
@@ -262,7 +263,7 @@ struct ROMValid validate_rom(std::string filename) {
     std::streamsize filesize = cppfile.tellg();
     cppfile.seekg(0, std::ios::beg);
     if (has_copier_header) {
-        std::cout << "Skipping copier header in checksum" << std::endl;
+        logger->doLog("Skipping copier header in checksum");
         filesize = filesize - 512;
         cppfile.seekg(512, std::ios::beg);
     }
@@ -319,7 +320,7 @@ struct ROMValid validate_rom(std::string filename) {
         output.error_string = "Possible patched ROM: Computed SHA256 hash does not match expected value.";
         return output;
     } else {
-        std::cout << "DEBUG: SHA256sum is correct." << std::endl;
+        logger->doLog("DEBUG: SHA256sum is correct.");
     }
 
     // We've gotten to the bottom, so we've got a fully valid ROM. Return an "error" code indicating a valid ROM of the given region and version

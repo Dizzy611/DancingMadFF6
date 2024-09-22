@@ -4,12 +4,12 @@
 #include <QObject>
 #include <QUrl>
 #include "downloadmanager.h"
-
+#include "dmlogger.h"
 class MirrorChecker : public QObject
 {
     Q_OBJECT
 public:
-    explicit MirrorChecker(QObject *parent = nullptr);
+    explicit MirrorChecker(QObject *parent = nullptr, DMLogger *logger = nullptr);
     void setUrl(std::string newUrl);
     void setUrls(std::vector<std::string> urls);
     void checkMirrors();
@@ -26,6 +26,7 @@ private:
     DownloadManager *dmgr;
     std::vector<std::string> validUrls;
     bool testdone = false;
+    DMLogger *logger;
 
 signals:
 };

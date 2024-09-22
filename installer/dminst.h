@@ -5,6 +5,7 @@
 #include "downloadmanager.h"
 #include "song_parser.h"
 #include "mirrorchecker.h"
+#include "dmlogger.h"
 
 // data path will depend on whether we're running in an AppImage/a MacOS .app bundle or directly on Linux/Windows. Should be "." for the latter, set as default here.
 #define DATA_PATH "."
@@ -55,7 +56,8 @@ private:
     std::string destdir;
     qint8 currsong;
     qint8 curropt;
-    MirrorChecker mc;
+    MirrorChecker *mc;
+    DMLogger *logger;
     void nextStage();
 };
 #endif // DMINST_H

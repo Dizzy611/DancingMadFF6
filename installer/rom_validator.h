@@ -2,6 +2,7 @@
 #define ROM_VALIDATOR_H
 
 #include <string>
+#include "dmlogger.h"
 
 typedef struct
 {
@@ -45,7 +46,7 @@ struct ROMValid {
     std::string error_string;
 };
 
-struct ROMValid validate_rom(std::string filename);
+struct ROMValid validate_rom(std::string filename, DMLogger *logger);
 
 #define VALID_US_V10 0
 #define VALID_US_V11 1

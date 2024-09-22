@@ -5,6 +5,7 @@
 #include <string>
 #include <QString>
 #include <map>
+#include "dmlogger.h"
 
 struct Preset {
     std::string name;
@@ -18,6 +19,6 @@ struct Song {
     std::vector<std::string> sources;
 };
 
-std::tuple<std::map<std::string, std::string>, std::vector<struct Preset>, std::vector<struct Song>> parseSongsXML(const QByteArray &data);
+std::tuple<std::map<std::string, std::string>, std::vector<struct Preset>, std::vector<struct Song>> parseSongsXML(const QByteArray &data, DMLogger* logger);
 
 #endif // SONG_PARSER_H
