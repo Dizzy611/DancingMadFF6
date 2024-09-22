@@ -20,6 +20,8 @@ signals:
     
 private slots:
     void fileDownloaded(QNetworkReply* pReply);
+    void downloadProgress(qint64 ist, qint64 max);
+
 private:
     QNetworkAccessManager m_WebCtrl;
     QByteArray m_DownloadedData;
