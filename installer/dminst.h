@@ -50,6 +50,7 @@ private:
     std::map<std::string, std::string> sources;
     std::map<int, std::string> selections;
     std::vector<std::string> songurls;
+    qint8 currsong;
     void nextStage();
 };
 #endif // DMINST_H
