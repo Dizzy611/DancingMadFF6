@@ -455,6 +455,8 @@ void DMInst::downloadFinished() {
         this->findChild<QProgressBar*>("downloadProgressBar")->setValue(50);
         IPSPatcherHandler* patcher = new IPSPatcherHandler();
         patcher->applyPatch((this->destdir + "ff3msu.ips").c_str(), this->findChild<QLineEdit*>("ROMSelectLine")->text().toStdString().c_str(), (this->destdir + "ff3.sfc").c_str());
+        QDir dir;
+        dir.remove(QString::fromStdString(this->destdir + "ff3msu.ips"));
         this->findChild<QProgressBar*>("downloadProgressBar")->setValue(100);
         this->findChild<QLabel*>("statusLabel")->setText("ROM patched.");
         // create empty .msu file
@@ -491,6 +493,8 @@ void DMInst::downloadFinished() {
                 IPSPatcherHandler* patcher = new IPSPatcherHandler();
                 patcher->applyPatch((this->destdir + QUrl(QString::fromStdString(this->mmoptpatchqueue.at(this->curropt)[0])).fileName().toStdString()).c_str(), (this->destdir + "ff3.sfc").c_str(), (this->destdir + "ff3.sfc").c_str());
                 this->findChild<QProgressBar*>("downloadProgressBar")->setValue(100);
+                QDir dir;
+                dir.remove(QString::fromStdString(this->destdir + QUrl(QString::fromStdString(this->mmoptpatchqueue.at(this->curropt)[0])).fileName().toStdString()));
             } else {
                 this->findChild<QProgressBar*>("downloadProgressBar")->setValue(100);
             }
