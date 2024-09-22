@@ -12,7 +12,7 @@
 //#define XML_URL "https://github.com/Dizzy611/DancingMadFF6/raw/refs/heads/master/installer/songs.xml"
 // debug version
 #define XML_URL "https://github.com/Dizzy611/DancingMadFF6/raw/refs/heads/dancemonkey-installer-rewrite/installer/songs.xml"
-
+#define PATCH_URL "https://github.com/Dizzy611/DancingMadFF6/raw/refs/heads/master/patch/ff3msu.ips"
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class DMInst;
