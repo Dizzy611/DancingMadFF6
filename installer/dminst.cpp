@@ -40,6 +40,7 @@ This patch is intended to be used only with a legally obtained copy of Final Fan
 #include "rom_validator.h"
 #include "song_parser.h"
 #include "ips-patcher-master/IPSPatcherHandler.h"
+#include "mirrorchecker.h"
 
 #include <ostream>
 #include <iostream>
@@ -125,38 +126,48 @@ void DMInst::on_ROMSelectLine_textChanged(const QString &arg1)
 
 void DMInst::on_goButton_clicked()
 {
-    int selectedmirror = 0; // test value
-    if (this->gostage == 2 && !this->selections.empty()) {
-        for (int i = 0; i < songs.size(); i++) {
-            for (auto & pcm : songs[i].pcms) {
-                if (this->selections.at(i) != "spc") { // skip download if SPC
-                    std::string uppersource = this->selections.at(i);
-                    std::transform(uppersource.begin(), uppersource.end(), uppersource.begin(), ::toupper);
-                    if (!uppersource.starts_with("X")) {
-                        this->songurls.push_back(this->mirrors[selectedmirror] + uppersource + "/ff3-" + std::to_string(pcm) + ".pcm");
-                    } else {
-                        this->songurls.push_back(this->mirrors[selectedmirror] + "opera/" + uppersource.substr(1, uppersource.size()) + "/ff3-" + std::to_string(pcm) + ".pcm");
+    // check if mirror list has been validated and at least one valid mirror has been returned.
+    if (mc.isDone()) {
+        if (mc.getMirror() != "") {
+            std::string selectedmirror = mc.getMirror();
+            if (this->gostage == 2 && !this->selections.empty()) {
+                for (int i = 0; i < songs.size(); i++) {
+                    for (auto & pcm : songs[i].pcms) {
+                        if (this->selections.at(i) != "spc") { // skip download if SPC
+                            std::string uppersource = this->selections.at(i);
+                            std::transform(uppersource.begin(), uppersource.end(), uppersource.begin(), ::toupper);
+                            if (!uppersource.starts_with("X")) {
+                                this->songurls.push_back(selectedmirror + uppersource + "/ff3-" + std::to_string(pcm) + ".pcm");
+                            } else {
+                                this->songurls.push_back(selectedmirror + "opera/" + uppersource.substr(1, uppersource.size()) + "/ff3-" + std::to_string(pcm) + ".pcm");
+                            }
+                        }
                     }
                 }
+                // DEBUG
+                std::cout << "SONG URLS:" << std::endl;
+                for (auto & url : songurls) {
+                    std::cout << url << std::endl;
+                }
+
+                // start the downloads!
+                QUrl songUrl = QString::fromStdString(songurls.at(0));
+                dmgr = new DownloadManager(songUrl, this);
+                connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
+                this->currsong = 0;
+                this->findChild<QLabel*>("statusLabel")->setText("Downloading " + QUrl(QString::fromStdString(this->songurls.at(this->currsong))).fileName() + " ...");
+
+            } else {
+                // Not ready to continue.
+                return;
             }
+        } else {
+            this->findChild<QLabel*>("statusLabel")->setText("ERROR: No valid mirrors found. Try again or report to developer.");
         }
-        // DEBUG
-        std::cout << "SONG URLS:" << std::endl;
-        for (auto & url : songurls) {
-            std::cout << url << std::endl;
-        }
-
-        // start the downloads!
-        QUrl songUrl = QString::fromStdString(songurls.at(0));
-        dmgr = new DownloadManager(songUrl, this);
-        connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
-        this->currsong = 0;
-        this->findChild<QLabel*>("statusLabel")->setText("Downloading " + QUrl(QString::fromStdString(this->songurls.at(this->currsong))).fileName() + " ...");
-
     } else {
-        // Not ready to continue.
-        return;
+        this->findChild<QLabel*>("statusLabel")->setText("Still checking for valid mirrors, please wait...");
     }
+
 }
 
 void DMInst::nextStage() {
@@ -225,21 +236,21 @@ void DMInst::nextStage() {
             this->nextStage();
             break;
         } else {
-            int selectedmirror = 0; // test value
+            std::string selectedmirror = this->mc.getMirror(); // if we got this far, we should have at least one valid mirror, so testing is not necessary (song download is necessary first)
             if (twue) {
-                this->optpatchqueue.push_back(this->mirrors[selectedmirror] + "contrib/twue.ips");
+                this->optpatchqueue.push_back(selectedmirror + "contrib/twue.ips");
             }
             if (mp && csr) {
-                this->optpatchqueue.push_back(this->mirrors[selectedmirror] + "contrib/mplayer-csr-main-nh.ips");
+                this->optpatchqueue.push_back(selectedmirror + "contrib/mplayer-csr-main-nh.ips");
             } else if (mp) {
-                this->optpatchqueue.push_back(this->mirrors[selectedmirror] + "contrib/mplayer-main-nh.ips");
+                this->optpatchqueue.push_back(selectedmirror + "contrib/mplayer-main-nh.ips");
             }
             if (csr) {
-                this->optpatchqueue.push_back(this->mirrors[selectedmirror] + "contrib/CSR/csr.ips");
-                this->optpatchqueue.push_back(this->mirrors[selectedmirror] + "contrib/CSR/ff3-90.pcm");
-                this->optpatchqueue.push_back(this->mirrors[selectedmirror] + "contrib/CSR/ff3-91.pcm");
-                this->optpatchqueue.push_back(this->mirrors[selectedmirror] + "contrib/CSR/ff3-92.pcm");
-                this->optpatchqueue.push_back(this->mirrors[selectedmirror] + "contrib/CSR/ff3-93.pcm");
+                this->optpatchqueue.push_back(selectedmirror + "contrib/CSR/csr.ips");
+                this->optpatchqueue.push_back(selectedmirror + "contrib/CSR/ff3-90.pcm");
+                this->optpatchqueue.push_back(selectedmirror + "contrib/CSR/ff3-91.pcm");
+                this->optpatchqueue.push_back(selectedmirror + "contrib/CSR/ff3-92.pcm");
+                this->optpatchqueue.push_back(selectedmirror + "contrib/CSR/ff3-93.pcm");
             }
             QUrl optUrl = QString::fromStdString(optpatchqueue.at(0));
             dmgr = new DownloadManager(optUrl, this);
@@ -280,6 +291,9 @@ void DMInst::downloadFinished() {
             line.erase(std::remove_if(line.begin(), line.end(), ::isspace), line.end());
             this->mirrors.push_back(line);
         }
+        // begin test of mirrors to find which are available
+        mc.setUrls(this->mirrors);
+        mc.checkMirrors();
         this->findChild<QProgressBar*>("downloadProgressBar")->setRange(0, 100);
         this->findChild<QProgressBar*>("downloadProgressBar")->setValue(0);
         this->nextStage();

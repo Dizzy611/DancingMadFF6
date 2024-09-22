@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "downloadmanager.h"
 #include "song_parser.h"
+#include "mirrorchecker.h"
 
 // data path will depend on whether we're running in an AppImage/a MacOS .app bundle or directly on Linux/Windows. Should be "." for the latter, set as default here.
 #define DATA_PATH "."
@@ -53,6 +54,7 @@ private:
     std::vector<std::string> optpatchqueue;
     qint8 currsong;
     qint8 curropt;
+    MirrorChecker mc;
     void nextStage();
 };
 #endif // DMINST_H

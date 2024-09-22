@@ -16,8 +16,10 @@ DownloadManager::DownloadManager(QUrl targetUrl, QObject *parent)
 DownloadManager::~DownloadManager() {}
 
 void DownloadManager::downloadProgress(qint64 ist, qint64 max) {
-    this->parent()->findChild<QProgressBar*>("downloadProgressBar")->setRange(0, max);
-    this->parent()->findChild<QProgressBar*>("downloadProgressBar")->setValue(ist);
+    if (this->parent()->findChild<QProgressBar*>("downloadProgressBar")) {
+        this->parent()->findChild<QProgressBar*>("downloadProgressBar")->setRange(0, max);
+        this->parent()->findChild<QProgressBar*>("downloadProgressBar")->setValue(ist);
+    }
 }
 
 void DownloadManager::fileDownloaded(QNetworkReply* pReply) {
