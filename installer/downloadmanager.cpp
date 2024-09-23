@@ -2,6 +2,9 @@
 #include <iostream>
 #include <QProgressBar>
 
+// DEBUG
+#define LOG_TO_STDERR true
+
 std::vector<std::string> buildMirroredUrls(std::vector<std::string> mirrors, std::string path) {
     std::vector<std::string> output;
     for (auto & mirror : mirrors) {
@@ -26,8 +29,9 @@ DownloadManager::DownloadManager(QUrl targetUrl, QObject *parent, DMLogger *logg
     connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(downloadProgress(qint64, qint64)));
 }
 
-DownloadManager::DownloadManager(std::vector<std::string> targetUrls, QObject *parent, DMLogger *logger)
+DownloadManager::DownloadManager(std::vector<std::string> targetUrls, QObject *parent)
     : QObject{parent} {
+    this->logger = new DMLogger("./songtransit.log", LOG_TO_STDERR);
     this->currmirror = 0;
     this->multimode = true;
     this->targetUrls = targetUrls;
@@ -71,17 +75,15 @@ void DownloadManager::fileDownloadedMulti(QNetworkReply* pReply) {
     QVariant test = pReply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
     if (test.isValid()) {
         QString status = test.toString();
-        // TODO: figure out why logging breaks with multi-mirror downloads
-        //if (this->logger != nullptr) {
-        //    this->logger->doLog("DEBUG: HTTP CODE RECEIVED: " + status.toStdString());
-        //}
-        std::cout << "DEBUG: HTTP CODE RECEIVED: " << status.toStdString() << std::endl;
-        std::cout << "Url was " << this->targetUrls.at(this->currmirror) << std::endl;
+
+        this->logger->doLog("DEBUG: HTTP CODE RECEIVED: " + status.toStdString());
+        this->logger->doLog("Url was " + this->targetUrls.at(this->currmirror));
+
         if (status.toStdString() != "200") {
             // Try the next url in the list
             this->currmirror++;
             if (this->currmirror < this->targetUrls.size()) {
-                std::cout << "Trying " << this->targetUrls.at(this->currmirror) << std::endl;
+                this->logger->doLog("Trying " + this->targetUrls.at(this->currmirror));
                 QNetworkRequest request(QUrl(QString::fromStdString(this->targetUrls.at(this->currmirror))));
                 request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
                 request.setTransferTimeout(30000);
@@ -99,12 +101,13 @@ void DownloadManager::fileDownloadedMulti(QNetworkReply* pReply) {
             emit downloaded();
         }
     } else {
-        std::cout << "DEBUG: Invalid reply to HTTP request" << std::endl;
-        std::cout << "Url was " << this->targetUrls.at(this->currmirror) << std::endl;
+        this->logger->doLog("DEBUG: Invalid reply to HTTP request");
+        this->logger->doLog("Url was " + this->targetUrls.at(this->currmirror));
+
         // Try the next url in the list
         this->currmirror++;
         if (this->currmirror < this->targetUrls.size()) {
-            std::cout << "Trying " << this->targetUrls.at(this->currmirror) << std::endl;
+            this->logger->doLog("Trying " + this->targetUrls.at(this->currmirror));
             QNetworkRequest request(QUrl(QString::fromStdString(this->targetUrls.at(this->currmirror))));
             request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
             request.setTransferTimeout(30000);

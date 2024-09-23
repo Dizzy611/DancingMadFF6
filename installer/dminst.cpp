@@ -162,7 +162,7 @@ void DMInst::on_goButton_clicked()
         // disable pressing the button twice
         this->findChild<QPushButton*>("goButton")->setEnabled(false);
         this->destdir = QFileDialog::getExistingDirectory(this, tr("Choose destination directory"), QDir::homePath()).toStdString() + "/";
-
+        this->logger->moveLog(this->destdir + "install.log");
         // check if mirror list has been validated and at least one valid mirror has been returned.
         if (mc->isDone()) {
             if (mc->getMirror() != "") {
@@ -224,7 +224,7 @@ void DMInst::on_goButton_clicked()
 
                     // start the downloads!
                     //QUrl songUrl = QString::fromStdString(songurls.at(0));
-                    dmgr = new DownloadManager(mmsongurls.at(0), this, this->logger);
+                    dmgr = new DownloadManager(mmsongurls.at(0), this);
                     connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
                     this->currsong = 0;
                     this->findChild<QLabel*>("statusLabel")->setText("Downloading " + QUrl(QString::fromStdString(this->mmsongurls.at(this->currsong)[0])).fileName() + " ...");
@@ -330,7 +330,7 @@ void DMInst::nextStage() {
                 this->mmoptpatchqueue.push_back(buildMirroredUrls(mirrorList, "contrib/CSR/ff3-92.pcm"));
                 this->mmoptpatchqueue.push_back(buildMirroredUrls(mirrorList, "contrib/CSR/ff3-93.pcm"));
             }
-            dmgr = new DownloadManager(this->mmoptpatchqueue.at(0), this, this->logger);
+            dmgr = new DownloadManager(this->mmoptpatchqueue.at(0), this);
             connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
             this->curropt = 0;
             this->gostage = 4;
@@ -439,9 +439,8 @@ void DMInst::downloadFinished() {
             if (this->mmsongurls.at(this->currsong)[0].ends_with("md5sum")) {
                 std::string matchFile = QUrl(QString::fromStdString(this->mmsongurls.at(this->currsong)[0])).fileName().toStdString();
                 matchFile.erase(matchFile.size()-7);
-                std::cout << "DEBUG: TRUNCATED FILENAME: " << matchFile << std::endl;
                 if (this->hashes.contains(matchFile)) {
-                        std::cout << "DEBUG:" << this->hashes.at(matchFile) << ":" << songData.toStdString().substr(0, songData.toStdString().find(' ')) << std::endl;
+                        this->logger->doLog("HASH CHECK: Existing:" + this->hashes.at(matchFile) + ", Remote:" + songData.toStdString().substr(0, songData.toStdString().find(' ')));
                     if (this->hashes.at(matchFile) == songData.toStdString().substr(0, songData.toStdString().find(' '))) {
                         // skip next pcm as we've already got it
                         if (this->currsong+1 < this->mmsongurls.size()) {
@@ -456,7 +455,6 @@ void DMInst::downloadFinished() {
                 file.close();
             }
         }
-        std::cout << this->currsong << ":" << this->mmsongurls.size() << std::endl;
         if (this->currsong+1 >= this->mmsongurls.size()) {
             this->findChild<QProgressBar*>("downloadProgressBar")->setRange(0, 100);
             this->findChild<QProgressBar*>("downloadProgressBar")->setValue(0);
@@ -474,7 +472,7 @@ void DMInst::downloadFinished() {
             }
 
             //QUrl songUrl = QString::fromStdString(songurls.at(this->currsong));
-            dmgr = new DownloadManager(mmsongurls.at(this->currsong), this, this->logger);
+            dmgr = new DownloadManager(mmsongurls.at(this->currsong), this);
             connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
         }
         this->findChild<QProgressBar*>("downloadProgressBar")->setRange(0, 100);
@@ -571,7 +569,7 @@ void DMInst::downloadFinished() {
             // next patch please
             this->curropt++;
             this->findChild<QLabel*>("statusLabel")->setText("Downloading " + QUrl(QString::fromStdString(this->mmoptpatchqueue.at(this->curropt)[0])).fileName() + " ...");
-            dmgr = new DownloadManager(mmoptpatchqueue.at(this->curropt), this, this->logger);
+            dmgr = new DownloadManager(mmoptpatchqueue.at(this->curropt), this);
             connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
         }
         this->findChild<QProgressBar*>("downloadProgressBar")->setRange(0, 100);
