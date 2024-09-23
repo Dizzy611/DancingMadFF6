@@ -166,6 +166,29 @@ void DMInst::on_goButton_clicked()
         // check if mirror list has been validated and at least one valid mirror has been returned.
         if (mc->isDone()) {
             if (mc->getMirror() != "") {
+                QDir directory(QString::fromStdString(this->destdir));
+                QStringList existingFiles = directory.entryList(QStringList() << "*.pcm" << "*.PCM",QDir::Files);
+                this->findChild<QLabel*>("statusLabel")->setText("Hashing any existing .pcm files in destination directory...");
+                this->hashes.clear();
+                this->warnings.clear();
+                int i = 0;
+                this->findChild<QProgressBar*>("downloadProgressBar")->setRange(0, existingFiles.size()-1);
+                for (auto & existingFileName : existingFiles) {
+                    logger->doLog("DEBUG: Existing file name " + existingFileName.toStdString());
+                    // new SHA256 using QCryptographicHash
+                    QFile file(QString::fromStdString(this->destdir + existingFileName.toStdString()));
+                    file.open(QIODevice::ReadOnly);
+                    QCryptographicHash hash(QCryptographicHash::Md5);
+                    hash.addData(&file);
+                    QByteArray hash_string = hash.result().toHex();
+                    file.close();
+                    this->hashes.insert({existingFileName.toStdString(), hash_string.toStdString()});
+                    i++;
+                    this->findChild<QProgressBar*>("downloadProgressBar")->setValue(i);
+                }
+                this->findChild<QProgressBar*>("downloadProgressBar")->setRange(0,100);
+                this->findChild<QProgressBar*>("downloadProgressBar")->setValue(0);
+
                 //std::string selectedmirror = mc->getMirror();
                 std::vector<std::string> mirrorList = mc->getMirrors();
                     for (int i = 0; i < songs.size(); i++) {
@@ -175,9 +198,11 @@ void DMInst::on_goButton_clicked()
                                     std::string uppersource = this->selections.at(i);
                                     std::transform(uppersource.begin(), uppersource.end(), uppersource.begin(), ::toupper);
                                     if (!uppersource.starts_with("X")) {
+                                        this->mmsongurls.push_back(buildMirroredUrls(mirrorList, uppersource + "/ff3-" + std::to_string(pcm) + ".pcm.md5sum"));
                                         this->mmsongurls.push_back(buildMirroredUrls(mirrorList, uppersource + "/ff3-" + std::to_string(pcm) + ".pcm"));
                                         //this->songurls.push_back(selectedmirror + uppersource + "/ff3-" + std::to_string(pcm) + ".pcm");
                                     } else {
+                                        this->mmsongurls.push_back(buildMirroredUrls(mirrorList, "opera/" + uppersource.substr(1, uppersource.size()) + "/ff3-" + std::to_string(pcm) + ".pcm.md5sum"));
                                         this->mmsongurls.push_back(buildMirroredUrls(mirrorList, "opera/" + uppersource.substr(1, uppersource.size()) + "/ff3-" + std::to_string(pcm) + ".pcm"));
                                         //this->songurls.push_back(selectedmirror + "opera/" + uppersource.substr(1, uppersource.size()) + "/ff3-" + std::to_string(pcm) + ".pcm");
                                     }
@@ -314,6 +339,17 @@ void DMInst::nextStage() {
         break;
     }
     case 4:
+        if(!this->warnings.empty()) {
+            std::string boxString = "Unable to download the following paths from any mirror. Please try again in 5 minutes. If this error persists, please contact the developer.\n\n";
+            for (auto & warning : this->warnings) {
+                boxString += warning + "\n";
+            }
+            QMessageBox msgBox;
+            msgBox.setText(QString::fromStdString(boxString));
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.setDefaultButton(QMessageBox::Ok);
+            msgBox.exec();
+        }
         this->findChild<QLabel*>("statusLabel")->setText("Finished! You may quit the installer or do another install at this time.");
         this->findChild<QPushButton*>("goButton")->setEnabled(true);
         this->gostage = 2;
@@ -392,18 +428,35 @@ void DMInst::downloadFinished() {
         if (songData.isEmpty()) {
             // song data failed to download for one reason or another. TODO: Explain reason in text box, attempt other mirror or allow user to continue.
             QMessageBox msgBox;
-            msgBox.setText("Unable to download " + QString::fromStdString(this->mmsongurls.at(this->currsong)[0]) + ". Installation cannot continue.");
+            std::string warnString = this->mmsongurls.at(this->currsong)[0];
+            warnString = warnString.substr(warnString.find("ff6data/")+8);
+            msgBox.setText("WARNING: Unable to download " + QString::fromStdString(warnString));
             msgBox.setStandardButtons(QMessageBox::Ok);
             msgBox.setDefaultButton(QMessageBox::Ok);
             msgBox.exec();
-            QCoreApplication::exit(1); // Quit, as we can't continue
-            return;
+            this->warnings.push_back(warnString);
         } else {
-            QFile file(QString::fromStdString(this->destdir + QUrl(QString::fromStdString(this->mmsongurls.at(this->currsong)[0])).fileName().toStdString()));
-            file.open(QIODevice::WriteOnly);
-            file.write(songData);
-            file.close();
+            if (this->mmsongurls.at(this->currsong)[0].ends_with("md5sum")) {
+                std::string matchFile = QUrl(QString::fromStdString(this->mmsongurls.at(this->currsong)[0])).fileName().toStdString();
+                matchFile.erase(matchFile.size()-7);
+                std::cout << "DEBUG: TRUNCATED FILENAME: " << matchFile << std::endl;
+                if (this->hashes.contains(matchFile)) {
+                        std::cout << "DEBUG:" << this->hashes.at(matchFile) << ":" << songData.toStdString().substr(0, songData.toStdString().find(' ')) << std::endl;
+                    if (this->hashes.at(matchFile) == songData.toStdString().substr(0, songData.toStdString().find(' '))) {
+                        // skip next pcm as we've already got it
+                        if (this->currsong+1 < this->mmsongurls.size()) {
+                            this->currsong++;
+                        }
+                    }
+                }
+            } else {
+                QFile file(QString::fromStdString(this->destdir + QUrl(QString::fromStdString(this->mmsongurls.at(this->currsong)[0])).fileName().toStdString()));
+                file.open(QIODevice::WriteOnly);
+                file.write(songData);
+                file.close();
+            }
         }
+        std::cout << this->currsong << ":" << this->mmsongurls.size() << std::endl;
         if (this->currsong+1 >= this->mmsongurls.size()) {
             this->findChild<QProgressBar*>("downloadProgressBar")->setRange(0, 100);
             this->findChild<QProgressBar*>("downloadProgressBar")->setValue(0);
@@ -412,7 +465,14 @@ void DMInst::downloadFinished() {
         } else {
             // next song please!
             this->currsong++;
-            this->findChild<QLabel*>("statusLabel")->setText("Downloading " + QUrl(QString::fromStdString(this->mmsongurls.at(this->currsong)[0])).fileName() + " ...");
+            if (QUrl(QString::fromStdString(this->mmsongurls.at(this->currsong)[0])).fileName().endsWith("md5sum")) {
+                std::string checkFile = QUrl(QString::fromStdString(this->mmsongurls.at(this->currsong)[0])).fileName().toStdString();
+                checkFile.erase(checkFile.size()-7);
+                this->findChild<QLabel*>("statusLabel")->setText("Skipping " + QString::fromStdString(checkFile) + " if it matches remote hash...");
+            } else {
+                this->findChild<QLabel*>("statusLabel")->setText("Downloading " + QUrl(QString::fromStdString(this->mmsongurls.at(this->currsong)[0])).fileName() + " ...");
+            }
+
             //QUrl songUrl = QString::fromStdString(songurls.at(this->currsong));
             dmgr = new DownloadManager(mmsongurls.at(this->currsong), this, this->logger);
             connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
@@ -455,8 +515,8 @@ void DMInst::downloadFinished() {
         this->findChild<QProgressBar*>("downloadProgressBar")->setValue(50);
         IPSPatcherHandler* patcher = new IPSPatcherHandler();
         patcher->applyPatch((this->destdir + "ff3msu.ips").c_str(), this->findChild<QLineEdit*>("ROMSelectLine")->text().toStdString().c_str(), (this->destdir + "ff3.sfc").c_str());
-        QDir dir;
-        dir.remove(QString::fromStdString(this->destdir + "ff3msu.ips"));
+        QDir dir(QString::fromStdString(this->destdir));
+        dir.remove(QString::fromStdString("ff3msu.ips"));
         this->findChild<QProgressBar*>("downloadProgressBar")->setValue(100);
         this->findChild<QLabel*>("statusLabel")->setText("ROM patched.");
         // create empty .msu file
@@ -476,10 +536,13 @@ void DMInst::downloadFinished() {
         if (optData.isEmpty()) {
             // optional patch data failed to download, warn user but continue
             QMessageBox msgBox;
-            msgBox.setText("Unable to download " + QUrl(QString::fromStdString(this->mmoptpatchqueue.at(this->curropt)[0])).fileName() + ". Continuing without...");
+            std::string warnString = this->mmoptpatchqueue.at(this->curropt)[0];
+            warnString = warnString.substr(warnString.find("ff6data/")+8);
+            msgBox.setText("WARNING: Unable to download " + QString::fromStdString(warnString));
             msgBox.setStandardButtons(QMessageBox::Ok);
             msgBox.setDefaultButton(QMessageBox::Ok);
             msgBox.exec();
+            this->warnings.push_back(warnString);
         } else {
             QFile file(QString::fromStdString(this->destdir + QUrl(QString::fromStdString(this->mmoptpatchqueue.at(this->curropt)[0])).fileName().toStdString()));
             this->findChild<QProgressBar*>("downloadProgressBar")->setRange(0, 100);
@@ -493,8 +556,8 @@ void DMInst::downloadFinished() {
                 IPSPatcherHandler* patcher = new IPSPatcherHandler();
                 patcher->applyPatch((this->destdir + QUrl(QString::fromStdString(this->mmoptpatchqueue.at(this->curropt)[0])).fileName().toStdString()).c_str(), (this->destdir + "ff3.sfc").c_str(), (this->destdir + "ff3.sfc").c_str());
                 this->findChild<QProgressBar*>("downloadProgressBar")->setValue(100);
-                QDir dir;
-                dir.remove(QString::fromStdString(this->destdir + QUrl(QString::fromStdString(this->mmoptpatchqueue.at(this->curropt)[0])).fileName().toStdString()));
+                QDir dir(QString::fromStdString(this->destdir));
+                dir.remove(QUrl(QString::fromStdString(this->mmoptpatchqueue.at(this->curropt)[0])).fileName());
             } else {
                 this->findChild<QProgressBar*>("downloadProgressBar")->setValue(100);
             }
