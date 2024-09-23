@@ -91,7 +91,9 @@ set_target_properties(DanceMonkey PROPERTIES
 
 include(GNUInstallDirs)
 # explicitly include G++14 stuff, as Qt Creator is being dumb
-include_directories("/usr/include/x86_64-linux-gnu/c++/14/")
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    include_directories("/usr/include/x86_64-linux-gnu/c++/14/")
+endif()
 
 # explicitly include local includes and libraries
 #include_directories("/usr/local/include/")
