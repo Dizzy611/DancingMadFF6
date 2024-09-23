@@ -61,8 +61,10 @@ private:
     std::vector<std::vector<std::string>> mmsongurls;
     std::vector<std::string> optpatchqueue;
     std::vector<std::vector<std::string>> mmoptpatchqueue;
+    std::vector<std::string> warnings;
+    std::map<std::string, std::string> hashes;
     std::string destdir;
-    qint8 currsong;
+    int currsong;
     qint8 curropt;
     MirrorChecker *mc;
     DMLogger *logger;
