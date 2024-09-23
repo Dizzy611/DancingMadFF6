@@ -15,7 +15,7 @@ class DownloadManager : public QObject
     Q_OBJECT
 public:
     explicit DownloadManager(QUrl targetUrl, QObject *parent = nullptr, DMLogger *logger = nullptr);
-    explicit DownloadManager(std::vector<std::string> targetUrls, QObject *parent = nullptr, DMLogger *logger = nullptr);
+    explicit DownloadManager(std::vector<std::string> targetUrls, QObject *parent = nullptr);
     virtual ~DownloadManager();
     QByteArray downloadedData() const;
 
