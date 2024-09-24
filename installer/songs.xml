@@ -7,9 +7,10 @@
 		<source friendly="OCRemix Balance &amp; Ruin (qwertymodo's loops)">ocr2</source>
 		<source friendly="ChrystalChameleon's Orchestrated">crc</source>
 		<source friendly="Eiko's Acoustic Rendition">ffar</source>
-		<source friendly="Kara Comparetti's Piano Soundtrack (NYI)">kct</source>
-		<source friendly="Matthew Valenti's Synthetic Origins (NYI)">sno</source>
-		<source friendly="Pixel Remaster Soundtrack (NYI)">prm</source>
+		<source friendly="Kara Comparetti's Piano Soundtrack">kct</source>
+		<source friendly="Kara Comparetti's Piano Soundtrack w/ Alternate Tracks">kcta</source>
+		<source friendly="Matthew Valenti's Synthetic Origins">sno</source>
+		<source friendly="Pixel Remaster Soundtrack">prm</source>
 		<source friendly="Other Source">oth</source>
 		<source friendly="SPC/Do Not Download">spc</source>
 		<source friendly="Official Soundtrack (No Voices)">xost</source>
@@ -17,12 +18,16 @@
 		<source friendly="More Friends: Music From Final Fantasy (English)">xmf</source>
 		<source friendly="Distant Worlds (English)">xdw</source>
 		<source friendly="The Black Mages (Japanese)">xtbm</source>
-		<source friendly="Pixel Remaster (English) (NYI)">xpre</source>
-		<source friendly="Pixel Remaster (Japanese) (NYI)">xprj</source>
-		<source friendly="Pixel Remaster (Italian) (NYI)">xpri</source>
-		<source friendly="Pixel Remaster (German) (NYI)">xprg</source>
-		<source friendly="Pixel Remaster (Spanish) (NYI)">xprs</source>
-		<source friendly="Pixel Reamster (Korean) (NYI)">xprk</source>
+		<source friendly="Pixel Remaster (English)">xpre</source>
+		<source friendly="Pixel Remaster (French)">xprf</source>
+		<source friendly="Pixel Remaster (German)">xprg</source>
+		<source friendly="Pixel Remaster (Italian)">xpri</source>
+		<source friendly="Pixel Remaster (Japanese)">xprj</source>
+		<source friendly="Pixel Remaster (Korean)">xprk</source>
+		<source friendly="Pixel Remaster (Spanish)">xprs</source>
+		<source friendly="Matthew Valenti's Synthetic Origins (No Voices)">xsno</source>
+		<source friendly="Kara Comparetti's Piano Soundtrack (SPC Voices)">xkct</source>
+		<source friendly="Kara Comparetti's Piano Soundtrack (No Voices)">xkcta</source>
 	</sources>
 	<presets>
 		<preset name="sid" friendly="Developer's Recommendation" type="per-song" />
@@ -70,6 +75,7 @@
 		<preset name="prm" friendly="Pixel Remaster Soundtrack (NYI)" type="per-song" />
 		<preset name="sno" friendly="Matthew Valenti's Synthetic Origins (NYI)" type="per-song" />
 		<preset name="kct" friendly="Kara Comparetti's Piano Soundtrack (NYI)" type="per-song" />
+		<preset name="kcta" friendly="Kara Comparetti's Piano Soundtrack with Alternate Tracks (NYI)" type="per-song" />
 	</presets>
 	<songs>
 		<song>
@@ -81,7 +87,15 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
 			<preset name="sid"><crc/></preset>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 		</song>
 		<song>
 			<name>1-02 The Mines of Narshe</name>
@@ -92,7 +106,15 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
 			<preset name="sid"><ssc/></preset>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 		</song>
 		<song>
 			<name>1-03 Awakening</name>
@@ -105,7 +127,15 @@
 			<ffar/>
 			<oth/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
 			<preset name="sid"><crc/></preset>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 		</song>
 		<song>
 			<name>1-04 Locke's Theme</name>
@@ -116,7 +146,15 @@
 			<ocr/>
 			<ocr2/>
 			<ffar/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
 			<preset name="sid"><ffar/></preset>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 		</song>
 		<song>
 			<name>1-05 Battle Theme</name>
@@ -128,7 +166,15 @@
 			<oth/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
 			<preset name="sid"><ssc/></preset>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 		</song>
 		<song>
 			<name>1-06 Fanfare</name>
@@ -138,7 +184,15 @@
 			<ssc/>
 			<ocr/>
 			<ocr2/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
 			<preset name="sid"><ssc/></preset>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 		</song>
 		<song>
 			<name>1-07 Edgar &amp; Sabin</name>
@@ -149,6 +203,14 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
 		 <ffar/>
 		</song>
@@ -162,6 +224,14 @@
 			<ocr2/>
 			<ffar/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
 		</song>
 		<song>
@@ -172,6 +242,14 @@
 			<ssc/>
 			<ocr/>
 			<ocr2/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ssc/></preset>
 		</song>
 		<song>
@@ -183,6 +261,14 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
 		</song>
 		<song>
@@ -194,6 +280,14 @@
 			<ocr/>
 			<ocr2/>
 			<ffar/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ocr2/></preset>
 		</song>
 		<song>
@@ -204,6 +298,14 @@
 			<ssc/>
 			<ocr/>
 			<ocr2/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ssc/></preset>
 		</song>
 		<song>
@@ -216,6 +318,14 @@
 			<ocr2/>
 			<ffar/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
 		</song>
 		<song>
@@ -227,6 +337,14 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><fft/></preset>
 		</song>
 		<song>
@@ -239,6 +357,14 @@
 			<ocr2/>
 			<ffar/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
 		</song>
 		<song>
@@ -251,6 +377,14 @@
 			<ocr2/>
 			<oth/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><oth/></preset>
 		</song>
 		<song>
@@ -261,6 +395,14 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
 		</song>
 		<song>
@@ -271,6 +413,14 @@
 			<ocr/>
 			<ocr2/>
 			<ffar/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ffar/></preset>
 		</song>
 		<song>
@@ -281,6 +431,14 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
 		</song>
 		<song>
@@ -291,6 +449,15 @@
 			<ocr/>
 			<ocr2/>
 			<ffar/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<crc/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ffar/></preset>
 		</song>
 		<song>
@@ -300,6 +467,15 @@
 			<ssc/>
 			<ocr/>
 			<ocr2/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<crc/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ssc/></preset>
 		</song>
 		<song>
@@ -309,6 +485,14 @@
 			<ssc/>
 			<ffar/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ssc/></preset>
 		</song>
 		<song>
@@ -319,6 +503,14 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ssc/></preset>
 		</song>
 		<song>
@@ -330,6 +522,14 @@
 			<oth/>
 			<ocr2/>
 			<ffar/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ocr/></preset>
 		</song>
 		<song>
@@ -339,6 +539,14 @@
 			<ssc/>
 			<ocr/>
 			<ocr2/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ocr2/></preset>
 		</song>
 		<song>
@@ -350,6 +558,14 @@
 			<ocr2/>
 			<ffar/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ffar/></preset>
 		</song>
 		<song>
@@ -361,6 +577,14 @@
 			<ocr2/>
 			<ffar/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
 		</song>
 		<song>
@@ -370,6 +594,14 @@
 			<ssc/>
 			<ocr/>
 			<ocr2/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ocr2/></preset>
 		</song>
 		<song>
@@ -381,6 +613,14 @@
 			<ocr2/>
 			<ffar/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
 		</song>
 		<song>
@@ -391,6 +631,14 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
 		</song>
 		<song>
@@ -400,16 +648,38 @@
 			<ssc/>
 			<ocr/>
 			<ocr2/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ocr2/></preset>
 		</song>
 		<song>
-			<name>2-07 The Opera (Select on Next Page)</name>
+			<name>2-07 The Opera</name>
 			<pcms>65,66,67,39,38,68,69,70</pcms>
 			<xost/>
 			<xgmc/>
 			<xmf/>
 			<xdw/>
 			<xtbm/>
+			<xkct/>
+			<xkcta/>
+			<xpre/>
+			<xprf/>
+			<xprg/>
+			<xpri/>
+			<xprj/>
+			<xprk/>
+			<xprs/>
+			<xsno/>
+			<preset name="kct"><xkct/></preset>
+			<preset name="kcta"><xkcta/></preset>
+			<preset name="sno"><xsno/></preset>
+			<preset name="prm"><xpri/></preset>
 			<preset name="sid"><xgmc/></preset>
 		</song>
 		<song>
@@ -417,6 +687,14 @@
 			<pcms>34</pcms>
 			<ost/>
 			<oth/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><oth/></preset>
 		</song>
 		<song>
@@ -427,6 +705,14 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ost/></preset>
 		</song>
 		<song>
@@ -436,6 +722,14 @@
 			<ssc/>
 			<ocr/>
 			<ocr2/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ost/></preset>
 		</song>
 		<song>
@@ -444,6 +738,14 @@
 			<ost/>
 			<ocr/>
 			<ocr2/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ocr2/></preset>
 		</song>
 		<song>
@@ -455,6 +757,14 @@
 			<ocr/>
 			<ocr2/>
 			<ffar/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ocr2/></preset>
 		</song>
 		<song>
@@ -463,6 +773,14 @@
 			<ost/>
 			<ocr/>
 			<ocr2/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ocr2/></preset>
 		</song>
 		<song>
@@ -470,6 +788,14 @@
 			<pcms>43</pcms>
 			<ost/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
 		</song>
 		<song>
@@ -479,6 +805,14 @@
 			<ocr/>
 			<ocr2/>
 			<ffar/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ffar/></preset>
 		</song>
 		<song>
@@ -490,6 +824,14 @@
 			<ocr2/>
 			<ffar/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
 		</song>
 		<song>
@@ -500,6 +842,14 @@
 			<ocr/>
 			<ocr2/>
 			<ffar/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ffar/></preset>
 		</song>
 		<song>
@@ -509,6 +859,14 @@
 			<ssc/>
 			<ocr/>
 			<ocr2/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ocr2/></preset>
 		</song>
 		<song>
@@ -517,6 +875,14 @@
 			<ost/>
 			<ocr/>
 			<ocr2/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ocr/></preset>
 		</song>
 		<song>
@@ -525,6 +891,14 @@
 			<ost/>
 			<ocr/>
 			<ocr2/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ocr2/></preset>
 		</song>
 		<song>
@@ -534,6 +908,14 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
 		</song>
 		<song>
@@ -543,6 +925,14 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
 		</song>
 		<song>
@@ -552,6 +942,14 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
 		</song>
 		<song>
@@ -561,6 +959,14 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
 		</song>
 		<song>
@@ -572,6 +978,14 @@
 			<oth/>
 			<ffar/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><oth/></preset>
 		</song>
 		<song>
@@ -581,6 +995,14 @@
 			<ocr/>
 			<ocr2/>
 			<ffar/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ffar/></preset>
 		</song>
 		<song>
@@ -591,6 +1013,14 @@
 			<ocr2/>
 			<ffar/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ffar/></preset>
 		</song>
 		<song>
@@ -600,6 +1030,14 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
 		</song>
 		<song>
@@ -610,6 +1048,14 @@
 			<ocr2/>
 			<ffar/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
 		</song>
 		<song>
@@ -619,6 +1065,14 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ocr2/></preset>
 		</song>
 		<song>
@@ -628,6 +1082,14 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
 		</song>
 		<song>
@@ -637,6 +1099,14 @@
 			<ocr/>
 			<oth/>
 			<ocr2/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><oth/></preset>
 		</song>
 		<song>
@@ -646,6 +1116,14 @@
 			<ocr/>
 			<ocr2/>
 			<ffar/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ffar/></preset>
 		</song>
 		<song>
@@ -654,6 +1132,14 @@
 			<ost/>
 			<ocr/>
 			<ocr2/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ocr2/></preset>
 		</song>
 		<song>
