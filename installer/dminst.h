@@ -6,6 +6,7 @@
 #include "song_parser.h"
 #include "mirrorchecker.h"
 #include "dmlogger.h"
+#include "customtrackselection.h"
 
 // data path will depend on whether we're running in an AppImage/a MacOS .app bundle or directly on Linux/Windows. Should be "." for the latter, set as default here.
 #define DATA_PATH "."
@@ -48,8 +49,15 @@ private slots:
 
     void on_actionGitHub_Issue_Tracker_triggered();
 
+    void on_customizationButton_clicked();
+
+    void customSelectionSaved();
+
+    void customSelectionRejected();
+
 private:
     Ui::DMInst *ui;
+    CustomTrackSelection cts;
     qint8 gostage;
     DownloadManager *dmgr;
     std::vector<std::string> mirrors;
@@ -68,6 +76,7 @@ private:
     qint8 curropt;
     MirrorChecker *mc;
     DMLogger *logger;
+    bool customized = false;
     void nextStage();
 };
 #endif // DMINST_H

@@ -44,6 +44,7 @@ This patch is intended to be used only with a legally obtained copy of Final Fan
 #include "ips-patcher-master/IPSPatcherHandler.h"
 #include "mirrorchecker.h"
 #include "dmlogger.h"
+#include "customtrackselection.h"
 
 #include <ostream>
 #include <iostream>
@@ -53,8 +54,7 @@ This patch is intended to be used only with a legally obtained copy of Final Fan
 // DEBUG
 #define LOG_TO_STDERR true
 
-const char *ff3msuxml = R"(
-<?xml version="1.0" encoding="UTF-8"?><cartridge region="NTSC">
+const char *ff3msuxml = R"(<?xml version="1.0" encoding="UTF-8"?><cartridge region="NTSC">
     <rom>
         <map mode="shadow" address="00-3f:8000-ffff"/>
         <map mode="linear" address="40-7f:0000-ffff"/>
@@ -104,12 +104,37 @@ DMInst::DMInst(QWidget *parent)
     this->findChild<QPushButton*>("goButton")->setEnabled(false);
     this->findChild<QPushButton*>("ROMSelectBrowse")->setEnabled(false);
 
+    // Connect custom track selection ok/cancel to update of current selections or reset of custom selections
+    connect(&cts, SIGNAL(savedSelections()), this, SLOT(customSelectionSaved()));
+    connect(&cts, SIGNAL(rejectedSelections()), this, SLOT(customSelectionRejected()));
+
 
 }
 
 DMInst::~DMInst()
 {
     delete ui;
+}
+
+void DMInst::customSelectionSaved() {
+    std::cout << "DEBUG: Custom selections saved." << std::endl;
+    // Change my selections to what's been customized
+    if (this->selections != cts.getSelections()) {
+        this->selections.clear();
+        this->selections = cts.getSelections();
+        if (this->customized == false) {
+            this->customized = true;
+            this->findChild<QLabel*>("customizedLabel")->setText("✅ Soundtrack has been customized. :)");
+        }
+    }
+    this->show();
+}
+
+void DMInst::customSelectionRejected() {
+    std::cout << "DEBUG: Custom selections reverted." << std::endl;
+    // Reset custom selections to what they were before the user changed them.
+    this->cts.setSelections(this->selections);
+    this->show();
 }
 
 void DMInst::on_ROMSelectBrowse_clicked()
@@ -282,7 +307,10 @@ void DMInst::nextStage() {
         this->on_soundtrackSelectBox_currentIndexChanged(0);
         this->on_operaSelectBox_currentIndexChanged(0);
 
-        // TODO: Populate customized soundtrack dropdowns
+        // Populate customized soundtrack dropdowns
+        this->cts.setSources(this->sources);
+        this->cts.setSongs(this->songs);
+
         this->gostage = 2;
 
         // DEBUG
@@ -628,6 +656,14 @@ void DMInst::on_soundtrackSelectBox_currentIndexChanged(int index)
     for (auto & selection : this->selections) {
         this->logger->doLog(this->songs[selection.first].name + " [#" + std::to_string(selection.first) + "]: " + selection.second);
     }
+    // Update soundtrack selection on customization list
+    this->cts.setSelections(this->selections);
+    // Update label to show soundtrack is no longer customized if it was
+    if (this->customized == true) {
+        this->customized = false;
+        this->findChild<QLabel*>("customizedLabel")->setText("Soundtrack has not been customized.");
+    }
+
 }
 
 
@@ -648,6 +684,8 @@ void DMInst::on_operaSelectBox_currentIndexChanged(int index)
     std::string selected_source = opera_sources.at(index);
     // set selected source in selections map
     this->selections[31] = opera_sources.at(index);
+    // Update soundtrack selection on customization list
+    this->cts.setSelections(this->selections);
 }
 
 
@@ -673,5 +711,14 @@ void DMInst::on_actionJoin_our_Discord_triggered()
 void DMInst::on_actionGitHub_Issue_Tracker_triggered()
 {
     QDesktopServices::openUrl(QUrl("https://github.com/Dizzy611/DancingMadFF6/issues"));
+}
+
+
+void DMInst::on_customizationButton_clicked()
+{
+
+    this->cts.show();
+    this->hide();
+
 }
 
