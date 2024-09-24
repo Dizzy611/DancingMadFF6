@@ -27,7 +27,7 @@ Welcome to the repository for Dancing Mad. Please submit any issues using the Is
 
 * If you wish to assemble patches yourself, you need copies of GNU Make, wla-dx and flips IPS patcher. Check the Makefile and make sure the paths for your assembler and copy of flips are correct (the first set are for windows, the second are for other platforms). Then stick your FF3 rom, renamed ff3.sfc, in the same directory as the Makefile and the ASM and link files, and run GNU Make. You should get as output ff3msu.sfc (the patched ROM) and ff3msu.ips (the new IPS patch.) This is my exact workflow, so if you are doing your own changes to the ASM please follow the same workflow to prevent errors.
 
-* If you wish to use the installer on Linux or a Mac you will need to extract the tar.xz version of the installer and run it (via `python Installer.py` or `python3 Installer.py` on some systems) on a system that has Python 3.4 or newer, PyQt5, PyCurl, certifi, and python-ips installed. These can be installed all at once with `pip3 install pycurl python-ips pyqt5 certifi`.
+* If you wish to use the installer on Linux or a Mac you will need to compile from source currently. An AppImage installer for Linux is in the works. macOS support tbd. WINE should work for running the Windows installer on these platforms as well.
 
 ### Contribution guidelines ###
 
@@ -54,11 +54,14 @@ Welcome to the repository for Dancing Mad. Please submit any issues using the Is
 * The Royal Stockholm Philharmonic Orchestra
 * Eiko Nichols
 * edale2
-
+* Kara Comparetti
+* Matthew Valenti
+  
 ## Editing Credits ##
 * Covarr
 * edale2
 * qwertymodo
+* Brutapode
 
 ## Patch Credits (both for Dancing Mad itself and for optional patches bundled) ##
 * Myself (Dylan Morrison)
