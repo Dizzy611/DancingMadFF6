@@ -396,6 +396,7 @@
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
 			<preset name="sid"><oth/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-17 The Veldt</name>
@@ -788,6 +789,7 @@
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ocr2/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>2-15 The Airship Blackjack</name>
