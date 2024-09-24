@@ -1,0 +1,537 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DMInst</class>
+ <widget class="QMainWindow" name="DMInst">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>521</width>
+    <height>628</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dancing Mad Installer</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QWidget" name="verticalLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>0</y>
+      <width>491</width>
+      <height>582</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="mainLayout">
+     <item>
+      <widget class="QLabel" name="stepLabel_1">
+       <property name="font">
+        <font>
+         <family>Sans Serif</family>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Step 1</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="ROMLayout">
+       <item>
+        <widget class="QLabel" name="ROMSelectLabel">
+         <property name="text">
+          <string>Select your ROM: </string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="ROMSelectLine"/>
+       </item>
+       <item>
+        <widget class="QPushButton" name="ROMSelectBrowse">
+         <property name="text">
+          <string>Browse</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="Line" name="ROMSeperator">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="stepLabel_2">
+       <property name="font">
+        <font>
+         <family>Sans Serif</family>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Step 2</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="soundtrackLayout">
+       <item>
+        <widget class="QLabel" name="soundtrackSelectLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Select your Base Soundtrack:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="soundtrackSelectBox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="editable">
+          <bool>false</bool>
+         </property>
+         <property name="currentText">
+          <string>Initializing preset list, please wait...</string>
+         </property>
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <property name="placeholderText">
+          <string/>
+         </property>
+         <item>
+          <property name="text">
+           <string comment="Recommended" extracomment="Recommended">Initializing preset list, please wait...</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Pixel Remaster Soundtrack</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Matthew Valenti's Synthetic Origins</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>FinalFanTim's Arrangements</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Sean Schafianski's FFVI Remastered</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>OCRemix Balance &amp; Ruin</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Kara Comparetti's Piano Soundtrack</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>OCRemix Balance &amp; Ruin (qwertymodo loops)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>ChrystalChameleon's Orchestrated</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Official Soundtrack</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>None/SPC</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>12</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>13</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="Line" name="soundtrackSeperator">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="stepLabel_3">
+       <property name="font">
+        <font>
+         <family>Sans Serif</family>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Step 3 </string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="operaLayout">
+       <item>
+        <widget class="QLabel" name="operaSelectLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Select your Opera:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="operaSelectBox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <item>
+          <property name="text">
+           <string>Initializing source list, please wait...</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>OST (No Voices)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>The Black Mages (Japanese)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Game Music Concert 4 (Japanese)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Distant Worlds (English)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>More Friends: Music From Final Fantasy (English)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Pixel Remaster (English)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Pixel Remaster (Japanese)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Pixel Remaster (Italian)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Pixel Remaster (German)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Pixel Remaster (Spanish)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Pixel Remaster (Korean)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>More</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Yet More</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>And Still More</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>More More</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="Line" name="operaSeperator">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="stepLabel_4">
+       <property name="font">
+        <font>
+         <family>Sans Serif</family>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Step 4 (Optional)</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="customizeLayout">
+       <item>
+        <widget class="QLabel" name="customizationLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Customize your Soundtrack:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="customizationButton">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Customize</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QLabel" name="customizedLabel">
+       <property name="text">
+        <string>Soundtrack has not been customized.</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="Line" name="customizeSeperator">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="stepLabel_5">
+       <property name="font">
+        <font>
+         <family>Sans Serif</family>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Step 5 (Optional)</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="patchLayout">
+       <item>
+        <widget class="QLabel" name="patchesSelectLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Select Optional Patches:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QGridLayout" name="patchInnerLayout">
+         <item row="0" column="0">
+          <widget class="QCheckBox" name="patchCheck_1">
+           <property name="text">
+            <string>Ted Woolsey Uncensored Patch</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QCheckBox" name="patchCheck_2">
+           <property name="text">
+            <string>Madsiur's Music Player</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QCheckBox" name="patchCheck_3">
+           <property name="text">
+            <string>edale2's Cut Songs Restoration</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="Line" name="patchSeperator">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="stepLabel_6">
+       <property name="font">
+        <font>
+         <family>Sans Serif</family>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Step 6</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="goButton">
+       <property name="font">
+        <font>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>GO</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="Line" name="goSeperator">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QProgressBar" name="downloadProgressBar">
+       <property name="value">
+        <number>0</number>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="statusLabel">
+       <property name="text">
+        <string>Waiting on user... Select your ROM, soundtrack, and patches and press GO when ready!</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>521</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuDancing_Mad_Installer">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionContact_Info_About"/>
+    <addaction name="actionJoin_our_Discord"/>
+    <addaction name="actionGitHub_Issue_Tracker"/>
+   </widget>
+   <addaction name="menuDancing_Mad_Installer"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionContact_Info_About">
+   <property name="text">
+    <string>Contact Info/About...</string>
+   </property>
+  </action>
+  <action name="actionJoin_our_Discord">
+   <property name="text">
+    <string>Join our Discord</string>
+   </property>
+  </action>
+  <action name="actionGitHub_Issue_Tracker">
+   <property name="text">
+    <string>GitHub Issue Tracker</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

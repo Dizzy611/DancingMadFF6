@@ -1,63 +1,76 @@
 <songlist>
 	<sources>
-		<source>ost</source>
-		<source>fft</source>
-		<source>ssc</source>
-		<source>ocr</source>
-		<source>ocr2</source>
-		<source>oth</source>
-		<source>ffar</source>
-		<source>crc</source>
-		<source>spc</source>
-		<source>xost</source>
-		<source>xgmc</source>
-		<source>xmf</source>
-		<source>xdw</source>
-		<source>xtbm</source>
+		<source friendly="Official Soundtrack">ost</source>
+		<source friendly="FinalFanTim's Arrangements">fft</source>
+		<source friendly="Sean Schafianski's FFVI Remastered">ssc</source>
+		<source friendly="OCRemix Balance &amp; Ruin">ocr</source>
+		<source friendly="OCRemix Balance &amp; Ruin (qwertymodo's loops)">ocr2</source>
+		<source friendly="ChrystalChameleon's Orchestrated">crc</source>
+		<source friendly="Eiko's Acoustic Rendition">ffar</source>
+		<source friendly="Kara Comparetti's Piano Soundtrack">kct</source>
+		<source friendly="Kara Comparetti's Piano Soundtrack w/ Alternate Tracks">kcta</source>
+		<source friendly="Matthew Valenti's Synthetic Origins">sno</source>
+		<source friendly="Pixel Remaster Soundtrack">prm</source>
+		<source friendly="Other Source">oth</source>
+		<source friendly="SPC/Do Not Download">spc</source>
+		<source friendly="Official Soundtrack (No Voices)">xost</source>
+		<source friendly="Game Music Concert 4 (Japanese)">xgmc</source>
+		<source friendly="More Friends: Music From Final Fantasy (English)">xmf</source>
+		<source friendly="Distant Worlds (English)">xdw</source>
+		<source friendly="The Black Mages (Japanese)">xtbm</source>
+		<source friendly="Pixel Remaster (English)">xpre</source>
+		<source friendly="Pixel Remaster (French)">xprf</source>
+		<source friendly="Pixel Remaster (German)">xprg</source>
+		<source friendly="Pixel Remaster (Italian)">xpri</source>
+		<source friendly="Pixel Remaster (Japanese)">xprj</source>
+		<source friendly="Pixel Remaster (Korean)">xprk</source>
+		<source friendly="Pixel Remaster (Spanish)">xprs</source>
+		<source friendly="Matthew Valenti's Synthetic Origins (No Voices)">xsno</source>
+		<source friendly="Kara Comparetti's Piano Soundtrack (SPC Voices)">xkct</source>
+		<source friendly="Kara Comparetti's Piano Soundtrack (No Voices)">xkcta</source>
 	</sources>
 	<presets>
-		<preset name="ost">
+		<preset name="sid" friendly="Developer's Recommendation" type="per-song" />
+		<preset name="ost" friendly="Official Soundtrack">
 			<ost range="0-30,32-58" />
 			<xost range="31" />
 			<spc range="59" />
 		</preset>
-		<preset name="fft">
+		<preset name="fft" friendly="FinalFanTim's Arrangements">
 			<fft range="0-15" />
 			<ost range="16-30,32-58" />
 			<xost range="31" />
 			<spc range="59" />
 		</preset>
-		<preset name="ssc">
+		<preset name="ssc" friendly="Sean Schafianski's FFVI Remastered">
 			<ssc range="0-30,33-34,36,40-42" />
 			<xost range="31" />
 			<ost range="32,35,37-39,43-58" />
 			<spc range="59" />
 		</preset>
-		<preset name="ocr">
+		<preset name="ocr" friendly="OCRemix Balance &amp; Ruin">
 			<ocr range="0-20,22-30,33-37,39-58" />
 			<xgmc range="31" />
 			<oth range="32,59" />
 			<ost range="21,38" />
 		</preset>
-		<preset name="ocr2">
+		<preset name="ocr2" friendly="OCRemix Balance &amp; Ruin (qwertymodo loops)">
 			<ocr2 range="0-20,22-30,33-37,39-58" />
 			<xgmc range="31" />
 			<oth range="32,59" />
 			<ost range="21,38" />
 		</preset>
-		<preset name="ffar">
+		<preset name="ffar" friendly="Eiko's Acoustic Rendition">
 			<ost range="0-1,4-5,8-9,11,13,15-16,18,20,22,24,27,29-30,32-35,37-38,42-48,52,54-56,58" />
 			<ffar range="2-3,6-7,10,12,14,17,19,21,23,25-26,28,36,39-41,49-51,53,57" />
 			<xost range="31" />
 			<spc range="59" />
 		</preset>
-		<preset name="crc">
-			<crc range="0-2,4,6-7,9,12,14,16,18,21,22,25,26,28-29,33,38,40,45-49,51-55" />
-			<ost range="3,5,8,10-11,13,15,19,20,23,24,27,30,32,34-37,39,41-44,50,56-58" />
-			<xost range="31" />
-			<spc range="59" />
-		</preset>
-		<preset name="sid" type="per-song" />
+		<preset name="crc" friendly="ChrystalChameleon's Orchestrated" type="per-song" />
+		<preset name="prm" friendly="Pixel Remaster Soundtrack" type="per-song" />
+		<preset name="sno" friendly="Matthew Valenti's Synthetic Origins" type="per-song" />
+		<preset name="kct" friendly="Kara Comparetti's Piano Soundtrack" type="per-song" />
+		<preset name="kcta" friendly="Kara Comparetti's Piano Soundtrack with Alternate Tracks" type="per-song" />
 	</presets>
 	<songs>
 		<song>
@@ -69,7 +82,16 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
 			<preset name="sid"><crc/></preset>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-02 The Mines of Narshe</name>
@@ -80,7 +102,16 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
 			<preset name="sid"><ssc/></preset>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-03 Awakening</name>
@@ -90,10 +121,19 @@
 			<ssc/>
 			<ocr/>
 			<ocr2/>
+			<crc/>
 			<ffar/>
 			<oth/>
-			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
 			<preset name="sid"><crc/></preset>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-04 Locke's Theme</name>
@@ -103,8 +143,18 @@
 			<ssc/>
 			<ocr/>
 			<ocr2/>
+			<crc/>
 			<ffar/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
 			<preset name="sid"><ffar/></preset>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-05 Battle Theme</name>
@@ -113,20 +163,38 @@
 			<fft/>
 			<ssc/>
 			<ocr/>
-			<oth/>
 			<ocr2/>
 			<crc/>
+			<oth/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
 			<preset name="sid"><ssc/></preset>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-06 Fanfare</name>
 			<pcms>47</pcms>
-			<ost/>1
+			<ost/>
 			<fft/>
 			<ssc/>
 			<ocr/>
 			<ocr2/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
 			<preset name="sid"><ssc/></preset>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
+			<preset name="crc"><ost/></preset>
 		</song>
 		<song>
 			<name>1-07 Edgar &amp; Sabin</name>
@@ -137,7 +205,16 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		 <ffar/>
 		</song>
 		<song>
@@ -150,7 +227,16 @@
 			<ocr2/>
 			<ffar/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-09 Mt Koltz</name>
@@ -160,7 +246,17 @@
 			<ssc/>
 			<ocr/>
 			<ocr2/>
+			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ssc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-10 The Returners</name>
@@ -171,7 +267,16 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-11 Shadow's Theme</name>
@@ -181,8 +286,18 @@
 			<ssc/>
 			<ocr/>
 			<ocr2/>
+			<crc/>
 			<ffar/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ocr2/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-12 Troops March On</name>
@@ -192,7 +307,17 @@
 			<ssc/>
 			<ocr/>
 			<ocr2/>
+			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ssc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-13 Cyan's Theme</name>
@@ -204,7 +329,16 @@
 			<ocr2/>
 			<ffar/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-14 The Unforgiven</name>
@@ -215,7 +349,16 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><fft/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-15 The Phantom Forest</name>
@@ -227,7 +370,16 @@
 			<ocr2/>
 			<ffar/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-16 The Phantom Train</name>
@@ -239,7 +391,16 @@
 			<ocr2/>
 			<oth/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><oth/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-17 The Veldt</name>
@@ -249,7 +410,16 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-18 Gau's Theme</name>
@@ -258,8 +428,18 @@
 			<ssc/>
 			<ocr/>
 			<ocr2/>
+			<crc/>
 			<ffar/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ffar/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-19 The Serpent Trench</name>
@@ -269,7 +449,16 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-20 Kids Run Through the City</name>
@@ -278,8 +467,18 @@
 			<ssc/>
 			<ocr/>
 			<ocr2/>
+			<crc/>
 			<ffar/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ffar/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-21 Under Martial Law</name>
@@ -288,7 +487,17 @@
 			<ssc/>
 			<ocr/>
 			<ocr2/>
+			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ssc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-22 Celes</name>
@@ -297,7 +506,16 @@
 			<ssc/>
 			<ffar/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ssc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-23 Protect the Espers!</name>
@@ -307,7 +525,16 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ssc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-24 The Decisive Battle</name>
@@ -317,8 +544,18 @@
 			<ocr/>
 			<oth/>
 			<ocr2/>
+			<crc/>
 			<ffar/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ocr/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-25 Metamorphosis</name>
@@ -327,7 +564,17 @@
 			<ssc/>
 			<ocr/>
 			<ocr2/>
+			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ocr2/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>2-01 Terra's Theme</name>
@@ -338,7 +585,16 @@
 			<ocr2/>
 			<ffar/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ffar/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>2-02 Coin of Fate</name>
@@ -349,7 +605,16 @@
 			<ocr2/>
 			<ffar/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>2-03 Techno de Chocobo</name>
@@ -358,7 +623,17 @@
 			<ssc/>
 			<ocr/>
 			<ocr2/>
+			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ocr2/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>2-04 Forever Rachel</name>
@@ -369,7 +644,16 @@
 			<ocr2/>
 			<ffar/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>2-05 Slam Shuffle</name>
@@ -379,7 +663,16 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>2-06 Spinach Rag</name>
@@ -388,24 +681,57 @@
 			<ssc/>
 			<ocr/>
 			<ocr2/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ocr2/></preset>
+			<preset name="crc"><ost/></preset>
 		</song>
 		<song>
-			<name>2-07 The Opera (Select on Next Page)</name>
+			<name>2-07 The Opera</name>
 			<pcms>65,66,67,39,38,68,69,70</pcms>
 			<xost/>
 			<xgmc/>
 			<xmf/>
 			<xdw/>
 			<xtbm/>
+			<xkct/>
+			<xkcta/>
+			<xpre/>
+			<xprf/>
+			<xprg/>
+			<xpri/>
+			<xprj/>
+			<xprk/>
+			<xprs/>
+			<xsno/>
+			<preset name="kct"><xkct/></preset>
+			<preset name="kcta"><xkcta/></preset>
+			<preset name="sno"><xsno/></preset>
+			<preset name="prm"><xpri/></preset>
 			<preset name="sid"><xgmc/></preset>
+			<preset name="crc"><xgmc/></preset>
 		</song>
 		<song>
 			<name>2-10 Grand Finale?</name>
 			<pcms>34</pcms>
 			<ost/>
 			<oth/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><oth/></preset>
+			<preset name="crc"><ost/></preset>
 		</song>
 		<song>
 			<name>2-11 Setzer's Theme</name>
@@ -415,7 +741,16 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ost/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>2-12 Johnny C. Bad</name>
@@ -424,7 +759,16 @@
 			<ssc/>
 			<ocr/>
 			<ocr2/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ost/></preset>
+			<preset name="crc"><ost/></preset>
 		</song>
 		<song>
 			<name>2-13 The Gestahl Empire</name>
@@ -432,7 +776,17 @@
 			<ost/>
 			<ocr/>
 			<ocr2/>
+			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ocr2/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>2-14 Magitek Research Facility</name>
@@ -443,7 +797,16 @@
 			<ocr/>
 			<ocr2/>
 			<ffar/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ocr2/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>2-15 The Airship Blackjack</name>
@@ -451,14 +814,33 @@
 			<ost/>
 			<ocr/>
 			<ocr2/>
+			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ocr2/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>2-16 What??</name>
 			<pcms>43</pcms>
 			<ost/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>2-17 Mog's Theme</name>
@@ -466,8 +848,18 @@
 			<ost/>
 			<ocr/>
 			<ocr2/>
+			<crc/>
 			<ffar/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ffar/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>2-18 Strago's Theme</name>
@@ -478,7 +870,16 @@
 			<ocr2/>
 			<ffar/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>2-19 Relm's Theme</name>
@@ -487,8 +888,18 @@
 			<ssc/>
 			<ocr/>
 			<ocr2/>
+			<crc/>
 			<ffar/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ffar/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>2-20 Esper World</name>
@@ -497,7 +908,17 @@
 			<ssc/>
 			<ocr/>
 			<ocr2/>
+			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ocr2/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>3-01 Floating Continent</name>
@@ -505,7 +926,17 @@
 			<ost/>
 			<ocr/>
 			<ocr2/>
+			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ocr/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>3-02 Catastrophe</name>
@@ -513,7 +944,17 @@
 			<ost/>
 			<ocr/>
 			<ocr2/>
+			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ocr2/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>3-03 Battle to the Death</name>
@@ -522,7 +963,16 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>3-04 Rest in Peace</name>
@@ -531,7 +981,16 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>3-05 Dark World</name>
@@ -540,7 +999,16 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>3-06 From That Day On...</name>
@@ -549,7 +1017,16 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>3-07 Searching for Friends</name>
@@ -560,7 +1037,16 @@
 			<oth/>
 			<ffar/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><oth/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>3-08 Gogo's Theme</name>
@@ -568,8 +1054,18 @@
 			<ost/>
 			<ocr/>
 			<ocr2/>
+			<crc/>
 			<ffar/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ffar/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>3-09 Epitaph</name>
@@ -579,7 +1075,16 @@
 			<ocr2/>
 			<ffar/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ffar/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>3-10 The Magic House</name>
@@ -588,7 +1093,16 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>3-11 Umaro's Theme</name>
@@ -598,7 +1112,16 @@
 			<ocr2/>
 			<ffar/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>3-12 The Fanatics</name>
@@ -607,7 +1130,16 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ocr2/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>3-13 Kefka's Tower</name>
@@ -616,7 +1148,16 @@
 			<ocr/>
 			<ocr2/>
 			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>3-14 Dancing Mad</name>
@@ -625,7 +1166,16 @@
 			<ocr/>
 			<oth/>
 			<ocr2/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><oth/></preset>
+			<preset name="crc"><ost/></preset>
 		</song>
 		<song>
 			<name>3-15 Ending Theme</name>
@@ -634,7 +1184,16 @@
 			<ocr/>
 			<ocr2/>
 			<ffar/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ffar/></preset>
+			<preset name="crc"><ost/></preset>
 		</song>
 		<song>
 			<name>3-16 The Prelude</name>
@@ -642,13 +1201,28 @@
 			<ost/>
 			<ocr/>
 			<ocr2/>
+			<crc/>
+			<kct/>
+			<kcta/>
+			<sno/>
+			<prm/>
+			<preset name="kct"><kct/></preset>
+			<preset name="kcta"><kcta/></preset>
+			<preset name="sno"><sno/></preset>
+			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ocr2/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>Sound Effects and Miscellany</name>
 			<pcms>30,58,74</pcms>
 			<oth/>
+			<preset name="kct"><spc/></preset>
+			<preset name="kcta"><spc/></preset>
+			<preset name="sno"><spc/></preset>
+			<preset name="prm"><spc/></preset>
 			<preset name="sid"><oth/></preset>
+			<preset name="crc"><spc/></preset>
 		</song>
 	</songs>
 </songlist>

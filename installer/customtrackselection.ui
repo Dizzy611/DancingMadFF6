@@ -1,0 +1,697 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CustomTrackSelection</class>
+ <widget class="QDialog" name="CustomTrackSelection">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>509</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Soundtrack Customizer</string>
+  </property>
+  <widget class="QDialogButtonBox" name="buttonBox">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>460</y>
+     <width>341</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="standardButtons">
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+   </property>
+  </widget>
+  <widget class="QScrollArea" name="scrollArea">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>371</width>
+     <height>441</height>
+    </rect>
+   </property>
+   <property name="widgetResizable">
+    <bool>true</bool>
+   </property>
+   <widget class="QWidget" name="scrollAreaWidgetContents">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>-2815</y>
+      <width>355</width>
+      <height>3254</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QLabel" name="labelSong1">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong1"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong2">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong2"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong3">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong3"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong4">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong4"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong5">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong5"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong6">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong6"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong7">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong7"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong8">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong8"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong9">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong9"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong10">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong10"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong11">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong11"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong12">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong12"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong13">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong13"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong14">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong14"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong15">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong15"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong16">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong16"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong17">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong17"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong18">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong18"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong19">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong19"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong20">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong20"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong21">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong21"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong22">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong22"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong23">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong23"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong24">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong24"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong25">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong25"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong26">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong26"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong27">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong27"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong28">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong28"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong29">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong29"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong30">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong30"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong31">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong31"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong32">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong32"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong33">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong33"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong34">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong34"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong35">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong35"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong36">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong36"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong37">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong37"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong38">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong38"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong39">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong39"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong40">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong40"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong41">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong41"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong42">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong42"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong43">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong43"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong44">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong44"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong45">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong45"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong46">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong46"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong47">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong47"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong48">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong48"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong49">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong49"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong50">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong50"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong51">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong51"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong52">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong52"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong53">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong53"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong54">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong54"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong55">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong55"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong56">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong56"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong57">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong57"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong58">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong58"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong59">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong59"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelSong60">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboSong60"/>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>CustomTrackSelection</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>CustomTrackSelection</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
