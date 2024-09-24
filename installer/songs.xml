@@ -194,6 +194,7 @@
 			<preset name="kcta"><kcta/></preset>
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
+			<preset name="crc"><ost/></preset>
 		</song>
 		<song>
 			<name>1-07 Edgar &amp; Sabin</name>
@@ -689,6 +690,7 @@
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ocr2/></preset>
+			<preset name="crc"><ost/></preset>
 		</song>
 		<song>
 			<name>2-07 The Opera</name>
@@ -713,6 +715,7 @@
 			<preset name="sno"><xsno/></preset>
 			<preset name="prm"><xpri/></preset>
 			<preset name="sid"><xgmc/></preset>
+			<preset name="crc"><xgmc/></preset>
 		</song>
 		<song>
 			<name>2-10 Grand Finale?</name>
@@ -728,6 +731,7 @@
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
 			<preset name="sid"><oth/></preset>
+			<preset name="crc"><ost/></preset>
 		</song>
 		<song>
 			<name>2-11 Setzer's Theme</name>
@@ -764,6 +768,7 @@
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ost/></preset>
+			<preset name="crc"><ost/></preset>
 		</song>
 		<song>
 			<name>2-13 The Gestahl Empire</name>
@@ -1170,6 +1175,7 @@
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
 			<preset name="sid"><oth/></preset>
+			<preset name="crc"><ost/></preset>
 		</song>
 		<song>
 			<name>3-15 Ending Theme</name>
@@ -1187,6 +1193,7 @@
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ffar/></preset>
+			<preset name="crc"><ost/></preset>
 		</song>
 		<song>
 			<name>3-16 The Prelude</name>
@@ -1215,6 +1222,7 @@
 			<preset name="sno"><spc/></preset>
 			<preset name="prm"><spc/></preset>
 			<preset name="sid"><oth/></preset>
+			<preset name="crc"><spc/></preset>
 		</song>
 	</songs>
 </songlist>
