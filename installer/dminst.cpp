@@ -86,9 +86,6 @@ DMInst::DMInst(QWidget *parent)
     this->logger = new DMLogger("./install.log", LOG_TO_STDERR);
     this->logger->doLog("Dancing Mad installer (DanceMonkey alpha) loaded...");
 
-    // intentional bad URL to test error handling
-    //QUrl mirrorsUrl("https://gorthub.com/Dizzy611/DancingMadFF6/raw/refs/heads/master/installer/mirrors.dat");
-
     QUrl mirrorsUrl(MIRRORS_URL);
     dmgr = new DownloadManager(mirrorsUrl, this, this->logger);
     this->gostage = 0;
