@@ -7,9 +7,9 @@
 		<source friendly="OCRemix Balance &amp; Ruin (qwertymodo's loops)">ocr2</source>
 		<source friendly="ChrystalChameleon's Orchestrated">crc</source>
 		<source friendly="Eiko's Acoustic Rendition">ffar</source>
-		<source friendly="Kara Comparetti's Piano Soundtrack">kct</source>
-		<source friendly="Matthew Valenti's Synthetic Origins">sno</source>
-		<source friendly="Pixel Remaster Soundtrack">prm</source>
+		<source friendly="Kara Comparetti's Piano Soundtrack (NYI)">kct</source>
+		<source friendly="Matthew Valenti's Synthetic Origins (NYI)">sno</source>
+		<source friendly="Pixel Remaster Soundtrack (NYI)">prm</source>
 		<source friendly="Other Source">oth</source>
 		<source friendly="SPC/Do Not Download">spc</source>
 		<source friendly="Official Soundtrack (No Voices)">xost</source>
@@ -17,12 +17,12 @@
 		<source friendly="More Friends: Music From Final Fantasy (English)">xmf</source>
 		<source friendly="Distant Worlds (English)">xdw</source>
 		<source friendly="The Black Mages (Japanese)">xtbm</source>
-		<source friendly="Pixel Remaster (English)">xpre</source>
-		<source friendly="Pixel Remaster (Japanese)">xprj</source>
-		<source friendly="Pixel Remaster (Italian)">xpri</source>
-		<source friendly="Pixel Remaster (German)">xprg</source>
-		<source friendly="Pixel Remaster (Spanish)">xprs</source>
-		<source friendly="Pixel Reamster (Korean)">xprk</source>
+		<source friendly="Pixel Remaster (English) (NYI)">xpre</source>
+		<source friendly="Pixel Remaster (Japanese) (NYI)">xprj</source>
+		<source friendly="Pixel Remaster (Italian) (NYI)">xpri</source>
+		<source friendly="Pixel Remaster (German) (NYI)">xprg</source>
+		<source friendly="Pixel Remaster (Spanish) (NYI)">xprs</source>
+		<source friendly="Pixel Reamster (Korean) (NYI)">xprk</source>
 	</sources>
 	<presets>
 		<preset name="sid" friendly="Developer's Recommendation" type="per-song" />
@@ -67,9 +67,9 @@
 			<xost range="31" />
 			<spc range="59" />
 		</preset>
-		<preset name="prm" friendly="Pixel Remaster Soundtrack" type="per-song" />
-		<preset name="sno" friendly="Matthew Valenti's Synthetic Origins" type="per-song" />
-		<preset name="kct" friendly="Kara Comparetti's Piano Soundtrack" type="per-song" />
+		<preset name="prm" friendly="Pixel Remaster Soundtrack (NYI)" type="per-song" />
+		<preset name="sno" friendly="Matthew Valenti's Synthetic Origins (NYI)" type="per-song" />
+		<preset name="kct" friendly="Kara Comparetti's Piano Soundtrack (NYI)" type="per-song" />
 	</presets>
 	<songs>
 		<song>
