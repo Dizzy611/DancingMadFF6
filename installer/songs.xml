@@ -66,12 +66,7 @@
 			<xost range="31" />
 			<spc range="59" />
 		</preset>
-		<preset name="crc" friendly="ChrystalChameleon's Orchestrated">
-			<crc range="0-2,4,6-7,9,12,14,16,18,21,22,25,26,28-29,33,38,40,45-49,51-55" />
-			<ost range="3,5,8,10-11,13,15,19,20,23,24,27,30,32,34-37,39,41-44,50,56-58" />
-			<xost range="31" />
-			<spc range="59" />
-		</preset>
+		<preset name="crc" friendly="ChrystalChameleon's Orchestrated" type="per-song" />
 		<preset name="prm" friendly="Pixel Remaster Soundtrack" type="per-song" />
 		<preset name="sno" friendly="Matthew Valenti's Synthetic Origins" type="per-song" />
 		<preset name="kct" friendly="Kara Comparetti's Piano Soundtrack" type="per-song" />
@@ -96,6 +91,7 @@
 			<preset name="kcta"><kcta/></preset>
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-02 The Mines of Narshe</name>
@@ -115,6 +111,7 @@
 			<preset name="kcta"><kcta/></preset>
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-03 Awakening</name>
@@ -136,6 +133,7 @@
 			<preset name="kcta"><kcta/></preset>
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-04 Locke's Theme</name>
@@ -177,6 +175,7 @@
 			<preset name="kcta"><kcta/></preset>
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-06 Fanfare</name>
@@ -214,6 +213,7 @@
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		 <ffar/>
 		</song>
 		<song>
@@ -235,6 +235,7 @@
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-09 Mt Koltz</name>
@@ -274,6 +275,7 @@
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-11 Shadow's Theme</name>
@@ -335,6 +337,7 @@
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-14 The Unforgiven</name>
@@ -349,7 +352,6 @@
 			<kcta/>
 			<sno/>
 			<prm/>
-			<crc/>
 			<preset name="kct"><kct/></preset>
 			<preset name="kcta"><kcta/></preset>
 			<preset name="sno"><sno/></preset>
@@ -376,6 +378,7 @@
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-16 The Phantom Train</name>
@@ -415,6 +418,7 @@
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-18 Gau's Theme</name>
@@ -453,6 +457,7 @@
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-20 Kids Run Through the City</name>
@@ -509,6 +514,7 @@
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ssc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-23 Protect the Espers!</name>
@@ -527,6 +533,7 @@
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ssc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>1-24 The Decisive Battle</name>
@@ -586,6 +593,7 @@
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ffar/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>2-02 Coin of Fate</name>
@@ -605,6 +613,7 @@
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>2-03 Techno de Chocobo</name>
@@ -643,6 +652,7 @@
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>2-05 Slam Shuffle</name>
@@ -661,6 +671,7 @@
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>2-06 Spinach Rag</name>
@@ -735,6 +746,7 @@
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ost/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>2-12 Johnny C. Bad</name>
@@ -823,6 +835,7 @@
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>2-17 Mog's Theme</name>
@@ -861,6 +874,7 @@
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>2-19 Relm's Theme</name>
@@ -953,6 +967,7 @@
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>3-04 Rest in Peace</name>
@@ -970,6 +985,7 @@
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>3-05 Dark World</name>
@@ -987,6 +1003,7 @@
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>3-06 From That Day On...</name>
@@ -1004,6 +1021,7 @@
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>3-07 Searching for Friends</name>
@@ -1023,6 +1041,7 @@
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
 			<preset name="sid"><oth/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>3-08 Gogo's Theme</name>
@@ -1060,6 +1079,7 @@
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ffar/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>3-10 The Magic House</name>
@@ -1077,6 +1097,7 @@
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>3-11 Umaro's Theme</name>
@@ -1095,6 +1116,7 @@
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>3-12 The Fanatics</name>
@@ -1112,6 +1134,7 @@
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ocr2/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>3-13 Kefka's Tower</name>
@@ -1129,6 +1152,7 @@
 			<preset name="sno"><sno/></preset>
 			<preset name="prm"><prm/></preset>
 			<preset name="sid"><crc/></preset>
+			<preset name="crc"><crc/></preset>
 		</song>
 		<song>
 			<name>3-14 Dancing Mad</name>
