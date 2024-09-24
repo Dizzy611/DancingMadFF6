@@ -76,6 +76,7 @@ void CustomTrackSelection::on_buttonBox_accepted()
     for (auto & song : this->songs) {
         QComboBox* thiscbox = this->findChild<QComboBox*>(QString::fromStdString("comboSong" + std::to_string(i)));
         this->selections[i-1] = thiscbox->currentData().toString().toStdString();
+        i++;
     }
     emit(savedSelections());
 }
