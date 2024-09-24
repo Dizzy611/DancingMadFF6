@@ -176,6 +176,11 @@
            <string>12</string>
           </property>
          </item>
+         <item>
+          <property name="text">
+           <string>13</string>
+          </property>
+         </item>
         </widget>
        </item>
       </layout>
@@ -284,6 +289,26 @@
          <item>
           <property name="text">
            <string>Pixel Remaster (Korean)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>More</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Yet More</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>And Still More</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>More More</string>
           </property>
          </item>
         </widget>

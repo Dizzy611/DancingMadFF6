@@ -117,7 +117,6 @@ DMInst::~DMInst()
 }
 
 void DMInst::customSelectionSaved() {
-    std::cout << "DEBUG: Custom selections saved." << std::endl;
     // Change my selections to what's been customized
     if (this->selections != cts.getSelections()) {
         this->selections.clear();
@@ -126,6 +125,7 @@ void DMInst::customSelectionSaved() {
             this->customized = true;
             this->findChild<QLabel*>("customizedLabel")->setText("✅ Soundtrack has been customized. :)");
         }
+        std::cout << "DEBUG: Custom selections saved." << std::endl;
     }
     this->show();
 }
@@ -249,10 +249,16 @@ void DMInst::on_goButton_clicked()
 
                     // start the downloads!
                     //QUrl songUrl = QString::fromStdString(songurls.at(0));
-                    dmgr = new DownloadManager(mmsongurls.at(0), this);
-                    connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
-                    this->currsong = 0;
-                    this->findChild<QLabel*>("statusLabel")->setText("Downloading " + QUrl(QString::fromStdString(this->mmsongurls.at(this->currsong)[0])).fileName() + " ...");
+                    if (!mmsongurls.empty()) {
+                        dmgr = new DownloadManager(mmsongurls.at(0), this);
+                        connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
+                        this->currsong = 0;
+                        this->findChild<QLabel*>("statusLabel")->setText("Downloading " + QUrl(QString::fromStdString(this->mmsongurls.at(this->currsong)[0])).fileName() + " ...");
+                    } else {
+                        // No songs to download, skip to patching.
+                        this->nextStage();
+                    }
+
             } else {
                 QMessageBox msgBox;
                 msgBox.setText("No download mirrors could be contacted. Please try again in 5 minutes. If this error persists, please contact the developer.");
