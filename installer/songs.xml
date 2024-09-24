@@ -1136,16 +1136,16 @@
 			<kcta/>
 			<sno/>
 			<prm/>
-			<preset name="kct"><kct/></preset>
-			<preset name="kcta"><kcta/></preset>
-			<preset name="sno"><sno/></preset>
-			<preset name="prm"><prm/></preset>
 			<preset name="sid"><ocr2/></preset>
 		</song>
 		<song>
 			<name>Sound Effects and Miscellany</name>
 			<pcms>30,58,74</pcms>
 			<oth/>
+			<preset name="kct"><spc/></preset>
+			<preset name="kcta"><spc/></preset>
+			<preset name="sno"><spc/></preset>
+			<preset name="prm"><spc/></preset>
 			<preset name="sid"><oth/></preset>
 		</song>
 	</songs>
