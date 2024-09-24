@@ -7,11 +7,11 @@
     <x>0</x>
     <y>0</y>
     <width>521</width>
-    <height>605</height>
+    <height>628</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>DMInst</string>
+   <string>Dancing Mad Installer</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QWidget" name="verticalLayoutWidget">
@@ -20,7 +20,7 @@
       <x>10</x>
       <y>0</y>
       <width>491</width>
-      <height>559</height>
+      <height>582</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="mainLayout">
@@ -339,6 +339,16 @@
         </widget>
        </item>
       </layout>
+     </item>
+     <item>
+      <widget class="QLabel" name="customizedLabel">
+       <property name="text">
+        <string>Soundtrack has not been customized.</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="Line" name="customizeSeperator">
