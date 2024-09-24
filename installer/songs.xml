@@ -1136,6 +1136,10 @@
 			<kcta/>
 			<sno/>
 			<prm/>
+			<preset name="kct"><spc/></preset>
+			<preset name="kcta"><spc/></preset>
+			<preset name="sno"><spc/></preset>
+			<preset name="prm"><spc/></preset>
 			<preset name="sid"><ocr2/></preset>
 		</song>
 		<song>
