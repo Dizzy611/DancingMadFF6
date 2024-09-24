@@ -11,11 +11,9 @@
 // data path will depend on whether we're running in an AppImage/a MacOS .app bundle or directly on Linux/Windows. Should be "." for the latter, set as default here.
 #define DATA_PATH "."
 #define MIRRORS_URL "https://github.com/Dizzy611/DancingMadFF6/raw/refs/heads/master/installer/mirrors.dat"
-// final version
-//#define XML_URL "https://github.com/Dizzy611/DancingMadFF6/raw/refs/heads/master/installer/songs.xml"
-// debug version
-#define XML_URL "https://github.com/Dizzy611/DancingMadFF6/raw/refs/heads/dancemonkey-installer-rewrite/installer/songs.xml"
+#define XML_URL "https://github.com/Dizzy611/DancingMadFF6/raw/refs/heads/master/installer/songs.xml"
 #define PATCH_URL "https://github.com/Dizzy611/DancingMadFF6/raw/refs/heads/master/patch/ff3msu.ips"
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class DMInst;
