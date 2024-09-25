@@ -54,8 +54,8 @@ Welcome to the repository for Dancing Mad. Please submit any issues using the Is
 * The Royal Stockholm Philharmonic Orchestra
 * Eiko Nichols
 * edale2
-* Kara Comparetti
-* Matthew Valenti
+* Kara Comparetto
+* Mathew Valente
   
 ## Editing Credits ##
 * Covarr
