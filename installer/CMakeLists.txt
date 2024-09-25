@@ -29,6 +29,19 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(DanceMonkey
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
+        customtrackselection.cpp
+        downloadmanager.cpp
+        mirrorchecker.cpp
+        rom_validator.cpp
+        song_parser.cpp
+        customtrackselection.h
+        customtrackselection.h customtrackselection.ui
+        dmlogger.cpp dmlogger.h
+        mirrorchecker.h
+        song_parser.h
+        rom_validator.h
+        downloadmanager.h
+        ips-patcher-master/IPSPatcherHandler.cpp ips-patcher-master/IPSPatcherHandler.h
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET DanceMonkey APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

@@ -37,8 +37,9 @@ This patch is intended to be used only with a legally obtained copy of Final Fan
 #include <QMessageBox>
 #include <QDesktopServices>
 #include <QWindow>
+#ifndef TARGET_OS_MAC
 #include <QSound>
-
+#endif
 #include "rom_validator.h"
 #include "song_parser.h"
 #include "ips-patcher-master/IPSPatcherHandler.h"
@@ -386,7 +387,9 @@ void DMInst::nextStage() {
         this->gostage = 2;
         this->mmsongurls.clear();
         this->optpatchqueue.clear();
+#ifndef TARGET_OS_MAC
         QSound::play("kefkalaugh.wav");
+#endif
         this->findChild<QProgressBar*>("downloadProgressBar")->setRange(0, 100);
         this->findChild<QProgressBar*>("downloadProgressBar")->setValue(100);
     default:
