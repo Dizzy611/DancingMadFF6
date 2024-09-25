@@ -27,6 +27,8 @@ installer/tmp/
 patch/ff3msu.link
 *.obj
 installer/build/
+build/
+**/.vscode/
 *.sfx
 utils/normalize/
 utils/rr/
