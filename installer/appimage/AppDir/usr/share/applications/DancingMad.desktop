@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Dancing Mad Installer
+Comment=Installer for the Dancing Mad MSU-1 Romhack
+Exec=DanceMonkey
+Icon=DancingMad
+Categories=Game;
+
