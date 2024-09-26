@@ -252,6 +252,7 @@ void DMInst::on_goButton_clicked()
                         connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
                         this->currsong = 0;
                         this->findChild<QLabel*>("statusLabel")->setText("Downloading " + QUrl(QString::fromStdString(this->mmsongurls.at(this->currsong)[0])).fileName() + " [1/" + this->mmsongurls.size() + "] ...");
+                        this->logger->doLog("Started download of song 1 of " + std::to_string(this->mmsongurls.size()));
                     } else {
                         // No songs to download, skip to patching.
                         this->nextStage();
@@ -506,6 +507,7 @@ void DMInst::downloadFinished() {
                 this->findChild<QLabel*>("statusLabel")->setText("Skipping " + QString::fromStdString(checkFile) + " if it matches remote hash...");
             } else {
                 this->findChild<QLabel*>("statusLabel")->setText("Downloading " + QUrl(QString::fromStdString(this->mmsongurls.at(this->currsong)[0])).fileName() + " [" + this->currsong+1 + "/" + this->mmsongurls.size() + "] ...");
+                this->logger->doLog("Started download of song " + std::to_string(this->currsong+1) + " of " + std::to_string(this->mmsongurls.size()));
             }
 
             //QUrl songUrl = QString::fromStdString(songurls.at(this->currsong));
