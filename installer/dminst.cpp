@@ -54,7 +54,7 @@ This patch is intended to be used only with a legally obtained copy of Final Fan
 // DEBUG
 #define LOG_TO_STDERR true
 
-const char *ff3msuxml = R"(<?xml version="1.0" encoding="UTF-8"?><cartridge region="NTSC">
+const char* ff3msuxml = R"(<?xml version="1.0" encoding="UTF-8"?><cartridge region="NTSC">
     <rom>
         <map mode="shadow" address="00-3f:8000-ffff"/>
         <map mode="linear" address="40-7f:0000-ffff"/>
@@ -86,7 +86,7 @@ DMInst::DMInst(QWidget *parent)
     this->logger = new DMLogger("./install.log", LOG_TO_STDERR);
     this->logger->doLog("Dancing Mad installer (DanceMonkey alpha) loaded...");
 
-    QUrl mirrorsUrl(MIRRORS_URL);
+    QUrl mirrorsUrl(QString::fromStdString(mirrors_url));
     dmgr = new DownloadManager(mirrorsUrl, this, this->logger);
     this->gostage = 0;
     connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
@@ -196,7 +196,7 @@ void DMInst::on_goButton_clicked()
                 this->warnings.clear();
                 int i = 0;
                 this->findChild<QProgressBar*>("downloadProgressBar")->setRange(0, existingFiles.size()-1);
-                for (auto & existingFileName : existingFiles) {
+                for (auto const & existingFileName : existingFiles) {
                     logger->doLog("DEBUG: Existing file name " + existingFileName.toStdString());
                     // new SHA256 using QCryptographicHash
                     QFile file(QString::fromStdString(this->destdir + existingFileName.toStdString()));
@@ -205,39 +205,35 @@ void DMInst::on_goButton_clicked()
                     hash.addData(&file);
                     QByteArray hash_string = hash.result().toHex();
                     file.close();
-                    this->hashes.insert({existingFileName.toStdString(), hash_string.toStdString()});
+                    this->hashes.try_emplace(existingFileName.toStdString(), hash_string.toStdString());
                     i++;
                     this->findChild<QProgressBar*>("downloadProgressBar")->setValue(i);
                 }
                 this->findChild<QProgressBar*>("downloadProgressBar")->setRange(0,100);
                 this->findChild<QProgressBar*>("downloadProgressBar")->setValue(0);
 
-                //std::string selectedmirror = mc->getMirror();
                 std::vector<std::string> mirrorList = mc->getMirrors();
-                    for (int i = 0; i < songs.size(); i++) {
-                        for (auto & pcm : songs[i].pcms) {
-                            if (this->selections.contains(i)) {
-                                if (this->selections.at(i) != "spc") { // skip download if SPC
-                                    std::string uppersource = this->selections.at(i);
-                                    std::transform(uppersource.begin(), uppersource.end(), uppersource.begin(), ::toupper);
-                                    if (!uppersource.starts_with("X")) {
-                                        this->mmsongurls.push_back(buildMirroredUrls(mirrorList, uppersource + "/ff3-" + std::to_string(pcm) + ".pcm.md5sum"));
-                                        this->mmsongurls.push_back(buildMirroredUrls(mirrorList, uppersource + "/ff3-" + std::to_string(pcm) + ".pcm"));
-                                        //this->songurls.push_back(selectedmirror + uppersource + "/ff3-" + std::to_string(pcm) + ".pcm");
-                                    } else {
-                                        this->mmsongurls.push_back(buildMirroredUrls(mirrorList, "opera/" + uppersource.substr(1, uppersource.size()) + "/ff3-" + std::to_string(pcm) + ".pcm.md5sum"));
-                                        this->mmsongurls.push_back(buildMirroredUrls(mirrorList, "opera/" + uppersource.substr(1, uppersource.size()) + "/ff3-" + std::to_string(pcm) + ".pcm"));
-                                        //this->songurls.push_back(selectedmirror + "opera/" + uppersource.substr(1, uppersource.size()) + "/ff3-" + std::to_string(pcm) + ".pcm");
-                                    }
+                    for (i = 0; i < songs.size(); i++) {
+                        for (auto const & pcm : songs[i].pcms) {
+                            if ((this->selections.contains(i)) && (this->selections.at(i) != "spc")) {
+                                std::string uppersource = this->selections.at(i);
+                                std::transform(uppersource.begin(), uppersource.end(), uppersource.begin(), ::toupper);
+                                if (!uppersource.starts_with("X")) {
+                                    this->mmsongurls.push_back(buildMirroredUrls(mirrorList, std::format("{}/ff3-{}.pcm.md5sum", uppersource, pcm)));
+                                    this->mmsongurls.push_back(buildMirroredUrls(mirrorList, std::format("{}/ff3-{}.pcm", uppersource, pcm)));
+                                    //this->songurls.push_back(selectedmirror + uppersource + "/ff3-" + std::to_string(pcm) + ".pcm");
+                                } else {
+                                    this->mmsongurls.push_back(buildMirroredUrls(mirrorList, std::format("opera/{}/ff3-{}.pcm.md5sum", uppersource.substr(1, uppersource.size()), pcm)));
+                                    this->mmsongurls.push_back(buildMirroredUrls(mirrorList, std::format("opera/{}/ff3-{}.pcm", uppersource.substr(1, uppersource.size()), pcm)));
                                 }
                             }
                         }
                     }
                     // DEBUG
                     this->logger->doLog("SONG URLS:");
-                    for (auto & url : mmsongurls) {
+                    for (auto const & url : mmsongurls) {
                         std::string outstr = "[";
-                        for (auto & murl : url) {
+                        for (auto const & murl : url) {
                            outstr += murl + ",";
                         }
                         outstr.pop_back();
@@ -253,7 +249,8 @@ void DMInst::on_goButton_clicked()
                         connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
                         this->currsong = 0;
                         this->findChild<QLabel*>("statusLabel")->setText("Downloading " + QUrl(QString::fromStdString(this->mmsongurls.at(this->currsong)[0])).fileName() + " [1/" + QString::fromStdString(std::to_string(this->mmsongurls.size())) + "] ...");
-                        this->logger->doLog("Started download of song 1 of " + std::to_string(this->mmsongurls.size()));
+                        std::string debugout = std::format("Started download of song 1 of {}.", this->mmsongurls.size());
+                        this->logger->doLog(debugout);
                     } else {
                         // No songs to download, skip to patching.
                         this->nextStage();
@@ -282,7 +279,7 @@ void DMInst::nextStage() {
     switch(this->gostage) {
     case 0: {
         this->findChild<QLabel*>("statusLabel")->setText("Downloading song and preset lists from GitHub...");
-        QUrl xmlUrl(XML_URL);
+        QUrl xmlUrl(QString::fromStdString(xml_url));
         dmgr->deleteLater();
         dmgr = new DownloadManager(xmlUrl, this, this->logger);
         this->gostage = 1;
@@ -295,7 +292,7 @@ void DMInst::nextStage() {
         int i = 0;
 
         // Set presets in soundtrack list
-        for (auto & element : this->presets) {
+        for (auto const & element : this->presets) {
             this->findChild<QComboBox*>("soundtrackSelectBox")->setItemText(i, QString::fromStdString(element.friendly_name));
             i++;
         }
@@ -304,9 +301,9 @@ void DMInst::nextStage() {
         // Set opera selections
         this->findChild<QComboBox*>("operaSelectBox")->setItemText(0, "SPC/Do Not Download");
         i = 1;
-        for (auto & element : this->sources) {
-            if (element.first.starts_with("x")) {
-                this->findChild<QComboBox*>("operaSelectBox")->setItemText(i, QString::fromStdString(element.second));
+        for (auto const& [name, friendlyName] : this->sources) {
+            if (name.starts_with("x")) {
+                this->findChild<QComboBox*>("operaSelectBox")->setItemText(i, QString::fromStdString(friendlyName));
                 i++;
             }
         }
@@ -323,7 +320,7 @@ void DMInst::nextStage() {
 
         // DEBUG
         this->logger->doLog("MIRROR LIST:");
-        for (auto & element : this->mirrors) {
+        for (auto const & element : this->mirrors) {
             this->logger->doLog("\t" + element);
         }
 
@@ -334,7 +331,7 @@ void DMInst::nextStage() {
     case 2: {
         this->logger->doLog("Reached patching stage...");
         this->findChild<QLabel*>("statusLabel")->setText("Downloading patches...");
-        QUrl patchUrl(PATCH_URL);
+        QUrl patchUrl(QString::fromStdString(patch_url));
         dmgr->deleteLater();
         dmgr = new DownloadManager(patchUrl, this, this->logger);
         this->gostage = 3;
@@ -381,7 +378,7 @@ void DMInst::nextStage() {
     case 4:
         if(!this->warnings.empty()) {
             std::string boxString = "Unable to download the following paths from any mirror. Please try again in 5 minutes. If this error persists, please contact the developer.\n\n";
-            for (auto & warning : this->warnings) {
+            for (auto const & warning : this->warnings) {
                 boxString += warning + "\n";
             }
             QMessageBox msgBox;
@@ -410,7 +407,7 @@ void DMInst::downloadFinished() {
         QByteArray mirrorData = dmgr->downloadedData();
         if (mirrorData.isEmpty()) {
             // mirror data failed to download for one reason or another, response code will have been logged to stdout. use local mirror data if available, else fatal.
-            QFile mirrorDat(DATA_PATH "/mirrors.dat");
+            QFile mirrorDat(QString::fromStdString(data_path) + "/mirrors.dat");
             if(!mirrorDat.open(QIODevice::ReadOnly)) {
                 QMessageBox msgBox;
                 msgBox.setText("Unable to download list of mirrors or read local list of mirrors. Installation cannot continue.");
@@ -443,7 +440,7 @@ void DMInst::downloadFinished() {
         QByteArray xmlData = dmgr->downloadedData();
         if (xmlData.isEmpty()) {
             // xml data failed to download for one reason or another, response code will have been logged to stdout. use local mirror data if available, else fatal.
-            QFile songsXml(DATA_PATH "/songs.xml");
+            QFile songsXml(QString::fromStdString(data_path) + "/songs.xml");
             if(!songsXml.open(QIODevice::ReadOnly)) {
                 QMessageBox msgBox;
                 msgBox.setText("Unable to download list of songs and presets or read local copy. Installation cannot continue.");
@@ -456,19 +453,17 @@ void DMInst::downloadFinished() {
                 xmlData = songsXml.readAll();
             }
         }
-        std::tuple<std::map<std::string, std::string>, std::vector<struct Preset>, std::vector<struct Song>> xmlparse = parseSongsXML(xmlData, this->logger);
-        this->songs = std::get<2>(xmlparse);
-        this->presets = std::get<1>(xmlparse);
-        this->sources = std::get<0>(xmlparse);
+        auto [tmpsources, tmppresets, tmpsongs] = parseSongsXML(xmlData, this->logger);
+        this->sources = tmpsources;
+        this->presets = tmppresets;
+        this->songs = tmpsongs;
         this->findChild<QProgressBar*>("downloadProgressBar")->setRange(0, 100);
         this->findChild<QProgressBar*>("downloadProgressBar")->setValue(0);
         this->nextStage();
         break;
     }
     case 2: {
-        QByteArray songData = dmgr->downloadedData();
-        if (songData.isEmpty()) {
-            // song data failed to download for one reason or another. TODO: Explain reason in text box, attempt other mirror or allow user to continue.
+        if (QByteArray songData = dmgr->downloadedData(); songData.isEmpty()) {
             QMessageBox msgBox;
             std::string warnString = this->mmsongurls.at(this->currsong)[0];
             warnString = warnString.substr(warnString.find("ff6data/")+8);
@@ -483,11 +478,9 @@ void DMInst::downloadFinished() {
                 matchFile.erase(matchFile.size()-7);
                 if (this->hashes.contains(matchFile)) {
                         this->logger->doLog("HASH CHECK: Existing:" + this->hashes.at(matchFile) + ", Remote:" + songData.toStdString().substr(0, songData.toStdString().find(' ')));
-                    if (this->hashes.at(matchFile) == songData.toStdString().substr(0, songData.toStdString().find(' '))) {
+                    if ((this->hashes.at(matchFile) == songData.toStdString().substr(0, songData.toStdString().find(' '))) && (this->currsong+1 < this->mmsongurls.size())) {
                         // skip next pcm as we've already got it
-                        if (this->currsong+1 < this->mmsongurls.size()) {
-                            this->currsong++;
-                        }
+                        this->currsong++;
                     }
                 }
             } else {
@@ -511,10 +504,9 @@ void DMInst::downloadFinished() {
                 this->findChild<QLabel*>("statusLabel")->setText("Skipping " + QString::fromStdString(checkFile) + " if it matches remote hash...");
             } else {
                 this->findChild<QLabel*>("statusLabel")->setText("Downloading " + QUrl(QString::fromStdString(this->mmsongurls.at(this->currsong)[0])).fileName() + " [" + QString::fromStdString(std::to_string(this->currsong+1)) + "/" + QString::fromStdString(std::to_string(this->mmsongurls.size())) + "] ...");
-                this->logger->doLog("Started download of song " + std::to_string(this->currsong+1) + " of " + std::to_string(this->mmsongurls.size()));
+                this->logger->doLog(std::format("Started download of song {} of {}.", this->currsong, this->mmsongurls.size()));
             }
 
-            //QUrl songUrl = QString::fromStdString(songurls.at(this->currsong));
             dmgr->deleteLater();
             dmgr = new DownloadManager(mmsongurls.at(this->currsong), this);
             connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
@@ -528,7 +520,7 @@ void DMInst::downloadFinished() {
         QByteArray patchData = dmgr->downloadedData();
         if (patchData.isEmpty()) {
             // patch data failed to download for one reason or another. Try local copy (potentially out of date)
-            QFile patchFile(DATA_PATH "/ff3msu.ips");
+            QFile patchFile(QString::fromStdString(data_path) + "/ff3msu.ips");
             if(!patchFile.open(QIODevice::ReadOnly)) {
                 QMessageBox msgBox;
                 msgBox.setText("Unable to download main patch or find local copy. Installation cannot continue.");
@@ -556,7 +548,7 @@ void DMInst::downloadFinished() {
         file.write(patchData);
         file.close();
         this->findChild<QProgressBar*>("downloadProgressBar")->setValue(50);
-        IPSPatcherHandler* patcher = new IPSPatcherHandler();
+        auto patcher = new IPSPatcherHandler();
         patcher->applyPatch((this->destdir + "ff3msu.ips").c_str(), this->findChild<QLineEdit*>("ROMSelectLine")->text().toStdString().c_str(), (this->destdir + "ff3.sfc").c_str());
         QDir dir(QString::fromStdString(this->destdir));
         dir.remove(QString::fromStdString("ff3msu.ips"));
@@ -575,8 +567,7 @@ void DMInst::downloadFinished() {
         break;
     }
     case 4: {
-        QByteArray optData = dmgr->downloadedData();
-        if (optData.isEmpty()) {
+        if (QByteArray optData = dmgr->downloadedData(); optData.isEmpty()) {
             // optional patch data failed to download, warn user but continue
             QMessageBox msgBox;
             std::string warnString = this->mmoptpatchqueue.at(this->curropt)[0];
@@ -596,7 +587,7 @@ void DMInst::downloadFinished() {
             if (QUrl(QString::fromStdString(this->mmoptpatchqueue.at(this->curropt)[0])).fileName().toStdString().ends_with(".ips")) {
                 this->findChild<QLabel*>("statusLabel")->setText("Patching with optional patch...");
                 this->findChild<QProgressBar*>("downloadProgressBar")->setValue(50);
-                IPSPatcherHandler* patcher = new IPSPatcherHandler();
+                auto patcher = new IPSPatcherHandler();
                 patcher->applyPatch((this->destdir + QUrl(QString::fromStdString(this->mmoptpatchqueue.at(this->curropt)[0])).fileName().toStdString()).c_str(), (this->destdir + "ff3.sfc").c_str(), (this->destdir + "ff3.sfc").c_str());
                 this->findChild<QProgressBar*>("downloadProgressBar")->setValue(100);
                 QDir dir(QString::fromStdString(this->destdir));
@@ -631,11 +622,11 @@ void DMInst::downloadFinished() {
 void DMInst::on_soundtrackSelectBox_currentIndexChanged(int index)
 {
     // DEBUG
-    this->logger->doLog("SELECTION INDEX: " + std::to_string(index));
+    this->logger->doLog(std::format("SELECTION INDEX: {}",index));
 
     // preserve opera source, if set
     std::string opera_source = "spc";
-    if (this->selections.count(31) != 0) {
+    if (this->selections.contains(31)) {
         opera_source = this->selections.at(31);
     }
 
@@ -643,18 +634,18 @@ void DMInst::on_soundtrackSelectBox_currentIndexChanged(int index)
     this->selections.clear();
 
     // re-set opera source
-    this->selections.insert({31, opera_source});
+    this->selections.try_emplace(31, opera_source);
 
     if (index < this->presets.size()) {
         struct Preset mypreset = this->presets[index];
-        for (auto & source : mypreset.selections) {
-            for (int i = 0; i < source.second.size()-1; i+=2) {
-                int rangemin = source.second.at(i);
-                int rangemax = source.second.at(i+1);
+        for (auto [source, ranges] : mypreset.selections) {
+            for (int i = 0; i < ranges.size()-1; i+=2) {
+                int rangemin = ranges.at(i);
+                int rangemax = ranges.at(i+1);
                 for (int j = rangemin; j <= rangemax; j++) {
                     // skip opera tracks, these are handled by the other dropdown
                     if (j != 31) {
-                        this->selections.insert({j, source.first});
+                        this->selections.try_emplace(j, source);
                     }
                 }
             }
@@ -664,15 +655,15 @@ void DMInst::on_soundtrackSelectBox_currentIndexChanged(int index)
             // skip opera tracks, these are handled by the other dropdown
             if (i != 31) {
                 // Too high index means SPC/Do Not Download was selected.
-                this->selections.insert({i, "spc"});
+                this->selections.try_emplace(i, "spc");
             }
 
         }
     }
     // DEBUG
     this->logger->doLog("SELECTIONS:");
-    for (auto & selection : this->selections) {
-        this->logger->doLog(this->songs[selection.first].name + " [#" + std::to_string(selection.first) + "]: " + selection.second);
+    for (auto const& [num, selection] : this->selections) {
+        this->logger->doLog(std::format("{}, [#{}]: {}", this->songs[num].name, num, selection));
     }
     // Update soundtrack selection on customization list
     this->cts.setSelections(this->selections);
@@ -690,11 +681,11 @@ void DMInst::on_operaSelectBox_currentIndexChanged(int index)
 {
     // build map of valid opera sources
     std::map<int, std::string> opera_sources;
-    opera_sources.insert({0, "spc"});
+    opera_sources.try_emplace(0, "spc");
     int i = 1;
-    for (auto & element : this->sources) {
-        if (element.first.starts_with("x")) {
-            opera_sources.insert({i, element.first});
+    for (auto const& [name, friendlyName] : this->sources) {
+        if (name.starts_with("x")) {
+            opera_sources.try_emplace(i, name);
             i++;
         }
     }
@@ -712,7 +703,7 @@ void DMInst::on_actionContact_Info_About_triggered()
     QMessageBox msgBox;
     msgBox.setTextFormat(Qt::RichText);
     msgBox.setWindowTitle("About/Contact...");
-    msgBox.setText("Dancing Mad MSU-1 is by Dylan \"Dizzy\" O'Malley-Morrison &lt;dizzy@domad.science&gt;, Copyright (C)2017-2024, licensed under the <a href=\"https://raw.githubusercontent.com/Dizzy611/DancingMadFF6/refs/heads/master/LICENSE\">BSD 2-clause license.</a><br /><br />\"Final Fantasy\",\"Final Fantasy III\", and \"Final Fantasy VI\" are registered trademarks of Square Enix Holdings Co., Ltd, hereafter \"Square Enix\". This is NOT a licensed product of Square Enix. The developers are not affiliated with or sponsored by Square Enix or any other rights holders.<br /><br />Issues? Contact Dizzy on Discord at <a href=\"https://discord.gg/ynZkNnK\">https://discord.gg/ynZkNnK</a>, open an issue on GitHub at <a href=\"https://github.com/Dizzy611/DancingMadFF6/issues\">https://github.com/Dizzy611/DancingMadFF6/issues</a>, or contact me by email at <a href=\"mailto:dizzy@domad.science.\">dizzy@domad.science</a>");
+    msgBox.setText(R"(Dancing Mad MSU-1 is by Dylan "Dizzy" O'Malley-Morrison &lt;dizzy@domad.science&gt;, Copyright (C)2017-2024, licensed under the <a href="https://raw.githubusercontent.com/Dizzy611/DancingMadFF6/refs/heads/master/LICENSE">BSD 2-clause license.</a><br /><br />"Final Fantasy","Final Fantasy III", and "Final Fantasy VI" are registered trademarks of Square Enix Holdings Co., Ltd, hereafter "Square Enix". This is NOT a licensed product of Square Enix. The developers are not affiliated with or sponsored by Square Enix or any other rights holders.<br /><br />Issues? Contact Dizzy on Discord at <a href="https://discord.gg/ynZkNnK">https://discord.gg/ynZkNnK</a>, open an issue on GitHub at <a href="https://github.com/Dizzy611/DancingMadFF6/issues">https://github.com/Dizzy611/DancingMadFF6/issues</a>, or contact me by email at <a href="mailto:dizzy@domad.science.">dizzy@domad.science</a>)");
     msgBox.setStandardButtons(QMessageBox::Ok);
     msgBox.setDefaultButton(QMessageBox::Ok);
     msgBox.exec();

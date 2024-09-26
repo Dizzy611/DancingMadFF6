@@ -14,7 +14,7 @@ class CustomTrackSelection : public QDialog
 
 public:
     explicit CustomTrackSelection(QWidget *parent = nullptr);
-    ~CustomTrackSelection();
+    ~CustomTrackSelection() final;
     void setSongs(std::vector<struct Song> songs);
     void setSources(std::map<std::string, std::string> sources);
     void setSelections(std::map<int, std::string> newSelections);
