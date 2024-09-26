@@ -8,15 +8,15 @@
 #include <QNetworkReply>
 #include "dmlogger.h"
 
-std::vector<std::string> buildMirroredUrls(std::vector<std::string> mirrors, std::string path);
+std::vector<std::string> buildMirroredUrls(std::vector<std::string> mirrors, std::string const& path);
 
 class DownloadManager : public QObject
 {
     Q_OBJECT
 public:
     explicit DownloadManager(QUrl targetUrl, QObject *parent = nullptr, DMLogger *logger = nullptr);
-    explicit DownloadManager(std::vector<std::string> targetUrls, QObject *parent = nullptr);
-    virtual ~DownloadManager();
+    explicit DownloadManager(std::vector<std::string> const& targetUrls, QObject *parent = nullptr);
+    ~DownloadManager() final;
     QByteArray downloadedData() const;
 
 signals:
@@ -25,7 +25,7 @@ signals:
 private slots:
     void fileDownloaded(QNetworkReply* pReply);
     void fileDownloadedMulti(QNetworkReply* pReply);
-    void downloadProgress(qint64 ist, qint64 max);
+    void downloadProgress(qint64 ist, qint64 max) const;
 
 private:
     QNetworkAccessManager m_WebCtrl;

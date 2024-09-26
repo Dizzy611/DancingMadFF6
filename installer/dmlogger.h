@@ -7,12 +7,12 @@
 class DMLogger
 {
 public:
-    DMLogger(std::string logfilename, bool toStderr = false);
+    DMLogger(std::string const& logfilename, bool toStderrSet = false);
     ~DMLogger();
     void closeLog();
-    void moveLog(std::string logfilename);
-    void doLog(std::string input);
-    void setToStderr(bool toStderr);
+    void moveLog(std::string const& logfilename);
+    void doLog(std::string const& input);
+    void setToStderr(bool toStderrSet);
 private:
     std::string logfilename;
     std::ofstream logfile;

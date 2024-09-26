@@ -233,7 +233,7 @@ unsigned int IPSPatcherHandler::getFileData( const char *fileName, char **fileDa
 
 char* IPSPatcherHandler::resizeBuffer( const char *oldBuffer, unsigned oldSize, unsigned int newSize )
 {
-		char *newDataBuffer = new char[newSize];
+		auto *newDataBuffer = new char[newSize];
 
 		memcpy( newDataBuffer, oldBuffer, oldSize );
 

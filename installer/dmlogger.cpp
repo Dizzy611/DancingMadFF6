@@ -1,18 +1,18 @@
 #include "dmlogger.h"
 
-DMLogger::DMLogger(std::string logfilename, bool toStderr) {
+DMLogger::DMLogger(std::string const& logfilename, bool toStderrSet) {
     this->logfilename = logfilename;
     this->logfile = std::ofstream(this->logfilename, std::ios_base::app);
-    this->toStderr = toStderr;
+    this->toStderr = toStderrSet;
 }
 
-void DMLogger::moveLog(std::string logfilename) {
+void DMLogger::moveLog(std::string const& newlogfilename) {
     // close current ofstream
     this->logfile.close();
 
     // copy contents of current log to new log
     std::ifstream src(this->logfilename, std::ios::binary);
-    std::ofstream dst(logfilename, std::ios::binary);
+    std::ofstream dst(newlogfilename, std::ios::binary);
     dst << src.rdbuf();
 
     // close src/dst streams
@@ -20,7 +20,7 @@ void DMLogger::moveLog(std::string logfilename) {
     dst.close();
 
     // set current filename and ofstream to new file
-    this->logfilename = logfilename;
+    this->logfilename = newlogfilename;
     this->logfile = std::ofstream(this->logfilename, std::ios_base::app);
 
     // log change
@@ -28,7 +28,7 @@ void DMLogger::moveLog(std::string logfilename) {
 
 }
 
-void DMLogger::doLog(std::string input) {
+void DMLogger::doLog(std::string const& input) {
     if (this->logfile.is_open()) {
         this->logfile << input << std::endl;
     }
@@ -37,8 +37,8 @@ void DMLogger::doLog(std::string input) {
     }
 
 }
-void DMLogger::setToStderr(bool toStderr) {
-    this->toStderr = toStderr;
+void DMLogger::setToStderr(bool toStderrSet) {
+    this->toStderr = toStderrSet;
 }
 
 void DMLogger::closeLog() {
