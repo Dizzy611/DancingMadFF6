@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(DanceMonkey VERSION 0.1 LANGUAGES CXX C)
+project(DancingMadInstaller VERSION 0.1 LANGUAGES CXX C)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -26,7 +26,7 @@ set(PROJECT_SOURCES
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(DanceMonkey
+    qt_add_executable(DancingMadInstaller
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         customtrackselection.cpp
@@ -44,20 +44,20 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ips-patcher-master/IPSPatcherHandler.cpp ips-patcher-master/IPSPatcherHandler.h
     )
 # Define target properties for Android with Qt 6 as:
-#    set_property(TARGET DanceMonkey APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
+#    set_property(TARGET DancingMadInstaller APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
 #                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
 # For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
 
     qt_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
 else()
     if(ANDROID)
-        add_library(DanceMonkey SHARED
+        add_library(DancingMadInstaller SHARED
             ${PROJECT_SOURCES}
         )
 # Define properties for Android with Qt 5 after find_package() calls as:
 #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     elseif(WIN32)
-        add_executable(DanceMonkey
+        add_executable(DancingMadInstaller
             ${PROJECT_SOURCES}
             rom_validator.cpp
             rom_validator.h
@@ -70,7 +70,7 @@ else()
             dmlogger.h dmlogger.cpp dminst.rc
         )
     else()
-        add_executable(DanceMonkey
+        add_executable(DancingMadInstaller
             ${PROJECT_SOURCES}
             rom_validator.cpp
             rom_validator.h
@@ -87,14 +87,14 @@ else()
     qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
 endif()
 
-target_link_libraries(DanceMonkey PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Xml Qt${QT_VERSION_MAJOR}::Network Qt${QT_VERSION_MAJOR}::Multimedia)
+target_link_libraries(DancingMadInstaller PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Xml Qt${QT_VERSION_MAJOR}::Network Qt${QT_VERSION_MAJOR}::Multimedia)
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
 # explicit, fixed bundle identifier manually though.
 if(${QT_VERSION} VERSION_LESS 6.1.0)
-  set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.DanceMonkey)
+  set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.DancingMadInstaller)
 endif()
-set_target_properties(DanceMonkey PROPERTIES
+set_target_properties(DancingMadInstaller PROPERTIES
     ${BUNDLE_ID_OPTION}
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
@@ -112,19 +112,19 @@ endif()
 #include_directories("/usr/local/include/")
 #link_directories("/usr/local/lib/")
 
-install(TARGETS DanceMonkey
+install(TARGETS DancingMadInstaller
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
 if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(DanceMonkey)
+    qt_finalize_executable(DancingMadInstaller)
 endif()
 
 # statically link on windows
 if(WIN32)
     set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
-    target_link_options(DanceMonkey PRIVATE "-static")
+    target_link_options(DancingMadInstaller PRIVATE "-static")
 endif()
 
