@@ -7,11 +7,11 @@ MirrorChecker::MirrorChecker(QObject *parent, DMLogger *logger)
     this->logger = logger;
 }
 
-void MirrorChecker::setUrl(std::string newUrl) {
+void MirrorChecker::setUrl(std::string const& newUrl) {
     this->urls.push_back(newUrl);
 }
 
-void MirrorChecker::setUrls(std::vector<std::string> newUrls) {
+void MirrorChecker::setUrls(std::vector<std::string> const& newUrls) {
     this->urls = newUrls;
 }
 
@@ -26,8 +26,7 @@ void MirrorChecker::checkMirrors() {
 }
 
 void MirrorChecker::downloadFinished() {
-    QByteArray retHtml = dmgr->downloadedData();
-    if (!retHtml.isEmpty()) {
+    if (QByteArray retHtml = dmgr->downloadedData(); !retHtml.isEmpty()) {
         this->validUrls.push_back(this->urls.at(this->currurl));
     }
     if (!(this->currurl+1 >= this->urls.size())) {
@@ -53,7 +52,7 @@ std::string MirrorChecker::getMirror() {
     }
 }
 
-std::vector<std::string> MirrorChecker::getMirrors() {
+std::vector<std::string> MirrorChecker::getMirrors() const {
     if (this->testdone) {
         if (!this->validUrls.empty()) {
             return this->validUrls;
@@ -65,6 +64,6 @@ std::vector<std::string> MirrorChecker::getMirrors() {
     }
 }
 
-bool MirrorChecker::isDone() {
+bool MirrorChecker::isDone() const {
     return this->testdone;
 }

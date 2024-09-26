@@ -6,7 +6,7 @@
 #include <map>
 #include "song_parser.h"
 
-std::pair<int, int> parseRange(std::string input) {
+std::pair<int, int> parseRange(std::string const& input) {
     std::pair<int, int> retval;
     int dash = input.find('-');
     if (dash != std::string::npos) {
@@ -41,13 +41,13 @@ std::tuple<std::map<std::string, std::string>, std::vector<struct Preset>, std::
         if (source_xml.toElement().hasAttribute("friendly")) {
             friendly_name = source_xml.toElement().attribute("friendly").toStdString();
         }
-        sources.insert({name, friendly_name});
+        sources.try_emplace(name, friendly_name);
     }
 
     // DEBUG
     logger->doLog("SOURCE LIST:");
-    for (auto & keyval : sources) {
-        logger->doLog("\t" + keyval.first + ":" + keyval.second);
+    for (auto const& [name, friendlyName] : sources) {
+        logger->doLog("\t" + name + ":" + friendlyName);
     }
     // END DEBUG
 
@@ -82,19 +82,19 @@ std::tuple<std::map<std::string, std::string>, std::vector<struct Preset>, std::
                             std::stringstream rrs(rawrange);
                             std::string token;
                             while (std::getline(rrs, token, ',')) {
-                                std::pair<int, int> range = parseRange(token);
-                                ranges.push_back(range.first);
-                                ranges.push_back(range.second);
+                                auto [min, max] = parseRange(token);
+                                ranges.push_back(min);
+                                ranges.push_back(max);
                             }
                         } else {
                             // If a single entry, just use it as is
-                            std::pair<int, int> range = parseRange(rawrange);
-                            ranges.push_back(range.first);
-                            ranges.push_back(range.second);
+                            auto [min, max] = parseRange(rawrange);
+                            ranges.push_back(min);
+                            ranges.push_back(max);
                         }
                     }
 
-                    newpreset.selections.insert({key, ranges});
+                    newpreset.selections.try_emplace(key, ranges);
                 }
             }
             presets.push_back(newpreset);
@@ -132,16 +132,16 @@ std::tuple<std::map<std::string, std::string>, std::vector<struct Preset>, std::
 
         // Build vector of sources
         // TODO: Figure out why this vector is building alphabetically instead of in file order
-        std::vector<std::string> sources;
+        std::vector<std::string> newsources;
         QDomNodeList song_nodes = root.childNodes();
         for (int j = 0; j < song_nodes.size(); j++) {
             if (song_nodes.item(j).nodeName() == "name" || song_nodes.item(j).nodeName() == "pcms" || song_nodes.item(j).nodeName() == "preset") {
                 continue;
             } else {
-                sources.push_back(song_nodes.item(j).nodeName().toStdString());
+                newsources.push_back(song_nodes.item(j).nodeName().toStdString());
             }
         }
-        song.sources = sources;
+        song.sources = newsources;
 
         // Populate per song presets
         QDomElement preset = root.firstChildElement("preset");
@@ -153,12 +153,12 @@ std::tuple<std::map<std::string, std::string>, std::vector<struct Preset>, std::
                         // Find source being set for preset. Should be name of very first child node
                         std::string source = preset.childNodes().item(0).nodeName().toStdString();
                         // Check if source already exists in preset
-                        if (element.selections.find(source) == element.selections.end()) {
+                        if (!element.selections.contains(source)) {
                             // Source does not already exist in preset, add it.
                             std::vector<int> ranges;
                             ranges.push_back(i);
                             ranges.push_back(i);
-                            element.selections.insert({source, ranges});
+                            element.selections.try_emplace(source, ranges);
                         } else {
                             // Source exists in preset, append to it
                             element.selections[source].push_back(i);
@@ -176,14 +176,14 @@ std::tuple<std::map<std::string, std::string>, std::vector<struct Preset>, std::
 
     // DEBUG
     logger->doLog("PRESET LIST:");
-    for (auto & element : presets) {
+    for (auto const & element : presets) {
         logger->doLog("\t" + element.name + ":" + element.friendly_name);
-        for (auto & keyval : element.selections) {
+        for (auto const& [source, ranges]: element.selections) {
             std::string outStr = "";
-            for (auto & rangeval : keyval.second) {
-                outStr += std::to_string(rangeval) + ",";
+            for (auto & rangeval : ranges) {
+                outStr += std::format("{},", rangeval);
             }
-            logger->doLog("\t\t" + keyval.first + ":" + outStr);
+            logger->doLog(std::format("\t\t{}:{}", source, outStr));
         }
     }
 
@@ -193,12 +193,12 @@ std::tuple<std::map<std::string, std::string>, std::vector<struct Preset>, std::
         logger->doLog("\t" + element.name);
         std::string outStr = "\t\tPCMs:";
         for (auto & element2 : element.pcms) {
-            outStr+= std::to_string(element2) + ",";
+            outStr+= std::format("{},", element2);
         }
         logger->doLog(outStr);
         outStr = "\t\tSources:";
         for (auto & element2 : element.sources) {
-            outStr+= element2 + ",";
+            outStr+= std::format("{},", element2);
         }
         logger->doLog(outStr);
     }

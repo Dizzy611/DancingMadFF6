@@ -5,7 +5,7 @@
 // DEBUG
 #define LOG_TO_STDERR true
 
-std::vector<std::string> buildMirroredUrls(std::vector<std::string> mirrors, std::string path) {
+std::vector<std::string> buildMirroredUrls(std::vector<std::string> mirrors, std::string const& path) {
     std::vector<std::string> output;
     for (auto & mirror : mirrors) {
         // add a final / if one is missing
@@ -24,12 +24,12 @@ DownloadManager::DownloadManager(QUrl targetUrl, QObject *parent, DMLogger *logg
     QNetworkRequest request(targetUrl);
     request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
     request.setTransferTimeout(30000);
-    QNetworkReply* reply = m_WebCtrl.get(request);
+    QNetworkReply const* reply = m_WebCtrl.get(request);
 
     connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(downloadProgress(qint64, qint64)));
 }
 
-DownloadManager::DownloadManager(std::vector<std::string> targetUrls, QObject *parent)
+DownloadManager::DownloadManager(std::vector<std::string> const& targetUrls, QObject *parent)
     : QObject{parent} {
     this->logger = new DMLogger("./songtransit.log", LOG_TO_STDERR);
     this->currmirror = 0;
@@ -39,14 +39,14 @@ DownloadManager::DownloadManager(std::vector<std::string> targetUrls, QObject *p
     QNetworkRequest request(QUrl(QString::fromStdString(this->targetUrls.at(this->currmirror))));
     request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
     request.setTransferTimeout(30000);
-    QNetworkReply* reply = m_WebCtrl.get(request);
+    QNetworkReply const* reply = m_WebCtrl.get(request);
 
     connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(downloadProgress(qint64, qint64)));
 }
 
-DownloadManager::~DownloadManager() {}
+DownloadManager::~DownloadManager() = default;
 
-void DownloadManager::downloadProgress(qint64 ist, qint64 max) {
+void DownloadManager::downloadProgress(qint64 ist, qint64 max) const {
     if (this->parent()->findChild<QProgressBar*>("downloadProgressBar")) {
         this->parent()->findChild<QProgressBar*>("downloadProgressBar")->setRange(0, max);
         this->parent()->findChild<QProgressBar*>("downloadProgressBar")->setValue(ist);
@@ -54,8 +54,7 @@ void DownloadManager::downloadProgress(qint64 ist, qint64 max) {
 }
 
 void DownloadManager::fileDownloaded(QNetworkReply* pReply) {
-    QVariant test = pReply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
-    if (test.isValid()) {
+    if (QVariant test = pReply->attribute(QNetworkRequest::HttpStatusCodeAttribute); test.isValid()) {
         QString status = test.toString();
         if (this->logger != nullptr) {
             this->logger->doLog("DEBUG: HTTP CODE RECEIVED: " + status.toStdString());
@@ -87,7 +86,7 @@ void DownloadManager::fileDownloadedMulti(QNetworkReply* pReply) {
                 QNetworkRequest request(QUrl(QString::fromStdString(this->targetUrls.at(this->currmirror))));
                 request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
                 request.setTransferTimeout(30000);
-                QNetworkReply* reply = m_WebCtrl.get(request);
+                QNetworkReply const* reply = m_WebCtrl.get(request);
                 connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(downloadProgress(qint64, qint64)));
             } else {
                 // Handle errors in later code by checking if m_DownloadedData QByteArray isEmpty()
@@ -111,7 +110,7 @@ void DownloadManager::fileDownloadedMulti(QNetworkReply* pReply) {
             QNetworkRequest request(QUrl(QString::fromStdString(this->targetUrls.at(this->currmirror))));
             request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
             request.setTransferTimeout(30000);
-            QNetworkReply* reply = m_WebCtrl.get(request);
+            QNetworkReply const* reply = m_WebCtrl.get(request);
             connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(downloadProgress(qint64, qint64)));
         } else {
             // Handle errors in later code by checking if m_DownloadedData QByteArray isEmpty()
