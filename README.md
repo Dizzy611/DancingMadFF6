@@ -29,6 +29,9 @@ Welcome to the repository for Dancing Mad. Please submit any issues using the Is
 
 * The installer is now supported natively on Windows, macOS, and Linux. If you're having any issue running the installer on any of these platforms, let me know!
 
+### Installer System Requirements ###
+
+* The installer has been tested to work on the following operating systems: Windows 10 and later, macOS 11 and later (macOS 13 or later recommended), Debian 9 and later, and latest Arch Linux. In terms of Linux, it should work on other Linux distros from 2017 or later as well.
 ### Contribution guidelines ###
 
 * Feel free to fork and submit pull requests. This is the preferred method of submitting fixes to the code/contributions. 
