@@ -37,9 +37,8 @@ This patch is intended to be used only with a legally obtained copy of Final Fan
 #include <QMessageBox>
 #include <QDesktopServices>
 #include <QWindow>
-#ifndef TARGET_OS_MAC
 #include <QSound>
-#endif
+
 #include "rom_validator.h"
 #include "song_parser.h"
 #include "ips-patcher-master/IPSPatcherHandler.h"
@@ -181,6 +180,7 @@ void DMInst::on_ROMSelectLine_textChanged(const QString &arg1)
 
 void DMInst::on_goButton_clicked()
 {
+    this->logger->doLog("Reached download stage...");
     if (this->gostage == 2 && !this->selections.empty()) {
         // disable pressing the button twice
         this->findChild<QPushButton*>("goButton")->setEnabled(false);
@@ -287,6 +287,7 @@ void DMInst::nextStage() {
         break;
     }
     case 1: {
+        this->logger->doLog("Reached pre-download stage...");
         this->findChild<QLabel*>("statusLabel")->setText("Populating song and preset lists from downloaded data...");
         int i = 0;
 
@@ -328,6 +329,7 @@ void DMInst::nextStage() {
         break;
     }
     case 2: {
+        this->logger->doLog("Reached patching stage...");
         this->findChild<QLabel*>("statusLabel")->setText("Downloading patches...");
         QUrl patchUrl(PATCH_URL);
         dmgr = new DownloadManager(patchUrl, this, this->logger);
@@ -336,6 +338,7 @@ void DMInst::nextStage() {
         break;
     }
     case 3: {
+        this->logger->doLog("Reached optional patch stage...");
         // check if any optional patches have been selected
         bool twue = this->findChild<QCheckBox*>("patchCheck_1")->checkState();
         bool mp   = this->findChild<QCheckBox*>("patchCheck_2")->checkState();
@@ -387,9 +390,7 @@ void DMInst::nextStage() {
         this->gostage = 2;
         this->mmsongurls.clear();
         this->optpatchqueue.clear();
-#ifndef TARGET_OS_MAC
         QSound::play("kefkalaugh.wav");
-#endif
         this->findChild<QProgressBar*>("downloadProgressBar")->setRange(0, 100);
         this->findChild<QProgressBar*>("downloadProgressBar")->setValue(100);
     default:
@@ -400,6 +401,7 @@ void DMInst::nextStage() {
 void DMInst::downloadFinished() {
     switch(this->gostage) {
     case 0: {
+        this->logger->doLog("Reached mirror setting stage...");
         QByteArray mirrorData = dmgr->downloadedData();
         if (mirrorData.isEmpty()) {
             // mirror data failed to download for one reason or another, response code will have been logged to stdout. use local mirror data if available, else fatal.
@@ -432,6 +434,7 @@ void DMInst::downloadFinished() {
         break;
     }
     case 1: {
+        this->logger->doLog("Reached song data setting stage...");
         QByteArray xmlData = dmgr->downloadedData();
         if (xmlData.isEmpty()) {
             // xml data failed to download for one reason or another, response code will have been logged to stdout. use local mirror data if available, else fatal.
@@ -514,6 +517,7 @@ void DMInst::downloadFinished() {
         break;
     }
     case 3: {
+        this->logger->doLog("Reached patch downloaded stage...");
         QByteArray patchData = dmgr->downloadedData();
         if (patchData.isEmpty()) {
             // patch data failed to download for one reason or another. Try local copy (potentially out of date)
