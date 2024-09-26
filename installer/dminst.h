@@ -9,10 +9,11 @@
 #include "customtrackselection.h"
 
 // data path will depend on whether we're running in an AppImage/a MacOS .app bundle or directly on Linux/Windows. Should be "." for the latter, set as default here.
-#define DATA_PATH "."
-#define MIRRORS_URL "https://github.com/Dizzy611/DancingMadFF6/raw/refs/heads/master/installer/mirrors.dat"
-#define XML_URL "https://github.com/Dizzy611/DancingMadFF6/raw/refs/heads/master/installer/songs.xml"
-#define PATCH_URL "https://github.com/Dizzy611/DancingMadFF6/raw/refs/heads/master/patch/ff3msu.ips"
+const std::string data_path = ".";
+const std::string mirrors_url = "https://github.com/Dizzy611/DancingMadFF6/raw/refs/heads/master/installer/mirrors.dat";
+const std::string xml_url = "https://github.com/Dizzy611/DancingMadFF6/raw/refs/heads/master/installer/songs.xml";
+const std::string patch_url = "https://github.com/Dizzy611/DancingMadFF6/raw/refs/heads/master/patch/ff3msu.ips";
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -25,8 +26,8 @@ class DMInst : public QMainWindow
     Q_OBJECT
 
 public:
-    DMInst(QWidget *parent = nullptr);
-    ~DMInst();
+    explicit DMInst(QWidget *parent = nullptr);
+    ~DMInst() final;
 
 private slots:
     void on_ROMSelectBrowse_clicked();
