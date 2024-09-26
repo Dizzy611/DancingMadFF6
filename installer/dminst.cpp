@@ -248,6 +248,7 @@ void DMInst::on_goButton_clicked()
                     // start the downloads!
                     //QUrl songUrl = QString::fromStdString(songurls.at(0));
                     if (!mmsongurls.empty()) {
+                        delete(dmgr);
                         dmgr = new DownloadManager(mmsongurls.at(0), this);
                         connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
                         this->currsong = 0;
@@ -282,6 +283,7 @@ void DMInst::nextStage() {
     case 0: {
         this->findChild<QLabel*>("statusLabel")->setText("Downloading song and preset lists from GitHub...");
         QUrl xmlUrl(XML_URL);
+        delete(dmgr);
         dmgr = new DownloadManager(xmlUrl, this, this->logger);
         this->gostage = 1;
         connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
@@ -333,6 +335,7 @@ void DMInst::nextStage() {
         this->logger->doLog("Reached patching stage...");
         this->findChild<QLabel*>("statusLabel")->setText("Downloading patches...");
         QUrl patchUrl(PATCH_URL);
+        delete(dmgr);
         dmgr = new DownloadManager(patchUrl, this, this->logger);
         this->gostage = 3;
         connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
@@ -366,6 +369,7 @@ void DMInst::nextStage() {
                 this->mmoptpatchqueue.push_back(buildMirroredUrls(mirrorList, "contrib/CSR/ff3-92.pcm"));
                 this->mmoptpatchqueue.push_back(buildMirroredUrls(mirrorList, "contrib/CSR/ff3-93.pcm"));
             }
+            delete(dmgr);
             dmgr = new DownloadManager(this->mmoptpatchqueue.at(0), this);
             connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
             this->curropt = 0;
@@ -511,6 +515,7 @@ void DMInst::downloadFinished() {
             }
 
             //QUrl songUrl = QString::fromStdString(songurls.at(this->currsong));
+            delete(dmgr);
             dmgr = new DownloadManager(mmsongurls.at(this->currsong), this);
             connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
         }
@@ -609,6 +614,7 @@ void DMInst::downloadFinished() {
             // next patch please
             this->curropt++;
             this->findChild<QLabel*>("statusLabel")->setText("Downloading " + QUrl(QString::fromStdString(this->mmoptpatchqueue.at(this->curropt)[0])).fileName() + " ...");
+            delete(dmgr);
             dmgr = new DownloadManager(mmoptpatchqueue.at(this->curropt), this);
             connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
         }
