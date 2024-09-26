@@ -82,6 +82,7 @@ jobs:
       shell: bash
       run: |
         sudo apt update && sudo apt install qtbase5-dev qtmultimedia5-dev qttools5-dev libqt5network5
+        cd installer
         mkdir build
         cd build
         cmake ..
