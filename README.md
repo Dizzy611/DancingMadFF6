@@ -1,12 +1,3 @@
-## UPDATE: Seeking Maintainers/Help
-
-I am seeking maintainers or long term help for this project, as I have had very little time or energy over the last two years to devote to this project. I consider it nearly feature complete, with fading as the only remaining high priority task, as well as fixing a small handful of bugs.
-
-The installer is a mess, frankly, but I'm willing to continue to maintain that part of the project myself. The actual patch, the SNES ASM part of the project, is what I want to find someone to take over. 
-
-If you're interested, visit our Discord server and have a chat with me. I will explain our current codebase to the best of my ability, and we can work things out from there.
- 
-
 ## UPDATE: Prepackaged song presets are [here](#prepacks)! Use of the installer is still recommended for most users, but users familiar with patching a ROM themselves might be interested. 
 
 # Dancing Mad FF6 MSU-1 Music Replacer #
