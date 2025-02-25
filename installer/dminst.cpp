@@ -37,8 +37,10 @@ This patch is intended to be used only with a legally obtained copy of Final Fan
 #include <QMessageBox>
 #include <QDesktopServices>
 #include <QWindow>
-#ifndef __APPLE__
-#include <QSound>
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    #include <QSound>
+#else
+    #include <QSoundEffect>
 #endif
 #include "rom_validator.h"
 #include "song_parser.h"
@@ -377,6 +379,7 @@ void DMInst::nextStage() {
         break;
     }
     case 4:
+        {
         if(!this->warnings.empty()) {
             std::string boxString = "Unable to download the following paths from any mirror. Please try again in 5 minutes. If this error persists, please contact the developer.\n\n";
             for (auto const & warning : this->warnings) {
@@ -393,11 +396,25 @@ void DMInst::nextStage() {
         this->gostage = 2;
         this->mmsongurls.clear();
         this->optpatchqueue.clear();
-#ifndef __APPLE__
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        // Use QSound on Qt5 or earlier.
         QSound::play("kefkalaugh.wav");
+#else
+        QSoundEffect* soundEffect = new QSoundEffect();
+        // Use QSoundEffect for Qt6.
+        soundEffect->setSource(QUrl::fromLocalFile("kefkalaugh.wav"));
+        soundEffect->setVolume(1.0f);
+        soundEffect->play();
+        QObject::connect(soundEffect, &QSoundEffect::playingChanged, [soundEffect]() {
+            if (!soundEffect->isPlaying()) {
+                soundEffect->deleteLater();
+            }
+        });
 #endif
         this->findChild<QProgressBar*>("downloadProgressBar")->setRange(0, 100);
         this->findChild<QProgressBar*>("downloadProgressBar")->setValue(100);
+        break;
+        }
     default:
         break;
     }
