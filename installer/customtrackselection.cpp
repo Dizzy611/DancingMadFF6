@@ -30,25 +30,25 @@ void CustomTrackSelection::setSelections(std::map<int, std::string> const& newSe
 void CustomTrackSelection::setSongs(std::vector<struct Song> const& newSongs) {
     int i = 1;
     for (auto & song : newSongs) {
-        if (this->findChild<QLabel*>(QString::fromStdString(std::format("labelSong{}",i)))) {
-            this->findChild<QLabel*>(QString::fromStdString(std::format("labelSong{}",i)))->setText(QString::fromStdString(song.name));
+        if (this->findChild<QLabel*>(QString::fromStdString("labelSong" + std::to_string(i)))) {
+            this->findChild<QLabel*>(QString::fromStdString("labelSong" + std::to_string(i)))->setText(QString::fromStdString(song.name));
             for (auto & source : song.sources) {
                 if (this->sources.empty()) {
-                    this->findChild<QComboBox*>(QString::fromStdString(std::format("comboSong{}",i)))->addItem(QString::fromStdString(source), QString::fromStdString(source));
+                    this->findChild<QComboBox*>(QString::fromStdString("comboSong" + std::to_string(i)))->addItem(QString::fromStdString(source), QString::fromStdString(source));
                 } else {
                     if (this->sources.contains(source)) {
-                        this->findChild<QComboBox*>(QString::fromStdString(std::format("comboSong{}",i)))->addItem(QString::fromStdString(this->sources.at(source)), QString::fromStdString(source));
+                        this->findChild<QComboBox*>(QString::fromStdString("comboSong" + std::to_string(i)))->addItem(QString::fromStdString(this->sources.at(source)), QString::fromStdString(source));
                     } else {
                         std::cout << "DEBUG:" << source << " not found in sources list, found in " << song.name << "." << std::endl;
-                        this->findChild<QComboBox*>(QString::fromStdString(std::format("comboSong{}",i)))->addItem(QString::fromStdString(source), QString::fromStdString(source));
+                        this->findChild<QComboBox*>(QString::fromStdString("comboSong" + std::to_string(i)))->addItem(QString::fromStdString(source), QString::fromStdString(source));
                     }
                 }
             }
-            this->findChild<QComboBox*>(QString::fromStdString(std::format("comboSong{}",i)))->addItem("SPC/Do Not Download", "spc");
+            this->findChild<QComboBox*>(QString::fromStdString("comboSong" + std::to_string(i)))->addItem("SPC/Do Not Download", "spc");
         }
         if (!this->selections.empty()) {
-            int selecteditem = this->findChild<QComboBox*>(QString::fromStdString(std::format("comboSong{}",i)))->findData(QString::fromStdString(this->selections.at(i-1)));
-            this->findChild<QComboBox*>(QString::fromStdString(std::format("comboSong{}",i)))->setCurrentIndex(selecteditem);
+            int selecteditem = this->findChild<QComboBox*>(QString::fromStdString("comboSong" + std::to_string(i)))->findData(QString::fromStdString(this->selections.at(i-1)));
+            this->findChild<QComboBox*>(QString::fromStdString("comboSong" + std::to_string(i)))->setCurrentIndex(selecteditem);
         }
         i++;
     }
@@ -59,8 +59,8 @@ void CustomTrackSelection::updateSelections() {
     int i = 1;
     for (auto const & song : this->songs) {
         if (!this->selections.empty()) {
-            int selecteditem = this->findChild<QComboBox*>(QString::fromStdString(std::format("comboSong{}",i)))->findData(QString::fromStdString(this->selections.at(i-1)));
-            this->findChild<QComboBox*>(QString::fromStdString(std::format("comboSong{}",i)))->setCurrentIndex(selecteditem);
+            int selecteditem = this->findChild<QComboBox*>(QString::fromStdString("comboSong" + std::to_string(i)))->findData(QString::fromStdString(this->selections.at(i-1)));
+            this->findChild<QComboBox*>(QString::fromStdString("comboSong" + std::to_string(i)))->setCurrentIndex(selecteditem);
         }
         i++;
     }
@@ -74,7 +74,7 @@ void CustomTrackSelection::on_buttonBox_accepted()
 {
     int i = 1;
     for (auto const & song : this->songs) {
-        QComboBox const* thiscbox = this->findChild<QComboBox*>(QString::fromStdString(std::format("comboSong{}",i)));
+        QComboBox* thiscbox = this->findChild<QComboBox*>(QString::fromStdString("comboSong" + std::to_string(i)));
         this->selections[i-1] = thiscbox->currentData().toString().toStdString();
         i++;
     }

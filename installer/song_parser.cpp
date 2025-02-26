@@ -181,9 +181,9 @@ std::tuple<std::map<std::string, std::string>, std::vector<struct Preset>, std::
         for (auto const& [source, ranges]: element.selections) {
             std::string outStr = "";
             for (auto & rangeval : ranges) {
-                outStr += std::format("{},", rangeval);
+                outStr += std::to_string(rangeval) + ",";
             }
-            logger->doLog(std::format("\t\t{}:{}", source, outStr));
+            logger->doLog("\t\t" + source + ":" + outStr);
         }
     }
 
@@ -193,12 +193,12 @@ std::tuple<std::map<std::string, std::string>, std::vector<struct Preset>, std::
         logger->doLog("\t" + element.name);
         std::string outStr = "\t\tPCMs:";
         for (auto & element2 : element.pcms) {
-            outStr+= std::format("{},", element2);
+            outStr+= element2 + ",";
         }
         logger->doLog(outStr);
         outStr = "\t\tSources:";
         for (auto & element2 : element.sources) {
-            outStr+= std::format("{},", element2);
+            outStr+= element2 + ",";
         }
         logger->doLog(outStr);
     }
