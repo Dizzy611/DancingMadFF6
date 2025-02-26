@@ -222,12 +222,11 @@ void DMInst::on_goButton_clicked()
                                 std::string uppersource = this->selections.at(i);
                                 std::transform(uppersource.begin(), uppersource.end(), uppersource.begin(), ::toupper);
                                 if (!uppersource.starts_with("X")) {
-                                    this->mmsongurls.push_back(buildMirroredUrls(mirrorList, std::format("{}/ff3-{}.pcm.md5sum", uppersource, pcm)));
-                                    this->mmsongurls.push_back(buildMirroredUrls(mirrorList, std::format("{}/ff3-{}.pcm", uppersource, pcm)));
-                                    //this->songurls.push_back(selectedmirror + uppersource + "/ff3-" + std::to_string(pcm) + ".pcm");
+                                    this->mmsongurls.push_back(buildMirroredUrls(mirrorList, uppersource + "/ff3-" + std::to_string(pcm) + ".pcm.md5sum"));
+                                    this->mmsongurls.push_back(buildMirroredUrls(mirrorList, uppersource + "/ff3-" + std::to_string(pcm) + ".pcm"));
                                 } else {
-                                    this->mmsongurls.push_back(buildMirroredUrls(mirrorList, std::format("opera/{}/ff3-{}.pcm.md5sum", uppersource.substr(1, uppersource.size()), pcm)));
-                                    this->mmsongurls.push_back(buildMirroredUrls(mirrorList, std::format("opera/{}/ff3-{}.pcm", uppersource.substr(1, uppersource.size()), pcm)));
+                                    this->mmsongurls.push_back(buildMirroredUrls(mirrorList, "opera/" + uppersource.substr(1, uppersource.size()) + "/ff3-" + std::to_string(pcm) + ".pcm.md5sum"));
+                                    this->mmsongurls.push_back(buildMirroredUrls(mirrorList, "opera/" + uppersource.substr(1, uppersource.size()) + "/ff3-" + std::to_string(pcm) + ".pcm"));
                                 }
                             }
                         }
@@ -252,8 +251,7 @@ void DMInst::on_goButton_clicked()
                         connect(dmgr, SIGNAL(downloaded()), this, SLOT(downloadFinished()));
                         this->currsong = 0;
                         this->findChild<QLabel*>("statusLabel")->setText("Downloading " + QUrl(QString::fromStdString(this->mmsongurls.at(this->currsong)[0])).fileName() + " [1/" + QString::fromStdString(std::to_string(this->mmsongurls.size())) + "] ...");
-                        std::string debugout = std::format("Started download of song 1 of {}.", this->mmsongurls.size());
-                        this->logger->doLog(debugout);
+                        this->logger->doLog("Started download of song 1 of " + std::to_string(this->mmsongurls.size()));
                     } else {
                         // No songs to download, skip to patching.
                         this->nextStage();
@@ -524,7 +522,7 @@ void DMInst::downloadFinished() {
                 this->findChild<QLabel*>("statusLabel")->setText("Skipping " + QString::fromStdString(checkFile) + " if it matches remote hash...");
             } else {
                 this->findChild<QLabel*>("statusLabel")->setText("Downloading " + QUrl(QString::fromStdString(this->mmsongurls.at(this->currsong)[0])).fileName() + " [" + QString::fromStdString(std::to_string(this->currsong+1)) + "/" + QString::fromStdString(std::to_string(this->mmsongurls.size())) + "] ...");
-                this->logger->doLog(std::format("Started download of song {} of {}.", this->currsong, this->mmsongurls.size()));
+                this->logger->doLog("Started download of song " + std::to_string(this->currsong+1) + " of " + std::to_string(this->mmsongurls.size()));
             }
 
             dmgr->deleteLater();
@@ -642,7 +640,7 @@ void DMInst::downloadFinished() {
 void DMInst::on_soundtrackSelectBox_currentIndexChanged(int index)
 {
     // DEBUG
-    this->logger->doLog(std::format("SELECTION INDEX: {}",index));
+    this->logger->doLog("SELECTION INDEX: " + std::to_string(index));
 
     // preserve opera source, if set
     std::string opera_source = "spc";
@@ -683,7 +681,7 @@ void DMInst::on_soundtrackSelectBox_currentIndexChanged(int index)
     // DEBUG
     this->logger->doLog("SELECTIONS:");
     for (auto const& [num, selection] : this->selections) {
-        this->logger->doLog(std::format("{}, [#{}]: {}", this->songs[num].name, num, selection));
+        this->logger->doLog(this->songs[num].name + " [#" + std::to_string(num) + "]: " + selection);
     }
     // Update soundtrack selection on customization list
     this->cts.setSelections(this->selections);
