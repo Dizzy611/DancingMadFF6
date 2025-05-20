@@ -1,5 +1,10 @@
 ## UPDATE: Prepackaged song presets are [here](#prepacks)! Use of the installer is still recommended for most users, but users familiar with patching a ROM themselves might be interested. 
 
+# Prepack Note #
+
+Prepacks include two IPS files, ff3msu.ips and ff3msu-alloptions.ips. The latter includes a music playing menu as well as the cut songs restoration patch and the patch for the music player menu to play the cut songs. This is the only difference between these two IPS files.
+
+
 # Dancing Mad FF6 MSU-1 Music Replacer #
 
 Welcome to the repository for Dancing Mad. Please submit any issues using the Issues tab on the left. 
