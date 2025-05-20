@@ -2,7 +2,7 @@
 
 # Prepack Note #
 
-Prepacks include two IPS files, ff3msu.ips and ff3msu-alloptions.ips. The latter includes a music playing menu as well as the cut songs restoration patch and the patch for the music player menu to play the cut songs. This is the only difference between these two IPS files.
+Prepacks include two IPS files, ff3msu.ips and ff3msu-alloptions.ips. The latter includes a music playing menu contributed by m as well as the cut songs restoration patch and the patch for the music player menu to play the cut songs. Credit to madsiur and qwertymodo for these options. This is the only difference between these two IPS files.
 
 
 # Dancing Mad FF6 MSU-1 Music Replacer #
