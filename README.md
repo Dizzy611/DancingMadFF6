@@ -1,3 +1,5 @@
+## NOTICE: This project has moved to https://codeberg.org/Dizzy611/DancingMadFF6, please submit issues/pull requests there if possible. This was done due to concerns about GitHub's new policy about Copilot PRs and Issues.
+
 ## UPDATE: Prepackaged song presets are [here](#prepacks)! Use of the installer is still recommended for most users, but users familiar with patching a ROM themselves might be interested. 
 
 # Prepack Note #
