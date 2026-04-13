@@ -198,10 +198,6 @@ CommandHandle:
     bne +
     jmp SubSongHandle
 +
-    cmp #SPCFade
-    bne +
-    jmp FadeHandle
-+
     cmp #SPC89
     bne +
     jmp SPC89Handle
@@ -231,9 +227,6 @@ setflag:
     sta DancingFlag
     jmp OriginalCommand
     
-FadeHandle:
-    jmp OriginalCommand
-
 SPC89Handle: ; Seems to be a different subsong change, used during Phantom Train to switch to the music from the sound effects.
     lda PlayTrack
     cmp #$20
