@@ -626,14 +626,18 @@ _EndFadeRoutine:
 
 _FadeZero:
     lda MSUCurrentVolume    ; current volume
-    dec
-    dec
-    dec
-    cmp #$10
-    bcs +
+    sec
+    sbc #$0A
+    bcs +                   ; no underflow, check if result is near zero
+    lda #$00                ; underflow: volume was < $0A, snap to zero
+    sta FadeFlag            ; erase fade flag
+    bra _FadeZeroStore
++
+    cmp #$0A
+    bcs _FadeZeroStore      ; result >= $0A, just store it
     lda #$00
     sta FadeFlag            ; erase fade flag
-+
+_FadeZeroStore:
     sta MSUVolume
     sta MSUCurrentVolume    ; current volume = target volume
     rep #$30
@@ -641,14 +645,15 @@ _FadeZero:
 
 _FadeDown:
     lda MSUCurrentVolume
-    dec
-    dec
-    dec
+    sec
+    sbc #$0A
+    bcc +                   ; underflow: snap to PlayVolume
     cmp PlayVolume          ; gone below the target volume?
-    bcs +                   ; if still >= target, just store; if below target, use target value
+    bcs _FadeDownStore      ; if still >= target, just store
++
     stz FadeFlag
     lda PlayVolume          ; current volume = target volume
-+
+_FadeDownStore:
     sta MSUCurrentVolume
     sta MSUVolume
     rep #$30
@@ -656,11 +661,12 @@ _FadeDown:
 
 _FadeUp:
     lda MSUCurrentVolume
-    inc
-    inc
-    inc
-    cmp #$fb                ; safety: if result is $fb or greater, cap volume at $ff to prevent wrapping
+    clc
+    adc #$0A
+    bcs +                   ; overflow: cap to $FF
+    cmp #$f6                ; safety: if result is $f6 or greater, cap volume at $ff to prevent wrapping
     bcc _FadeUpCheck
++
     lda #$FF
     sta PlayVolume
     bra _FadeUpClear
