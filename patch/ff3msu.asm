@@ -27,6 +27,7 @@
 .DEFINE LastCommand $1308
 .DEFINE LastTrack $1309
 .DEFINE LastVolume $130A
+.DEFINE FadeFlag $130B
 
 .DEFINE OriginalNMIHandler $1500
 .DEFINE ReturnCommand 
@@ -231,13 +232,6 @@ setflag:
     jmp OriginalCommand
     
 FadeHandle:
-    ; We'll be doing a lot more here later, but for now, check for fades to volume 00, and silence the MSU-1 if found.
-    lda $1302
-    cmp #$00
-    bne +
-    stz MSUVolume
-    stz MSUCurrentVolume
-+
     jmp OriginalCommand
 
 SPC89Handle: ; Seems to be a different subsong change, used during Phantom Train to switch to the music from the sound effects.
@@ -549,7 +543,6 @@ ShutUp:
     stz MSUTrack+1
     stz MSUControl
 SilenceAndReturn:
-    stz PlayVolume
     ; Skip silencing playtrack if we're currently playing problematic tracks (ones that rely on track timing)
     lda PlayTrack
     cmp #$27 ; Opera
@@ -588,7 +581,7 @@ NMIHandle:
     phb
     phd
     sep #$20
-;stuff goes here
+    jsr FadeRoutine
     rep #$30
     pld
     plb
@@ -599,6 +592,97 @@ NMIHandle:
     jml OriginalNMIHandler
 
 ; End Subroutines
+
+; Fade routine - Credit goes to Conn
+FadeRoutine:
+    sep #$20
+    lda FadeFlag
+    beq _SetFadeFlag
+    cmp #$01
+    beq _FadeZero
+    cmp #$02
+    beq _FadeDown
+    cmp #$03
+    beq _FadeUp
+    stz FadeFlag
+    rep #$30
+    rts
+
+_SetFadeFlag:
+    lda PlayVolume          ; target volume
+    cmp MSUCurrentVolume    ; current msu volume
+    beq _EndFadeRoutine
+    cmp #$00                ; target volume = 0? fade to zero
+    bne +
+    lda #$01
+    sta FadeFlag
+    bra _EndFadeRoutine
++
+    lda PlayVolume          ; target volume
+    cmp MSUCurrentVolume    ; current msu volume
+    bcs +                   ; target >= current? fade up
+    lda #$02
+    sta FadeFlag            ; fade down
+    bra _EndFadeRoutine
++
+    lda #$03
+    sta FadeFlag            ; fade up
+_EndFadeRoutine:
+    rep #$30
+    rts
+
+_FadeZero:
+    lda MSUCurrentVolume    ; current volume
+    dec
+    dec
+    dec
+    cmp #$10
+    bcs +
+    lda #$00
+    sta FadeFlag            ; erase fade flag
++
+    sta MSUVolume
+    sta MSUCurrentVolume    ; current volume = target volume
+    rep #$30
+    rts
+
+_FadeDown:
+    lda MSUCurrentVolume
+    dec
+    dec
+    dec
+    cmp PlayVolume          ; gone below the target volume?
+    bcs +                   ; if still >= target, just store; if below target, use target value
+    stz FadeFlag
+    lda PlayVolume          ; current volume = target volume
++
+    sta MSUCurrentVolume
+    sta MSUVolume
+    rep #$30
+    rts
+
+_FadeUp:
+    lda MSUCurrentVolume
+    inc
+    inc
+    inc
+    cmp #$fb                ; safety: if result is $fb or greater, cap volume at $ff to prevent wrapping
+    bcc _FadeUpCheck
+    lda #$FF
+    sta PlayVolume
+    bra _FadeUpClear
+_FadeUpCheck:
+    cmp PlayVolume          ; did we reach the target volume?
+    bcc _FadeUpStore
+_FadeUpClear:
+    stz FadeFlag
+    lda PlayVolume          ; current volume = target volume
+_FadeUpStore:
+    sta MSUCurrentVolume
+    sta MSUVolume
+    rep #$30
+    rts
+
 .ENDS
 
 ; Ran out of space again...
