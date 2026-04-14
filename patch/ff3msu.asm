@@ -29,11 +29,16 @@
 .DEFINE LastVolume $130A
 .DEFINE FadeFlag $130B
 
+.DEFINE FadeStep $20
+.DEFINE FadeStepClamp $E0
+.DEFINE FadeInStartVolume $20
+
 .DEFINE OriginalNMIHandler $1500
 .DEFINE ReturnCommand 
 ; Was using $1E00-$1E07 earlier, but these are used for storing Veldt monsters. $1E20-$1E27 are unused. 
-; $7EF001 appears to be unused and is used so that the data for what track the MSU is currently playing 
-; can persist across saved games.
+; $1E30-$1E38 are in $1600-$1FFF, which FF6 save/load copies to SRAM. Keep MSULastTrackSet outside
+; that region so this state does not persist across save/load.
+; MSULastTrackSet currently uses $7EF001 because the in-engine sound DP candidates are active at runtime.
 
 
 .DEFINE MSUExists          $1E30
@@ -43,6 +48,7 @@
 .DEFINE SPCVolumeTemp      $1E34
 .DEFINE DancingFlag        $1E35
 .DEFINE TrainFlag          $1E36
+.DEFINE FadeInPending      $1E38
 .DEFINE MSULastTrackSet    $7EF001
 
 
@@ -198,6 +204,10 @@ CommandHandle:
     bne +
     jmp SubSongHandle
 +
+    cmp #SPCFade
+    bne +
+    jmp FadeCommandHandle
++
     cmp #SPC89
     bne +
     jmp SPC89Handle
@@ -225,6 +235,16 @@ SubSongHandle: ; Handle subsong changes, primarily used during Dancing Mad
 setflag:
     lda #$01
     sta DancingFlag
+    jmp OriginalCommand
+
+FadeCommandHandle:
+    lda PlayVolume
+    beq +
+    lda #$01
+    sta FadeInPending
+    jmp OriginalCommand
++
+    stz FadeInPending
     jmp OriginalCommand
     
 SPC89Handle: ; Seems to be a different subsong change, used during Phantom Train to switch to the music from the sound effects.
@@ -395,8 +415,26 @@ WaitMSU:
     sta PlayTrack
     jmp ShutUpAndLetMeTalk
 PlayMSU:
-    ; Set the MSU Volume to the requested volume. 
-    ChangeVolume PlayVolume
+    ; Fade-in only when the SPC explicitly requested a non-zero fade.
+    lda FadeInPending
+    cmp #$01
+    bne _PlayMSUImmediateVolume
+    stz FadeInPending
+    lda PlayVolume
+    cmp.b #FadeInStartVolume
+    bcc _PlayMSUImmediateVolume
+    lda.b #FadeInStartVolume
+    sta MSUCurrentVolume
+    sta MSUVolume
+    lda.b #$03
+    sta FadeFlag
+    bra _PlayMSUVolumeReady
+_PlayMSUImmediateVolume:
+    lda PlayVolume
+    sta MSUCurrentVolume
+    sta MSUVolume
+    stz FadeFlag
+_PlayMSUVolumeReady:
     ; Set our currently playing track to this one.
     lda PlayTrack
     sta MSUCurrentTrack
@@ -531,6 +569,8 @@ Ending1:
 ; Return routines
 
 ShutUp:
+    stz FadeInPending
+    stz FadeFlag
     stz MSUVolume
     stz MSUTrack
     stz MSUTrack+1
@@ -559,6 +599,8 @@ OriginalCode:
     rtl
 
 ShutUpAndLetMeTalk:
+    stz FadeInPending
+    stz FadeFlag
     stz MSUVolume
     stz MSUTrack
     stz MSUTrack+1
@@ -571,13 +613,16 @@ NMIHandle:
     pha
     phx
     phy
-    phb
     phd
+    phb
     sep #$20
+    lda #$00
+    pha
+    plb
     jsr FadeRoutine
     rep #$30
-    pld
     plb
+    pld
     ply
     plx
     pla
@@ -591,11 +636,11 @@ FadeRoutine:
     sep #$20
     lda FadeFlag
     beq _SetFadeFlag
-    cmp #$01
+    cmp.b #$01
     beq _FadeZero
-    cmp #$02
+    cmp.b #$02
     beq _FadeDown
-    cmp #$03
+    cmp.b #$03
     beq _FadeUp
     stz FadeFlag
     rep #$30
@@ -605,20 +650,20 @@ _SetFadeFlag:
     lda PlayVolume          ; target volume
     cmp MSUCurrentVolume    ; current msu volume
     beq _EndFadeRoutine
-    cmp #$00                ; target volume = 0? fade to zero
+    cmp.b #$00              ; target volume = 0? fade to zero
     bne +
-    lda #$01
+    lda.b #$01
     sta FadeFlag
     bra _EndFadeRoutine
 +
     lda PlayVolume          ; target volume
     cmp MSUCurrentVolume    ; current msu volume
     bcs +                   ; target >= current? fade up
-    lda #$02
+    lda.b #$02
     sta FadeFlag            ; fade down
     bra _EndFadeRoutine
 +
-    lda #$03
+    lda.b #$03
     sta FadeFlag            ; fade up
 _EndFadeRoutine:
     rep #$30
@@ -627,15 +672,15 @@ _EndFadeRoutine:
 _FadeZero:
     lda MSUCurrentVolume    ; current volume
     sec
-    sbc #$0A
+    sbc.b #FadeStep
     bcs +                   ; no underflow, check if result is near zero
-    lda #$00                ; underflow: volume was < $0A, snap to zero
+    lda.b #$00              ; underflow: volume was < $0A, snap to zero
     sta FadeFlag            ; erase fade flag
     bra _FadeZeroStore
 +
-    cmp #$0A
+    cmp.b #FadeStep
     bcs _FadeZeroStore      ; result >= $0A, just store it
-    lda #$00
+    lda.b #$00
     sta FadeFlag            ; erase fade flag
 _FadeZeroStore:
     sta MSUVolume
@@ -646,7 +691,7 @@ _FadeZeroStore:
 _FadeDown:
     lda MSUCurrentVolume
     sec
-    sbc #$0A
+    sbc.b #FadeStep
     bcc +                   ; underflow: snap to PlayVolume
     cmp PlayVolume          ; gone below the target volume?
     bcs _FadeDownStore      ; if still >= target, just store
@@ -662,12 +707,12 @@ _FadeDownStore:
 _FadeUp:
     lda MSUCurrentVolume
     clc
-    adc #$0A
+    adc.b #FadeStep
     bcs +                   ; overflow: cap to $FF
-    cmp #$f6                ; safety: if result is $f6 or greater, cap volume at $ff to prevent wrapping
+    cmp.b #FadeStepClamp    ; safety: cap before the next step would wrap
     bcc _FadeUpCheck
 +
-    lda #$FF
+    lda.b #$FF
     sta PlayVolume
     bra _FadeUpClear
 _FadeUpCheck:
