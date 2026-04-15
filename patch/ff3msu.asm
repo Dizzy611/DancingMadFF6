@@ -28,6 +28,7 @@
 .DEFINE LastTrack $1309
 .DEFINE LastVolume $130A
 .DEFINE FadeFlag $130B
+.DEFINE APUIO0 $2140
 .DEFINE APUIO2 $2142
 
 .DEFINE FadeStep $20
@@ -114,17 +115,9 @@ jsl MSUMain
 
 .BANK 5
 .ORG $1A6
-.SECTION "SPCSongVolumeHook" SIZE 4 OVERWRITE
+.SECTION "SPCSongLoadHook" SIZE 4 OVERWRITE
 
-jml SPCSongVolumeWriteHook
-
-.ENDS
-
-.BANK 5
-.ORG $5AD
-.SECTION "SPCInterruptVolumeHook" SIZE 4 OVERWRITE
-
-jml SPCInterruptVolumeWriteHook
+jml SPCSongLoadHook
 
 .ENDS
 
@@ -763,37 +756,26 @@ NMIHandle:
     plp
     jml OriginalNMIHandler
 
-SPCSongVolumeWriteHook:
-    lda SPCMusicMuteFlag
-    bne _SPCSongForceMute
+SPCSongLoadHook:
     lda MSUCurrentTrack
-    bne _SPCSongForceMute
-    lda MSUStatus
-    and.b #MSUStatus_AudioPlaying
-    bne _SPCSongForceMute
+    bne _BlockSPCSongLoad
+    ; Pass-through path: replay clobbered instructions and resume PlaySong.
     lda $02
     sta APUIO2
-    jml $c501ab
-_SPCSongForceMute:
-    lda.b #$00
-    sta APUIO2
+    lda $01
     jml $c501ab
 
-SPCInterruptVolumeWriteHook:
-    lda SPCMusicMuteFlag
-    bne _SPCInterruptForceMute
-    lda MSUCurrentTrack
-    bne _SPCInterruptForceMute
-    lda MSUStatus
-    and.b #MSUStatus_AudioPlaying
-    bne _SPCInterruptForceMute
-    lda $02
-    sta APUIO2
-    jml $c505b2
-_SPCInterruptForceMute:
-    lda.b #$00
-    sta APUIO2
-    jml $c505b2
+_BlockSPCSongLoad:
+    ; MSU owns music: send SPC command $F1 (stop song), then exit.
+    lda.b #$f1
+    sta APUIO0
+_WaitStopAck:
+    cmp APUIO0
+    bne _WaitStopAck
+    inc a
+    and.b #$7f
+    sta $1e
+    jml $c50171
 
 ; End Subroutines
 
