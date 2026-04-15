@@ -20,11 +20,11 @@
 .DEFINE PlayTrack $1301
 .DEFINE PlayVolume $1302
 
-.DEFINE CurrentCommand $1304
+.DEFINE CurrentCommand $1304 ; Unused atm, used by underlying FF6 code, left here for reference.
 .DEFINE CurrentTrack $1305
-.DEFINE CurrentVolume $1306
+.DEFINE CurrentVolume $1306 ; Unused atm, used by underlying FF6 code, left here for reference.
 
-.DEFINE LastCommand $1308
+.DEFINE LastCommand $1308 ; Unused atm, used by underlying FF6 code, left here for reference.
 .DEFINE LastTrack $1309
 .DEFINE LastVolume $130A
 .DEFINE FadeFlag $130B
@@ -36,7 +36,7 @@
 .DEFINE FadeInStartVolume $20
 
 .DEFINE OriginalNMIHandler $1500
-.DEFINE ReturnCommand 
+
 ; Was using $1E00-$1E07 earlier, but these are used for storing Veldt monsters. $1E20-$1E27 are unused. 
 ; $1E30-$1E38 are in $1600-$1FFF, which FF6 save/load copies to SRAM. Keep MSULastTrackSet outside
 ; that region so this state does not persist across save/load.
@@ -46,11 +46,8 @@
 .DEFINE MSUExists          $1E30
 .DEFINE MSUCurrentTrack    $1E31
 .DEFINE MSUCurrentVolume   $1E32
-.DEFINE SPCCommandTemp     $1E33
-.DEFINE SPCVolumeTemp      $1E34
 .DEFINE DancingFlag        $1E35
 .DEFINE TrainFlag          $1E36
-.DEFINE SPCMusicMuteFlag   $1E37
 .DEFINE FadeInPending      $1E38
 .DEFINE MSULastTrackSet    $7EF001
 
@@ -58,18 +55,18 @@
 ; MSU Registers
 
 .DEFINE MSUStatus        $2000
-.DEFINE MSUDRead         $2001
+.DEFINE MSUDRead         $2001 ; Data registers planned to be used for video playback at some point, unused atm.
 .DEFINE MSUID            $2002
-.DEFINE MSUDSeek         $2000
+.DEFINE MSUDSeek         $2000 ; Data registers planned to be used for video playback at some point, unused atm.
 .DEFINE MSUTrack         $2004
 .DEFINE MSUVolume        $2006
 .DEFINE MSUControl       $2007
 
 ; MSU Status Flags Definition
 
-.DEFINE MSUStatus_DataBusy     %10000000
+.DEFINE MSUStatus_DataBusy     %10000000 ; Data registers planned to be used for video playback at some point, unused atm.
 .DEFINE MSUStatus_AudioBusy    %01000000
-.DEFINE MSUStatus_AudioLooping %00100000
+.DEFINE MSUStatus_AudioLooping %00100000 ; Code does not currently check loop state, left as reference
 .DEFINE MSUStatus_AudioPlaying %00010000
 .DEFINE MSUStatus_BadTrack     %00001000
 
@@ -82,10 +79,13 @@
 ; SPC Commands
 .DEFINE SPCSubSong $82
 .DEFINE SPCFade $81
-.DEFINE SPCPlaySong $10
-.DEFINE SPCInterrupt $14 ; TODO: Find out what this actually does. Is it a pause? A stop? Something else?
+.DEFINE SPCPlaySong $10 ; Unused by our code, left as reference 
+.DEFINE SPCInterrupt $14 ; Unused by our code, left as reference 
 .DEFINE SPC89 $89
-.DEFINE SPCSFX $18
+.DEFINE SPCSFX $18 ; Unused by our code, left as reference
+
+; Constants 
+.DEFINE SpecialTrackLimit $55 ; Last track to check for special track handling.
 
 ; Subroutine hooks
 
@@ -135,12 +135,6 @@ jml SPCSongLoadHook
 .DB $B2 $D0 $FF $08 $FD $FD $FD $FD $FD $FD $FD $FD $FD $FD $FD ; Jump to $D2FFD0, then lots of NOPs.
 .ENDS
 
-;.BANK 10
-;.ORG $CDF6
-;.SECTION "CUTSCENEFIX2" SIZE 5 OVERWRITE
-;.DB $B2 $F1 $FF $08 $FD ; Jump to $D2FFF1, then NOP
-;.ENDS
-
 .BANK 10
 .ORG $CE5D
 .SECTION "CUTSCENEFIX3" SIZE 4 OVERWRITE
@@ -161,48 +155,6 @@ jml SPCSongLoadHook
 .SECTION "MSU" SIZE 1400 OVERWRITE
 
 ; Macros
-
-; Input: Address of RAM with volume to change to (in SNES notation)
-; Modifies: A
-; No output.
-.MACRO ChangeVolume
-    lda \1
-    bmi forcesub\@; If we're negative, since it's unsigned, we want to skip the comparisons and subtract.
-    cmp #$00      ; If we're being asked to silence, we don't want to change silence.
-    beq skip\@
-    cmp #$0A      ; Don't subtract if volume is already less than 10
-    bcc skip\@
-    sbc #$40      ; Subtract 64
-    cmp #$0A      ; If it's now less than 10, set it to 10.
-    bcs skip\@
-    lda #$0A
-skip\@:
-    sta MSUCurrentVolume
-    sta MSUVolume
-    jmp done\@
-forcesub\@:
-    sbc #$20
-    jmp skip\@
-done\@:
-.ENDM
-
-; Input: Error character to indicate (uses FF3 character table)
-; $80-$99 A-Z $9A-$B3 a-z $B4-BD 0-9 
-; Modifies: Terra's name in RAM to "ERROR(number)" (addresses $1602 through $1607 modified)
-; Output: None
-
-.MACRO SignalError
-    lda \1
-    sta $1607
-    lda #$84 ; E
-    sta $1602
-    lda #$91 ; R
-    sta $1603
-    sta $1604 
-    sta $1606
-    lda #$8E ; O
-    sta $1605
-.ENDM
 
 ; End Macros
 
@@ -306,7 +258,6 @@ MSUMain:
     cmp #$01
     beq MSUFound
     ; If not found, do the original SPC code
-    stz SPCMusicMuteFlag
     jmp OriginalCode
 MSUFound:
 TFCheck: ; Phantom train flag clearing. Clears the phantom train flag if any track other than the phantom train is played.
@@ -322,9 +273,8 @@ TFCheck: ; Phantom train flag clearing. Clears the phantom train flag if any tra
     beq BattleCheck
     stz TrainFlag
 BattleCheck:
-    ; --- Special track handling via jump table ---
-    ; Direct table indexed by PlayTrack for O(1) dispatch.
-    .DEFINE SpecialTrackLimit $55
+    ; Special track handling via jump table
+
 
 SpecialTrackDispatch:
     lda PlayTrack
@@ -431,7 +381,7 @@ SpecialTrackHandlers:
 
     ; $50-$54
     .DW Kefka5Handler
-    .DW RePlayHandler
+    .DW SilenceHandler
     .DW NormalTrackHandler
     .DW Ending1Handler
     .DW Ending2Handler
@@ -458,12 +408,6 @@ Kefka1Handler:
 Kefka5Handler:
     jml Kefka5
 
-RePlayHandler:
-    ; Track $51 is a signal to re-play the last track.
-    lda MSUCurrentTrack
-    sta PlayTrack
-    jmp SpecialHandlingBack
-
 Ending1Handler:
     jml Ending1
 
@@ -487,11 +431,12 @@ SpecialHandlingBack:
     cmp MSUCurrentVolume
     beq DoNothing
     ; If not, change our volume to match the new value.
-    ; TODO: Fade to the new volume
-    ChangeVolume PlayVolume
+    lda PlayVolume
+    sta MSUCurrentVolume
+    sta MSUVolume
 DoNothing:
-    ; Either way, silence the SPC volume and return
-    jmp SilenceAndReturn
+    ; Either way, return
+    jmp OriginalCode
 NotPlaying:
     ; Okay, so we're not currently playing this track. Is the volume $00?
     lda PlayVolume
@@ -571,8 +516,8 @@ _PlayMSUVolumeReady:
     jmp ShutUp
 TimeToPlay:
     sta MSUControl
-    ; We're now playing the track. Silence the SPC music and return
-    jmp SilenceAndReturn
+    ; We're now playing the track. Return
+    jmp OriginalCode
 
 ; End Main Code
 
@@ -661,7 +606,7 @@ Kefka5:
     lda MSUStatus
     and #MSUStatus_AudioPlaying
     beq +
-    jml SilenceAndReturn
+    jml OriginalCode
 +
     jml SpecialHandlingBack
 
@@ -677,8 +622,8 @@ PhantomTrain:
     
 ; Ending part 2 handling.
 Ending2:
-; We don't use this track, instead piggybacking onto the end of Ending Part 1, so just silence and return.
-    jml SilenceAndReturn
+; We don't use this track, instead piggybacking onto the end of Ending Part 1, so just return.
+    jml OriginalCode
 
 ; Try to stop it from repeatedly restarting ending part 1
 Ending1:
@@ -688,7 +633,7 @@ Ending1:
     lda MSUStatus
     and #MSUStatus_AudioPlaying
     beq +
-    jml SilenceAndReturn
+    jml OriginalCode
 +
     jml SpecialHandlingBack
 
@@ -696,28 +641,12 @@ Ending1:
 
 ShutUp:
     stz MSUCurrentTrack
-    stz SPCMusicMuteFlag
     stz FadeInPending
     stz FadeFlag
     stz MSUVolume
     stz MSUTrack
     stz MSUTrack+1
     stz MSUControl
-SilenceAndReturn:
-    ; Skip silencing playtrack if we're currently playing problematic tracks (ones that rely on track timing)
-    lda PlayTrack
-    cmp #$27 ; Opera
-    beq OriginalCode
-    cmp #$45 ; Opera
-    beq OriginalCode
-    cmp #$53 ; Ending
-    beq OriginalCode
-    cmp #$54 ; Ending
-    beq OriginalCode
-    cmp #$38 ; Good Night jingle
-    beq OriginalCode
-    lda #$01
-    sta SPCMusicMuteFlag
 OriginalCode:
     lda PlayTrack
     cmp CurrentTrack
@@ -725,7 +654,6 @@ OriginalCode:
 
 ShutUpAndLetMeTalk:
     stz MSUCurrentTrack
-    stz SPCMusicMuteFlag
     stz FadeInPending
     stz FadeFlag
     stz MSUVolume
