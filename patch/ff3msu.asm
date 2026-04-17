@@ -53,11 +53,7 @@
 .DEFINE FadeInPending      $1E35
 .DEFINE MSULastTrackSet    $7EF001
 
-; RAM allocations for FMV processing.
-; $1E20-$1E2F were verified unused in FF6 runtime scans and are kept separate
-; from the existing MSU audio state at $1E30-$1E35.
-; High WRAM scratch is placed away from title-active buffers and avoids
-; $7EF120, which world code references explicitly.
+; FMV RAM allocations ($1E20-$1E2F are unused in FF6)
 .DEFINE FMVState           $1E20
 .DEFINE FMVNMIReady        $1E21
 .DEFINE FMVSubFrame        $1E22
@@ -979,27 +975,20 @@ _FadeUpStore:
     rts
 
 .ENDS
-; Reserved FMV code region at $C4:A4C0.
-; Initial implementation scaffold: stream/header/audio/input helpers.
+; FMV code region at $C4:A4C0.
 .BANK 4
 .ORG $A4C0
 .SECTION "FMVCODE" SIZE 5440 OVERWRITE
 
-; -----------------------------------------------------------------------------
-; TitleScreenHook
-;
-; Hooks the ROM-side title loader after the cutscene program has been
-; decompressed to WRAM. Patches WRAM TitleState_01 to jump into ROM.
-; -----------------------------------------------------------------------------
+; Patch WRAM TitleState_01 to jump into our FMV hook after title decompression.
 TitleScreenHook:
     php
-    sep #$30                          ; Force 8-bit A and 8-bit X/Y
+    sep #$30
     phb
     lda #$7e
     pha
     plb
-    ; Only patch when WRAM contains the expected title State_01 routine.
-    ; This hook site can be reached by non-title flows as well.
+    ; Only patch if WRAM has the expected bytes — this hook can fire from non-title flows too.
     lda TitleState01Patch
     cmp #$a4
     bne _TitleScreenHookDone
@@ -1020,8 +1009,7 @@ TitleScreenHook:
     stz FMVFlags
     lda #$10
     sta FMVDebugMarker
-    ; Write 5-byte stub: JSL FMV_TitleState01Hook + RTS
-    ; JSL saves PBR on stack, RTL restores it — safe cross-bank call from WRAM
+    ; Write JSL FMV_TitleState01Hook + RTS over the 5 bytes
     lda #$22                          ; JSL opcode
     sta TitleState01Patch
     lda #<FMV_TitleState01Hook
@@ -1037,23 +1025,13 @@ _TitleScreenHookDone:
     plp
     jml TitleScreenExt2
 
-; -----------------------------------------------------------------------------
-; FMV_TitleState01Hook
-;
-; Replacement for WRAM TitleState_01.
-; - First visit: run FMV.
-; - Natural end: re-run native title init to restore VRAM/PPU, then let state 1
-;   play the title song on its second visit without replaying FMV.
-; - Interrupt: emulate native A-button title skip by setting the new-press bit.
-; - No MSU / bad stream: fall back to the native title song path.
-; -----------------------------------------------------------------------------
+; Replaces TitleState_01 in WRAM. First visit runs FMV, second visit restores
+; the original bytes and lets the native title do its thing.
 FMV_TitleState01Hook:
     php
-    sep #$30                          ; Force 8-bit A and 8-bit X/Y
+    sep #$30
     
-    ; Blank screen immediately to prevent prior-state graphics from flashing
-    ; during FMV initialization. This ensures black screen from hook entry
-    ; through first FMV frame render.
+    ; Blank screen immediately so we don't flash stale graphics
     lda #$80
     sta INIDISP
     
@@ -1118,12 +1096,7 @@ FMV_RestoreTitleState01:
     sta TitleState01Patch+4
     rts
 
-; -----------------------------------------------------------------------------
-; FMV_CheckMSU
-;
-; Confirms MSU-1 presence before touching the data stream. Returns carry set if
-; available, clear otherwise.
-; -----------------------------------------------------------------------------
+; Check for MSU-1 hardware. Carry set = found, carry clear = missing.
 FMV_CheckMSU:
     lda MSUExists
     cmp #$01
@@ -1159,17 +1132,7 @@ _FMVCheckMSUMissing:
     clc
     rts
 
-; -----------------------------------------------------------------------------
-; FMV_RunBootstrap
-;
-; Phase-1 entry point for FMV integration work.
-; - Validates and reads FMV header from the MSU data stream.
-; - Starts FMV audio track through existing MSUMain path.
-;
-; Returns:
-;   carry set   = success
-;   carry clear = failure (bad header or stream unavailable)
-; -----------------------------------------------------------------------------
+; Bootstrap: read the FMV header and start audio. Carry set = success.
 FMV_RunBootstrap:
     php
     phb
@@ -1203,15 +1166,7 @@ _FMVBootstrapDone:
     plp
     rtl
 
-; -----------------------------------------------------------------------------
-; FMV_ReadHeader
-;
-; Reads and validates the 16-byte FMV stream header at MSU data offset 0.
-; Expected magic: "FFVI" at bytes 0..3.
-; Stores frame count (u16le) into FMVFrameCount.
-;
-; Returns carry set on success, clear on failure.
-; -----------------------------------------------------------------------------
+; Read and validate the 16-byte FMV header (magic "FFVI", then frame count).
 FMV_ReadHeader:
     sep #$20
     rep #$10
@@ -1273,12 +1228,7 @@ _FMVBadHeader:
     clc
     rts
 
-; -----------------------------------------------------------------------------
-; FMV_StartAudio
-;
-; Requests custom FMV track through the existing MSU path.
-; Keeps behavior consistent with patch-wide track/volume handling.
-; -----------------------------------------------------------------------------
+; Save current audio state and start the FMV track through MSUMain.
 FMV_StartAudio:
     sep #$20
     rep #$10
@@ -1298,9 +1248,7 @@ FMV_StartAudio:
     sta MSUControl
     rts
 
-; -----------------------------------------------------------------------------
-; FMV_StopAudio
-; -----------------------------------------------------------------------------
+; Restore pre-FMV audio state.
 FMV_StopAudio:
     sep #$20
     rep #$10
@@ -1319,13 +1267,8 @@ FMV_StopAudio:
     sta PlayVolume
     rts
 
-; -----------------------------------------------------------------------------
-; FMV_WaitVBlank
-;
-; Waits for one queued VBlank tick from NMIHandle.
-; FMVNMIReady is a counter rather than a binary flag so transient overlap
-; between NMI and this routine does not lose a frame boundary.
-; -----------------------------------------------------------------------------
+; Wait for one VBlank tick from NMI. FMVNMIReady is a counter so we don't
+; lose a frame boundary on transient overlap.
 FMV_WaitVBlank:
     sep #$20
     rep #$10
@@ -1335,11 +1278,7 @@ _FMVWaitNMI:
     dec FMVNMIReady
     rts
 
-; -----------------------------------------------------------------------------
-; FMV_ReadController
-;
-; Reads JOY1 state and computes rising-edge presses into FMVNewButtons.
-; -----------------------------------------------------------------------------
+; Read JOY1, compute rising-edge presses into FMVNewButtons.
 FMV_ReadController:
     rep #$30
     lda JOY1L
@@ -1352,13 +1291,7 @@ FMV_ReadController:
     sep #$20
     rts
 
-; -----------------------------------------------------------------------------
-; FMV_RunPlayback
-;
-; Full playback routine for title-hook integration.
-; Returns with carry set if playback reached natural end, clear if interrupted
-; or setup failed.
-; -----------------------------------------------------------------------------
+; Main FMV playback loop. Carry set = natural end, clear = interrupted/failed.
 FMV_RunPlayback:
     php
     phb
@@ -1393,7 +1326,6 @@ _FMVPlaybackHaveHeader:
     jsr FMV_InitVideo
     lda #$33
     sta FMVDebugMarker
-    ; Configure NMI once for playback; per-subframe writes add overhead.
     lda #$81
     sta $4200
     stz FMVNMIReady
@@ -1452,8 +1384,7 @@ _FMVAfterSubFrame:
     bra _FMVPlaybackDone
 
 _FMVPlaybackCheckInput:
-    ; Poll input once per completed video frame (after subframe 3).
-    ; This keeps the hot path equivalent to the reference player's cadence.
+    ; Poll input once per completed video frame (after subframe 3)
     sep #$20
     jsr FMV_ReadController
     rep #$20
@@ -1485,9 +1416,7 @@ _FMVPlaybackDone:
     plp
     rts
 
-; -----------------------------------------------------------------------------
-; FMV_InitVideo
-; -----------------------------------------------------------------------------
+; Set up PPU for FMV display.
 FMV_InitVideo:
     sep #$20
     rep #$10
@@ -1505,8 +1434,7 @@ FMV_InitVideo:
     sta VMAIN
     rep #$20
 
-    ; Clear the dedicated blank tile in both buffers once at init.
-    ; Letterbox rows map to BLANK_TILE_INDEX and remain stable across frames.
+    ; Clear the blank tile in both buffers (used for letterbox rows)
     lda #TILEDATA_A + (BLANK_TILE_INDEX * 16)
     sta VMADDL
     sep #$20
@@ -1619,9 +1547,7 @@ _FMVBlankLoop:
     sta INIDISP
     rts
 
-; -----------------------------------------------------------------------------
-; FMV_StopVideo
-; -----------------------------------------------------------------------------
+; Tear down FMV PPU state.
 FMV_StopVideo:
     lda #$80
     sta INIDISP
@@ -1636,16 +1562,13 @@ FMV_StopVideo:
     sta INIDISP
     rts
 
-; -----------------------------------------------------------------------------
-; FMV_DoSubFrame0-3
-; Palette staging: read 256-byte palette into WRAM buffer at subframe 0,
-; apply it at subframe 3 to keep tile/palette synchronized.
-; -----------------------------------------------------------------------------
+; Subframes 0-3: each vblank we DMA one tile chunk. Palette is read at
+; subframe 0 but applied at subframe 3 to stay in sync with the tiles.
 FMV_DoSubFrame0:
     rep #$10
     sep #$20
 
-    ; --- Read palette data (256 bytes) from MSU to WRAM buffer FIRST ---
+    ; Read palette into WRAM buffer first, then wait for vblank
     ldx #$0000
 _FMVReadPaletteLoop:
     lda MSUDRead
@@ -1654,10 +1577,9 @@ _FMVReadPaletteLoop:
     cpx #PALETTE_BYTES
     bne _FMVReadPaletteLoop
 
-    ; --- THEN wait for vblank ---
     jsr FMV_WaitVBlank
 
-    ; --- Set up VRAM write address for tile chunk 0 ---
+    ; DMA tile chunk 0 to the inactive buffer
     lda FMVActiveBuffer
     beq _FMVSubFrame0UseBufferA
     lda #<TILEDATA_B
@@ -1760,7 +1682,7 @@ _FMVSubFrame2BufferReady:
 FMV_DoSubFrame3:
     jsr FMV_WaitVBlank
 
-    ; --- DMA channel 0: Palette from WRAM to CGRAM ---
+    ; DMA ch0: palette WRAM->CGRAM, ch1: tile chunk 3 MSU->VRAM
     stz CGADD
     lda #$00
     sta DMA0CTRL
@@ -1777,7 +1699,6 @@ FMV_DoSubFrame3:
     lda #>PALETTE_BYTES
     sta DMA0SIZEH
 
-    ; --- Set up VRAM write address for tile chunk 3 ---
     lda FMVActiveBuffer
     beq _FMVSubFrame3UseBufferA
     rep #$20
@@ -1792,7 +1713,6 @@ _FMVSubFrame3BufferReady:
     lda #$80
     sta VMAIN
 
-    ; --- DMA channel 1: Tile chunk 3 from MSU to VRAM ---
     lda #$09
     sta DMA1CTRL
     lda #$18
@@ -1808,7 +1728,6 @@ _FMVSubFrame3BufferReady:
     lda #>TILE_CHUNK_3
     sta DMA1SIZEH
 
-    ; Trigger both channels: ch0 palette + ch1 tile chunk 3
     lda #$03
     sta DMAEN
 

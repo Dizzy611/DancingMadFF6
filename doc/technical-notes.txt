@@ -40,3 +40,75 @@ NotPlaying fall-through:
 - Must fall through to ContinueToPlay even on volume=0, because of EventCmd_f3
   behavior described above. Short-circuiting to ShutUpAndLetMeTalk on volume=0
   clears MSUCurrentTrack, breaking the fade-in sequence.
+
+FMV system (video-implementation branch)
+=========================================
+
+WRAM patching for title-screen FMV hook:
+- TitleScreenHook fires after the cutscene program is decompressed to WRAM.
+  It patches 5 bytes at $7E:5280 (TitleState_01 inside the WRAM routine) to
+  JSL FMV_TitleState01Hook + RTS. This is a cross-bank call from WRAM into
+  ROM bank $C4 — JSL pushes PBR, RTL restores it.
+- The hook verifies the expected bytes ($A4 $15 $D0 $12 $E6) before patching,
+  because the same hook site can be reached by non-title flows.
+- FMV_RestoreTitleState01 writes the original bytes back when FMV is done.
+
+FMV state machine in TitleState01Hook:
+- First visit (FMVState=0): sets FMVState=1, runs FMV_RunPlayback.
+  - Natural end (carry set): reinits title screen ($19/$15 zeroed) so native
+    code re-decompresses VRAM/PPU, then state 1 plays the title song on its
+    second visit without replaying FMV.
+  - User interrupt (FMVFlags!=0): emulates native A-button skip by setting
+    new-press bit ($06=#$80).
+  - MSU missing / bad stream (carry clear from RunPlayback failure): falls
+    through to the same reinit path — native title song plays normally.
+- Second visit (FMVState!=0): restores original WRAM bytes and returns.
+
+NMI handler FMV dispatch:
+- During normal gameplay, NMI calls FadeRoutine for audio fading.
+- When FMVState!=0, NMI instead increments FMVNMIReady (a counter, not a
+  binary flag). The FMV loop's FMV_WaitVBlank busy-waits on this counter.
+  Using a counter means a transient overlap between NMI and the wait loop
+  won't lose a frame boundary.
+
+FMV video pipeline (4 subframes per video frame):
+- Subframe 0: Read 256-byte palette from MSU into WRAM buffer, then wait
+  for vblank and DMA tile chunk 0 to the inactive VRAM buffer.
+- Subframe 1: Wait for vblank, DMA tile chunk 1.
+- Subframe 2: Wait for vblank, DMA tile chunk 2.
+- Subframe 3: Wait for vblank, DMA palette from WRAM to CGRAM + DMA tile
+  chunk 3, then flip the active buffer (swap BG12NBA between TILEDATA_A
+  and TILEDATA_B). Palette is staged at subframe 0 but applied at subframe 3
+  to keep tile and palette data synchronized on the display frame.
+- Double-buffered VRAM: TILEDATA_A ($1000) and TILEDATA_B ($4000). While one
+  buffer is displayed, the other is being filled over 4 subframes. Buffer flip
+  happens at subframe 3 after the last chunk is uploaded.
+
+FMV tilemap layout:
+- 32x18 tile grid for the video area, with letterbox rows below mapped to
+  BLANK_TILE_INDEX (767, outside the streamed 0-575 range). The blank tile
+  is zeroed in both VRAM buffers once at init. Vertical scroll (BG1VOFS=216)
+  centers the 18-row image.
+
+FMV stream format:
+- Header: 16 bytes starting at MSU data offset 0. Magic "FFVI" at bytes 0-3,
+  frame count (u16le) at bytes 4-5.
+- Per frame: 256 bytes palette + 4 tile chunks (4736+5120+5120+3456 = 18432
+  bytes of tile data). Total per frame = 18688 bytes.
+
+FMV audio:
+- FMV_StartAudio saves PlayCommand/PlayTrack/PlayVolume, then requests track
+  $68 through the existing MSUMain path at full volume, play-no-loop.
+- FMV_StopAudio restores the saved values and clears MSU audio state so the
+  normal game audio path picks back up cleanly.
+
+FMV input handling:
+- Controller is polled once per completed video frame (after subframe 3),
+  matching the reference player's cadence. A-button ($0080) triggers interrupt.
+- Rising-edge detection: FMVNewButtons = (current XOR previous) AND current.
+
+FMV RAM allocation:
+- $1E20-$1E2F are verified unused in FF6 runtime and kept separate from the
+  MSU audio state at $1E30-$1E35.
+- High WRAM scratch at $7EF300-$7EF418 is placed away from title-active
+  buffers and avoids $7EF120 (world code references it explicitly).
