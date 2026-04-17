@@ -201,6 +201,47 @@ setflag:
     jmp OriginalCommand
 
 FadeCommandHandle:
+    ; If MSU is already playing a track, apply fade intent immediately.
+    ; This is critical for EventCmd_f3, which loads previous song at volume 0
+    ; and then sends a separate $81 fade-up command.
+    lda MSUCurrentTrack
+    beq _FadeCmdNoActiveMSU
+
+    lda PlayVolume
+    beq _FadeCmdToZero
+
+    cmp MSUCurrentVolume
+    beq _FadeCmdClearPending
+    bcs _FadeCmdUp
+
+    lda #$02
+    sta FadeFlag
+    stz FadeInPending
+    jmp OriginalCommand
+
+_FadeCmdUp:
+    lda #$03
+    sta FadeFlag
+    ; Seed from absolute silence so fade-up is immediately audible.
+    lda MSUCurrentVolume
+    bne _FadeCmdClearPending
+    lda PlayVolume
+    cmp.b #FadeInStartVolume
+    bcc _FadeCmdClearPending
+    lda.b #FadeInStartVolume
+    sta MSUCurrentVolume
+    sta MSUVolume
+    bra _FadeCmdClearPending
+
+_FadeCmdToZero:
+    lda #$01
+    sta FadeFlag
+
+_FadeCmdClearPending:
+    stz FadeInPending
+    jmp OriginalCommand
+
+_FadeCmdNoActiveMSU:
     lda PlayVolume
     beq +
     lda #$01
@@ -419,31 +460,29 @@ Ending2Handler:
 SpecialHandlingBack:
     ; Are we playing it?
     lda PlayTrack
-    cmp MSULastTrackSet
+    ; Compare against currently active MSU track, not LastTrackSet.
+    ; LastTrackSet can lag in some event-driven transitions, which makes
+    ; same-track map reloads look like a new request and causes volume snaps.
+    cmp MSUCurrentTrack
     ; If not, skip to NotPlaying
     bne NotPlaying
     ; Are we *really* playing it?
     lda MSUStatus
     and #MSUStatus_AudioPlaying
     beq NotPlaying
-    ; If so, is the volume the same?
-    lda PlayVolume
-    cmp MSUCurrentVolume
-    beq DoNothing
-    ; If not, change our volume to match the new value.
-    lda PlayVolume
-    sta MSUCurrentVolume
-    sta MSUVolume
 DoNothing:
-    ; Either way, return
+    ; Same-track requests should behave like vanilla PlaySong and return.
     jmp OriginalCode
 NotPlaying:
-    ; Okay, so we're not currently playing this track. Is the volume $00?
-    lda PlayVolume
-    cmp #$00
-    ; If not, continue, if so, set our current volume to 00 and tell the MSU to stop, then do the SPC code.
-    bne ContinueToPlay
-    jmp ShutUpAndLetMeTalk
+    ; Fall through unconditionally to ContinueToPlay even if volume is $00.
+    ; EventCmd_f3 ("fade in previous song") issues a volume=0 play followed by
+    ; a separate $81 fade-up command. If we short-circuit to ShutUpAndLetMeTalk
+    ; on volume=0, MSUCurrentTrack gets cleared, SPCSongLoadHook passes through,
+    ; and the SPC loads the track instead of MSU.  By falling through, the MSU
+    ; starts the track silently (MSUVolume/MSUCurrentVolume both 0), MSUCurrentTrack
+    ; is set non-zero, and SPCSongLoadHook blocks the SPC load.  The subsequent
+    ; $81 command then drives PlayVolume to $ff, and the FadeRoutine's _SetFadeFlag
+    ; path naturally sets FadeFlag=3 (fade up) on the next NMI tick.
 ContinueToPlay:
     ; Grab our track to play and push it at the MSU if it's not silence.
     lda PlayTrack
