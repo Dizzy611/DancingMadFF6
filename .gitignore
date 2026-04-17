@@ -9,6 +9,7 @@
 testpath/
 rom/
 music/
+external/
 **/*.pyc
 **/*.pcm
 **/*.sfc
@@ -19,12 +20,19 @@ music/
 **/*.pyc
 **/*.7z
 **/*.exe
+**/*.iso
+**/*.cue
+**/*.bin
+**/*.str
+**/*.STR
+**/*.mp4
+**/*.png
 **/videoscript
 installer/dist/
 installer/tmp/
 *.srm
 *.log
-patch/ff3msu.link
+**/*.link
 *.obj
 installer/build/
 build/
@@ -37,6 +45,10 @@ utils/reshacker/
 patch/test/
 patch/ff3msu.ips
 installer/DancingMad-linux.tar
+video/video-player-test.msu
+video/ff3msu-intro.msu
+video/reference/
+video/*.html
 *.bak
 
 
@@ -112,3 +124,4 @@ CMakeLists.txt.user*
 *.exe
 
 
+patch/FF6-RevisedOldStyleEdition_v2-03_NH.ips
