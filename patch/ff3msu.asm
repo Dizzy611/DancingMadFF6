@@ -29,6 +29,7 @@
 .DEFINE LastVolume $130A
 .DEFINE FadeFlag $130B
 .DEFINE APUIO0 $2140
+.DEFINE APUIO1 $2141
 .DEFINE APUIO2 $2142
 .DEFINE APUIO3 $2143
 
@@ -47,9 +48,9 @@
 .DEFINE MSUExists          $1E30
 .DEFINE MSUCurrentTrack    $1E31
 .DEFINE MSUCurrentVolume   $1E32
-.DEFINE DancingFlag        $1E35
-.DEFINE TrainFlag          $1E36
-.DEFINE FadeInPending      $1E38
+.DEFINE DancingFlag        $1E33
+.DEFINE TrainFlag          $1E34
+.DEFINE FadeInPending      $1E35
 .DEFINE MSULastTrackSet    $7EF001
 
 
@@ -111,14 +112,6 @@ jml CommandHandle
 .SECTION "TrackLoader" SIZE 4 OVERWRITE
 
 jsl MSUMain
-
-.ENDS
-
-.BANK 5
-.ORG $1A6
-.SECTION "SPCSongLoadHook" SIZE 4 OVERWRITE
-
-jml SPCSongLoadHook
 
 .ENDS
 
@@ -431,7 +424,7 @@ SpecialTrackHandlers:
 
     ; $50-$54
     .DW Kefka5Handler
-    .DW SilenceHandler
+    .DW RePlayHandler
     .DW NormalTrackHandler
     .DW Ending1Handler
     .DW Ending2Handler
@@ -439,9 +432,19 @@ SpecialTrackHandlers:
 ; --- Individual handlers ---
 
 SilenceHandler:
-    ; Silence (FF6 does a *lot* of track 0 requests, we're specifically masking
-    ; this one to reduce calls to the MSU.)
+    ; Track $00: silence.  FF6 does a *lot* of track-0 requests; mask them to
+    ; reduce unnecessary MSU churn.
     jmp ShutUpAndLetMeTalk
+
+RePlayHandler:
+    ; Track $51: the game read back its own RAM and found $51 (the silence track
+    ; we substituted for the SPC).  What it really wants is "the song that was
+    ; just playing", so substitute the current MSU track.
+    lda MSUCurrentTrack
+    beq +
+    sta PlayTrack
++
+    jmp SpecialHandlingBack
 
 PhantomTrainHandler:
     jml PhantomTrain
@@ -577,6 +580,13 @@ TimeToPlay:
 ; while an MSU track is active, and fall back to vanilla behavior otherwise.
 EventCmdFAHook:
     lda MSUCurrentTrack
+    beq _EventCmdFAVanilla
+    ; Ending tracks are one continuous MSU track; $FA between scenes must not
+    ; block on MSU audio. Fall through to vanilla APUIO3 check, which returns
+    ; immediately since the SPC is playing $51 (silence).
+    cmp #$53
+    beq _EventCmdFAVanilla
+    cmp #$54
     beq _EventCmdFAVanilla
 
     lda MSUStatus
@@ -725,6 +735,32 @@ ShutUp:
     stz MSUTrack+1
     stz MSUControl
 OriginalCode:
+    ; When MSU is actively playing, set up $01/$02 for native PlaySong:
+    ; - Position-marker tracks ($27, $41-$46, $53-$54): keep real track in $01
+    ;   but zero $02 (volume) so SPC plays silently for $F9 wait_song markers.
+    ; - All other tracks: mask $01 to $51 (silence) so native PlaySong's
+    ;   early-exit comparison ($01 == $05) succeeds on subsequent calls,
+    ;   preventing TfrSongScript from clobbering LastTrack ($09).
+    lda MSUCurrentTrack
+    beq _OrigCodeDone
+    lda PlayTrack
+    cmp.b #$27
+    beq _OrigCodeZeroVol
+    cmp.b #$41
+    bcc _OrigCodeMask
+    cmp.b #$47
+    bcc _OrigCodeZeroVol
+    cmp.b #$53
+    bcc _OrigCodeMask
+    cmp.b #$55
+    bcc _OrigCodeZeroVol
+_OrigCodeMask:
+    lda.b #$51
+    sta PlayTrack
+    bra _OrigCodeDone
+_OrigCodeZeroVol:
+    stz PlayVolume
+_OrigCodeDone:
     lda PlayTrack
     cmp CurrentTrack
     rtl
@@ -760,27 +796,6 @@ NMIHandle:
     pla
     plp
     jml OriginalNMIHandler
-
-SPCSongLoadHook:
-    lda MSUCurrentTrack
-    bne _BlockSPCSongLoad
-    ; Pass-through path: replay clobbered instructions and resume PlaySong.
-    lda $02
-    sta APUIO2
-    lda $01
-    jml $c501ab
-
-_BlockSPCSongLoad:
-    ; MSU owns music: send SPC command $F1 (stop song), then exit.
-    lda.b #$f1
-    sta APUIO0
-_WaitStopAck:
-    cmp APUIO0
-    bne _WaitStopAck
-    inc a
-    and.b #$7f
-    sta $1e
-    jml $c50171
 
 ; End Subroutines
 
