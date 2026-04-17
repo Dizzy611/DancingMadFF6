@@ -20,11 +20,11 @@
 .DEFINE PlayTrack $1301
 .DEFINE PlayVolume $1302
 
-.DEFINE CurrentCommand $1304 ; Unused atm, used by underlying FF6 code, left here for reference.
+.DEFINE CurrentCommand $1304
 .DEFINE CurrentTrack $1305
-.DEFINE CurrentVolume $1306 ; Unused atm, used by underlying FF6 code, left here for reference.
+.DEFINE CurrentVolume $1306
 
-.DEFINE LastCommand $1308 ; Unused atm, used by underlying FF6 code, left here for reference.
+.DEFINE LastCommand $1308
 .DEFINE LastTrack $1309
 .DEFINE LastVolume $130A
 .DEFINE FadeFlag $130B
@@ -57,18 +57,18 @@
 ; MSU Registers
 
 .DEFINE MSUStatus        $2000
-.DEFINE MSUDRead         $2001 ; Data registers planned to be used for video playback at some point, unused atm.
+.DEFINE MSUDRead         $2001
 .DEFINE MSUID            $2002
-.DEFINE MSUDSeek         $2000 ; Data registers planned to be used for video playback at some point, unused atm.
+.DEFINE MSUDSeek         $2000
 .DEFINE MSUTrack         $2004
 .DEFINE MSUVolume        $2006
 .DEFINE MSUControl       $2007
 
 ; MSU Status Flags Definition
 
-.DEFINE MSUStatus_DataBusy     %10000000 ; Data registers planned to be used for video playback at some point, unused atm.
+.DEFINE MSUStatus_DataBusy     %10000000
 .DEFINE MSUStatus_AudioBusy    %01000000
-.DEFINE MSUStatus_AudioLooping %00100000 ; Code does not currently check loop state, left as reference
+.DEFINE MSUStatus_AudioLooping %00100000
 .DEFINE MSUStatus_AudioPlaying %00010000
 .DEFINE MSUStatus_BadTrack     %00001000
 
@@ -81,13 +81,13 @@
 ; SPC Commands
 .DEFINE SPCSubSong $82
 .DEFINE SPCFade $81
-.DEFINE SPCPlaySong $10 ; Unused by our code, left as reference 
-.DEFINE SPCInterrupt $14 ; Unused by our code, left as reference 
+.DEFINE SPCPlaySong $10
+.DEFINE SPCInterrupt $14
 .DEFINE SPC89 $89
-.DEFINE SPCSFX $18 ; Unused by our code, left as reference
+.DEFINE SPCSFX $18
 
 ; Constants 
-.DEFINE SpecialTrackLimit $55 ; Last track to check for special track handling.
+.DEFINE SpecialTrackLimit $55
 
 ; Subroutine hooks
 
@@ -203,9 +203,8 @@ setflag:
     jmp OriginalCommand
 
 FadeCommandHandle:
-    ; If MSU is already playing a track, apply fade intent immediately.
-    ; This is critical for EventCmd_f3, which loads previous song at volume 0
-    ; and then sends a separate $81 fade-up command.
+    ; If MSU is playing, apply fade intent now. This matters for EventCmd_f3 which
+    ; loads the previous song at volume 0 then sends a separate $81 fade-up.
     lda MSUCurrentTrack
     beq _FadeCmdNoActiveMSU
 
@@ -224,7 +223,7 @@ FadeCommandHandle:
 _FadeCmdUp:
     lda #$03
     sta FadeFlag
-    ; Seed from absolute silence so fade-up is immediately audible.
+    ; Seed from silence so fade-up is audible right away.
     lda MSUCurrentVolume
     bne _FadeCmdClearPending
     lda PlayVolume
@@ -432,14 +431,13 @@ SpecialTrackHandlers:
 ; --- Individual handlers ---
 
 SilenceHandler:
-    ; Track $00: silence.  FF6 does a *lot* of track-0 requests; mask them to
-    ; reduce unnecessary MSU churn.
+    ; Silence (FF6 does a *lot* of track 0 requests, we're specifically masking
+    ; this one to reduce calls to the MSU.)
     jmp ShutUpAndLetMeTalk
 
 RePlayHandler:
-    ; Track $51: the game read back its own RAM and found $51 (the silence track
-    ; we substituted for the SPC).  What it really wants is "the song that was
-    ; just playing", so substitute the current MSU track.
+    ; If we're seeing track $51, the game read back its own RAM and found
+    ; the silence track we substituted. Re-play whatever the MSU has.
     lda MSUCurrentTrack
     beq +
     sta PlayTrack
@@ -453,7 +451,6 @@ BattleThemeHandler:
     jml BattleTheme
 
 Kefka1Handler:
-    ; Kefka's Dancing Mad Parts 1-3: remap to part 1 and continue normal processing.
     lda #$65
     sta PlayTrack
     jmp SpecialHandlingBack
@@ -472,9 +469,6 @@ Ending2Handler:
 SpecialHandlingBack:
     ; Are we playing it?
     lda PlayTrack
-    ; Compare against currently active MSU track, not LastTrackSet.
-    ; LastTrackSet can lag in some event-driven transitions, which makes
-    ; same-track map reloads look like a new request and causes volume snaps.
     cmp MSUCurrentTrack
     ; If not, skip to NotPlaying
     bne NotPlaying
@@ -483,18 +477,10 @@ SpecialHandlingBack:
     and #MSUStatus_AudioPlaying
     beq NotPlaying
 DoNothing:
-    ; Same-track requests should behave like vanilla PlaySong and return.
     jmp OriginalCode
 NotPlaying:
-    ; Fall through unconditionally to ContinueToPlay even if volume is $00.
-    ; EventCmd_f3 ("fade in previous song") issues a volume=0 play followed by
-    ; a separate $81 fade-up command. If we short-circuit to ShutUpAndLetMeTalk
-    ; on volume=0, MSUCurrentTrack gets cleared, SPCSongLoadHook passes through,
-    ; and the SPC loads the track instead of MSU.  By falling through, the MSU
-    ; starts the track silently (MSUVolume/MSUCurrentVolume both 0), MSUCurrentTrack
-    ; is set non-zero, and SPCSongLoadHook blocks the SPC load.  The subsequent
-    ; $81 command then drives PlayVolume to $ff, and the FadeRoutine's _SetFadeFlag
-    ; path naturally sets FadeFlag=3 (fade up) on the next NMI tick.
+    ; Fall through even on volume=0. EventCmd_f3 sends volume=0 play then a
+    ; separate $81 fade-up, so we need MSUCurrentTrack set for that to work.
 ContinueToPlay:
     ; Grab our track to play and push it at the MSU if it's not silence.
     lda PlayTrack
@@ -537,7 +523,7 @@ WaitMSU:
     sta PlayTrack
     jmp ShutUpAndLetMeTalk
 PlayMSU:
-    ; Fade-in only when the SPC explicitly requested a non-zero fade.
+    ; If a fade-in is pending, seed a low volume and let the NMI fade handle it.
     lda FadeInPending
     cmp #$01
     bne _PlayMSUImmediateVolume
@@ -574,16 +560,12 @@ TimeToPlay:
 
 ; Subroutines
 
-; Event command $FA: wait for song end.
-; Vanilla checks APUIO3 ($2143), but when MSU owns music the SPC-side status
-; can remain zero and cause false immediate advances. Use MSU playback status
-; while an MSU track is active, and fall back to vanilla behavior otherwise.
+; Event command $FA hook: wait for song end.
+; When MSU is playing, check MSU status instead of APUIO3.
 EventCmdFAHook:
     lda MSUCurrentTrack
     beq _EventCmdFAVanilla
-    ; Ending tracks are one continuous MSU track; $FA between scenes must not
-    ; block on MSU audio. Fall through to vanilla APUIO3 check, which returns
-    ; immediately since the SPC is playing $51 (silence).
+    ; Ending tracks ($53, $54) are one continuous MSU file; don't block on MSU status here.
     cmp #$53
     beq _EventCmdFAVanilla
     cmp #$54
@@ -735,12 +717,10 @@ ShutUp:
     stz MSUTrack+1
     stz MSUControl
 OriginalCode:
-    ; When MSU is actively playing, set up $01/$02 for native PlaySong:
-    ; - Position-marker tracks ($27, $41-$46, $53-$54): keep real track in $01
-    ;   but zero $02 (volume) so SPC plays silently for $F9 wait_song markers.
-    ; - All other tracks: mask $01 to $51 (silence) so native PlaySong's
-    ;   early-exit comparison ($01 == $05) succeeds on subsequent calls,
-    ;   preventing TfrSongScript from clobbering LastTrack ($09).
+    ; When MSU is playing, mask PlayTrack for the SPC:
+    ; - Position-marker tracks ($27, $41-$46, $53-$54) pass through at zero volume
+    ;   so the SPC keeps updating APUIO1 for EventCmd_f9.
+    ; - Everything else gets masked to $51 to avoid the double-play problem.
     lda MSUCurrentTrack
     beq _OrigCodeDone
     lda PlayTrack

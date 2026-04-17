@@ -1,0 +1,42 @@
+Technical notes from code analysis (2026)
+==========================================
+
+FadeCommandHandle / FadeInPending system:
+- EventCmd_f3 ("fade in previous song") sends a volume=0 play request followed
+  by a separate $81 fade-up command. The MSU needs to start the track silently
+  on the first request so the fade-up has something to work with.
+- If we treat volume=0 as "stop MSU", MSUCurrentTrack gets cleared and the SPC
+  takes over instead. FadeInPending flags this so PlayMSU can seed a low volume
+  and set FadeFlag=3 for the NMI fade routine.
+
+OriginalCode $51 masking:
+- When MSU owns a track, we tell the SPC to play $51 (silence) so it stays in
+  a normal state but doesn't produce audible output.
+- Position-marker tracks ($27, $41-$46, $53-$54) are an exception: the SPC must
+  actually play these (at zero volume) because EventCmd_f9 polls APUIO1 for
+  song position markers. If the SPC isn't running the real track, the markers
+  never update and the event script hangs.
+- The $51 masking also prevents native PlaySong's TfrSongScript from running on
+  repeat calls (because $01==$05 triggers early exit), which avoids clobbering
+  LastTrack ($1309) — the root cause of the Sabin/Figaro bug (issue #4).
+
+EventCmdFAHook ending track pass-through:
+- Ending themes ($53, $54) are one continuous MSU track. The game fires $FA
+  (wait for song end) between ending scenes. If we block on MSU audio status
+  here, the ending hangs. Falling through to the vanilla APUIO3 check works
+  because the SPC is playing $51 (silence, which reports "ended" immediately).
+
+RePlayHandler ($51):
+- The game stores $51 back into $1305 (CurrentTrack) via TfrSongScript, then
+  later reads it back and requests "play track $51". This is really a re-request
+  for whatever the MSU was already playing, so we substitute MSUCurrentTrack.
+
+SpecialHandlingBack same-track comparison:
+- Comparing against MSUCurrentTrack instead of MSULastTrackSet avoids false
+  mismatches during event-driven transitions where LastTrackSet can lag, which
+  would cause unnecessary track restarts and volume snaps.
+
+NotPlaying fall-through:
+- Must fall through to ContinueToPlay even on volume=0, because of EventCmd_f3
+  behavior described above. Short-circuiting to ShutUpAndLetMeTalk on volume=0
+  clears MSUCurrentTrack, breaking the fade-in sequence.
