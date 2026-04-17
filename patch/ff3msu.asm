@@ -30,6 +30,7 @@
 .DEFINE FadeFlag $130B
 .DEFINE APUIO0 $2140
 .DEFINE APUIO2 $2142
+.DEFINE APUIO3 $2143
 
 .DEFINE FadeStep $20
 .DEFINE FadeStepClamp $E0
@@ -118,6 +119,14 @@ jsl MSUMain
 .SECTION "SPCSongLoadHook" SIZE 4 OVERWRITE
 
 jml SPCSongLoadHook
+
+.ENDS
+
+.BANK 0
+.ORG $B8C7
+.SECTION "EventCmdFAHook" SIZE 4 OVERWRITE
+
+jml EventCmdFAHook
 
 .ENDS
 
@@ -562,6 +571,29 @@ TimeToPlay:
 
 ; Subroutines
 
+; Event command $FA: wait for song end.
+; Vanilla checks APUIO3 ($2143), but when MSU owns music the SPC-side status
+; can remain zero and cause false immediate advances. Use MSU playback status
+; while an MSU track is active, and fall back to vanilla behavior otherwise.
+EventCmdFAHook:
+    lda MSUCurrentTrack
+    beq _EventCmdFAVanilla
+
+    lda MSUStatus
+    and #MSUStatus_AudioPlaying
+    bne _EventCmdFAWait
+    jml $c0b8cd
+
+_EventCmdFAVanilla:
+    lda APUIO3
+    beq _EventCmdFAAdvance
+
+_EventCmdFAWait:
+    jml $c0b8cc
+
+_EventCmdFAAdvance:
+    jml $c0b8cd
+
 
 
 ; Check for MSU. If it's found, A and MSUExists will be $01
@@ -605,6 +637,12 @@ WillItLoop:
     cmp #$04   ; Opening part 3
     beq WILNope
     cmp #$27   ; Aria de Mezzo Carattare
+    beq WILNope
+    cmp #$41   ; Overture part 1
+    beq WILNope
+    cmp #$42   ; Overture part 2
+    beq WILNope
+    cmp #$43   ; Overture part 3
     beq WILNope
     cmp #$51   ; Silence
     beq WILStop
