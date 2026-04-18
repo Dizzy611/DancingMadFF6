@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.5)
 
 project(DancingMadInstaller VERSION 0.1 LANGUAGES CXX C)
 
+option(DMINST_WINDOWS_FORCE_STATIC "Force static linking for Windows build (legacy)" OFF)
+
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -151,8 +153,9 @@ if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(DancingMadInstaller)
 endif()
 
-# statically link on windows
-if(WIN32)
+# Legacy static linking can produce brittle executables with modern MSYS2/Qt packaging.
+# Keep it opt-in for manual experiments only.
+if(WIN32 AND DMINST_WINDOWS_FORCE_STATIC)
     set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
     target_link_options(DancingMadInstaller PRIVATE "-static")
 endif()
