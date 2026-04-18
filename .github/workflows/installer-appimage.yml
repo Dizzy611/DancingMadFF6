@@ -18,6 +18,20 @@ on:
         required: false
         type: string
         default: ""
+  workflow_call:
+    inputs:
+      run_recipe_tests:
+        required: false
+        type: boolean
+        default: false
+      publish_to_release:
+        required: false
+        type: boolean
+        default: false
+      release_tag:
+        required: false
+        type: string
+        default: ""
 
 permissions:
   contents: write

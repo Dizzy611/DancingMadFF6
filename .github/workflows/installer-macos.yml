@@ -13,6 +13,16 @@ on:
         required: false
         type: string
         default: ""
+  workflow_call:
+    inputs:
+      publish_to_release:
+        required: false
+        type: boolean
+        default: false
+      release_tag:
+        required: false
+        type: string
+        default: ""
 
 permissions:
   contents: write

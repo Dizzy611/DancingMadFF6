@@ -1,0 +1,110 @@
+name: Build Installer Release (All Platforms)
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Release tag to publish to"
+        required: true
+        type: string
+      run_linux_recipe_tests:
+        description: "Run appimage-builder test containers for Linux build"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    name: Validate input
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Validate release tag
+        run: |
+          if [[ -z "${{ inputs.release_tag }}" ]]; then
+            echo "release_tag is required" >&2
+            exit 1
+          fi
+
+  build-linux:
+    name: Build Linux AppImage
+    needs: validate
+    uses: ./.github/workflows/installer-appimage.yml
+    with:
+      run_recipe_tests: ${{ inputs.run_linux_recipe_tests }}
+      publish_to_release: false
+      release_tag: ""
+    secrets: inherit
+
+  build-windows:
+    name: Build Windows Installer
+    needs: validate
+    uses: ./.github/workflows/installer-windows.yml
+    with:
+      publish_to_release: false
+      release_tag: ""
+    secrets: inherit
+
+  build-macos:
+    name: Build macOS Installer
+    needs: validate
+    uses: ./.github/workflows/installer-macos.yml
+    with:
+      publish_to_release: false
+      release_tag: ""
+    secrets: inherit
+
+  publish-release:
+    name: Publish combined release assets
+    runs-on: ubuntu-22.04
+    needs:
+      - build-linux
+      - build-windows
+      - build-macos
+
+    steps:
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v5
+        with:
+          path: release-assets
+          merge-multiple: true
+
+      - name: Verify expected files
+        run: |
+          set -e
+          ls -lah release-assets
+
+          shopt -s nullglob
+          appimages=(release-assets/*.AppImage)
+          windows_exe=(release-assets/DancingMadInstaller.exe)
+          windows_7z=(release-assets/DancingMadInstaller-windows-extras.7z)
+          mac_universal=(release-assets/DancingMadInstaller-macos-universal.dmg)
+
+          if [[ ${#appimages[@]} -lt 1 ]]; then
+            echo "No AppImage artifact found" >&2
+            exit 1
+          fi
+          if [[ ${#windows_exe[@]} -ne 1 ]]; then
+            echo "Windows SFX executable missing" >&2
+            exit 1
+          fi
+          if [[ ${#windows_7z[@]} -ne 1 ]]; then
+            echo "Windows 7z package missing" >&2
+            exit 1
+          fi
+          if [[ ${#mac_universal[@]} -ne 1 ]]; then
+            echo "Universal macOS DMG missing" >&2
+            exit 1
+          fi
+
+      - name: Upload combined assets to release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.release_tag }}
+          files: |
+            release-assets/*.AppImage
+            release-assets/DancingMadInstaller.exe
+            release-assets/DancingMadInstaller-windows-extras.7z
+            release-assets/DancingMadInstaller-macos-universal.dmg
