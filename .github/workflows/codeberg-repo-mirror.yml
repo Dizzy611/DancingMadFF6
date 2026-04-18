@@ -1,7 +1,6 @@
 name: CodeBerg Repo Mirror
 
 on:
-  push:
   release:
     types: [published, edited, released]
   workflow_dispatch:
@@ -22,7 +21,7 @@ jobs:
 
       - name: Fetch all refs
         run: |
-          git fetch --prune origin '+refs/heads/*:refs/remotes/origin/*' '+refs/tags/*:refs/tags/*'
+          git fetch origin '+refs/heads/*:refs/remotes/origin/*' '+refs/tags/*:refs/tags/*'
 
       - name: Set up Python
         uses: actions/setup-python@v5

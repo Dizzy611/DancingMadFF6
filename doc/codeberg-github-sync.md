@@ -96,6 +96,8 @@ What it does:
 
 Behavior notes:
 
+* Ref prune is OFF by default (safer). The mirror will not delete CodeBerg branches/tags unless you explicitly pass `--prune-refs`.
+* It mirrors branches from `origin/*` refs so CI checkout state does not accidentally narrow the branch set.
 * It does not delete existing CodeBerg release assets.
 * It updates existing CodeBerg release metadata to match GitHub.
 * Draft GitHub releases are skipped unless you pass `--include-drafts`.
@@ -124,6 +126,7 @@ python3 utils/sync_codeberg_repo.py --dry-run \
 Useful flags:
 
 * `--skip-refs`
+* `--prune-refs` (dangerous unless intentional)
 * `--skip-releases`
 * `--include-drafts`
 * `--dry-run`

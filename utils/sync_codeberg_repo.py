@@ -144,6 +144,7 @@ def mirror_refs(
     cb_repo: str,
     cb_username: str,
     cb_token: str,
+    prune_refs: bool,
     dry_run: bool,
 ) -> None:
     encoded_user = urllib.parse.quote(cb_username, safe="")
@@ -152,9 +153,20 @@ def mirror_refs(
 
     eprint("Mirroring branches and tags to CodeBerg...")
     run_cmd(["git", "rev-parse", "--is-inside-work-tree"], dry_run=dry_run)
-    run_cmd(["git", "fetch", "--prune", "origin"], dry_run=dry_run)
-    run_cmd(["git", "push", "--prune", push_url, "+refs/heads/*:refs/heads/*"], dry_run=dry_run)
-    run_cmd(["git", "push", "--prune", push_url, "+refs/tags/*:refs/tags/*"], dry_run=dry_run)
+    run_cmd(["git", "fetch", "origin"], dry_run=dry_run)
+
+    branch_push_cmd = ["git", "push"]
+    tag_push_cmd = ["git", "push"]
+    if prune_refs:
+        branch_push_cmd.append("--prune")
+        tag_push_cmd.append("--prune")
+
+    # Mirror exactly what exists on origin/*, not just locally checked-out branches.
+    branch_push_cmd.extend([push_url, "+refs/remotes/origin/*:refs/heads/*"])
+    tag_push_cmd.extend([push_url, "+refs/tags/*:refs/tags/*"])
+
+    run_cmd(branch_push_cmd, dry_run=dry_run)
+    run_cmd(tag_push_cmd, dry_run=dry_run)
 
 
 def release_payload_from_github(gh_release: dict) -> dict:
@@ -295,6 +307,11 @@ def main() -> int:
         help="Optional GitHub token (recommended for API rate limits).",
     )
     parser.add_argument("--skip-refs", action="store_true", help="Do not mirror branches/tags.")
+    parser.add_argument(
+        "--prune-refs",
+        action="store_true",
+        help="Allow pruning refs on CodeBerg that no longer exist on GitHub origin.",
+    )
     parser.add_argument("--skip-releases", action="store_true", help="Do not mirror releases/assets.")
     parser.add_argument("--include-drafts", action="store_true", help="Also mirror draft releases.")
     parser.add_argument("--dry-run", action="store_true", help="Show actions without mutating CodeBerg.")
@@ -340,6 +357,7 @@ def main() -> int:
             cb_repo=cb_repo,
             cb_username=args.codeberg_username or "",
             cb_token=args.codeberg_token or "",
+            prune_refs=args.prune_refs,
             dry_run=args.dry_run,
         )
 
