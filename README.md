@@ -125,7 +125,10 @@ The following are 7zip files with all the data needed (.pcm, .msu, and .ips/.bps
 
 ### Responsible Disclosure (AI Assistance) ###
 
-* As of April 2026, this project has begun using GitHub Copilot primarily for debugging assistance, research support, and build/release automation work.
-* AI/LLM-generated changes to functional patch and installer code have been minimal; core functional behavior remains primarily authored and reviewed by the project maintainer.
+* As of April 2026, this project has begun using GitHub Copilot primarily for debugging assistance and research support.
+* The following areas include AI/LLM-generated code contributions:
+* Experimental FMV support based on ikari's reference implementation.
+* General low-impact bug fixes.
+* GitHub Actions automation.
 
 
