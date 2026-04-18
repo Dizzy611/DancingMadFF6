@@ -29,7 +29,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Validate release input
         run: |
@@ -99,7 +99,7 @@ jobs:
           echo "appimage_name=$NEW_NAME" >> "$GITHUB_OUTPUT"
 
       - name: Upload AppImage artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ steps.artifact.outputs.appimage_name }}
           path: installer/appimage/${{ steps.artifact.outputs.appimage_name }}
