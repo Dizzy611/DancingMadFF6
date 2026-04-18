@@ -90,6 +90,110 @@ jobs:
             /mingw64/bin/windeployqt.exe --release --compiler-runtime --no-angle "$GITHUB_WORKSPACE/dist/bin/DanceMonkey.exe"
           fi
 
+      - name: Validate staged Windows executable
+        shell: pwsh
+        run: |
+          function Test-PeExecutable {
+            param([string]$Path)
+
+            if (-not (Test-Path $Path)) {
+              return $false
+            }
+
+            $bytes = [System.IO.File]::ReadAllBytes($Path)
+            if ($bytes.Length -lt 512) {
+              return $false
+            }
+
+            if ($bytes[0] -ne 0x4D -or $bytes[1] -ne 0x5A) {
+              return $false
+            }
+
+            $peOffset = [BitConverter]::ToInt32($bytes, 0x3C)
+            if ($peOffset -lt 0 -or ($peOffset + 6) -ge $bytes.Length) {
+              return $false
+            }
+
+            if ($bytes[$peOffset] -ne 0x50 -or $bytes[$peOffset + 1] -ne 0x45 -or $bytes[$peOffset + 2] -ne 0x00 -or $bytes[$peOffset + 3] -ne 0x00) {
+              return $false
+            }
+
+            $machine = [BitConverter]::ToUInt16($bytes, $peOffset + 4)
+            if ($machine -ne 0x8664 -and $machine -ne 0x014c) {
+              return $false
+            }
+
+            return $true
+          }
+
+          $stagedExe = "$env:GITHUB_WORKSPACE/dist/bin/DanceMonkey.exe"
+          $builtExeCandidates = @(
+            "$env:GITHUB_WORKSPACE/build-installer/DanceMonkey.exe",
+            "$env:GITHUB_WORKSPACE/build-installer/Release/DanceMonkey.exe"
+          )
+
+          $stagedValid = Test-PeExecutable -Path $stagedExe
+          Write-Host "Staged exe valid PE: $stagedValid"
+
+          if (-not $stagedValid) {
+            $replacement = $null
+            foreach ($candidate in $builtExeCandidates) {
+              if (Test-PeExecutable -Path $candidate) {
+                $replacement = $candidate
+                break
+              }
+            }
+
+            if (-not $replacement) {
+              Write-Error "Staged executable is invalid and no valid build output executable was found."
+              exit 1
+            }
+
+            Write-Warning "Replacing invalid staged executable with build output: $replacement"
+            Copy-Item -Path $replacement -Destination $stagedExe -Force
+          }
+
+          $stagedInfo = Get-Item $stagedExe
+          $stagedHash = (Get-FileHash -Algorithm SHA256 $stagedExe).Hash
+          Write-Host "Final staged executable: $($stagedInfo.FullName)"
+          Write-Host "Size: $($stagedInfo.Length) bytes"
+          Write-Host "SHA256: $stagedHash"
+
+      - name: Validate staged executable format
+        shell: pwsh
+        run: |
+          $stagedExe = "$env:GITHUB_WORKSPACE/dist/bin/DanceMonkey.exe"
+          if (-not (Test-Path $stagedExe)) {
+            Write-Error "Staged executable not found: $stagedExe"
+            exit 1
+          }
+
+          $bytes = [System.IO.File]::ReadAllBytes($stagedExe)
+          if ($bytes.Length -lt 2 -or $bytes[0] -ne 0x4D -or $bytes[1] -ne 0x5A) {
+            Write-Warning "dist/bin/DanceMonkey.exe is not a valid PE (MZ) binary. Attempting repair from build output."
+            $candidates = Get-ChildItem "$env:GITHUB_WORKSPACE/build-installer" -Recurse -File |
+              Where-Object { $_.Name -in @("DanceMonkey.exe", "DancingMadInstaller.exe") }
+
+            if (-not $candidates) {
+              Write-Error "No candidate built executable found under build-installer"
+              exit 1
+            }
+
+            # Use the largest candidate to avoid selecting tiny placeholders.
+            $sourceExe = $candidates | Sort-Object Length -Descending | Select-Object -First 1
+            Write-Host "Repair source selected: $($sourceExe.FullName) ($($sourceExe.Length) bytes)"
+            Copy-Item $sourceExe.FullName $stagedExe -Force
+
+            $bytes = [System.IO.File]::ReadAllBytes($stagedExe)
+            if ($bytes.Length -lt 2 -or $bytes[0] -ne 0x4D -or $bytes[1] -ne 0x5A) {
+              Write-Error "Repair failed: staged executable is still not a valid MZ PE binary"
+              exit 1
+            }
+          }
+
+          $size = (Get-Item $stagedExe).Length
+          Write-Host "Validated PE executable: $stagedExe ($size bytes)"
+
       - name: Build archive + bootstrap executable
         shell: pwsh
         run: |
