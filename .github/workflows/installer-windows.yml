@@ -97,6 +97,8 @@ jobs:
 
           $sfxLines = @(
             ';!@Install@!UTF-8!',
+            'GUIMode="2"',
+            'InstallPath="%TEMP%\\DancingMadInstaller"',
             'Title="Dancing Mad Installer"',
             'RunProgram="DanceMonkey.exe"',
             ';!@InstallEnd@!'
