@@ -103,7 +103,8 @@ jobs:
             'RunProgram="DanceMonkey.exe"',
             ';!@InstallEnd@!'
           )
-          Set-Content "$env:GITHUB_WORKSPACE/sfx-config.txt" -Value $sfxLines -NoNewline
+          $sfxConfig = ($sfxLines -join "`r`n") + "`r`n"
+          [System.IO.File]::WriteAllText("$env:GITHUB_WORKSPACE/sfx-config.txt", $sfxConfig, [System.Text.Encoding]::UTF8)
 
           cmd /c copy /b "C:\Program Files\7-Zip\7z.sfx"+"$env:GITHUB_WORKSPACE\sfx-config.txt"+"$env:GITHUB_WORKSPACE\DancingMadInstaller-windows-extras.7z" "$env:GITHUB_WORKSPACE\DancingMadInstaller.exe"
           Pop-Location
