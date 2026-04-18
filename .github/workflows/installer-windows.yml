@@ -93,6 +93,13 @@ jobs:
       - name: Build archive + bootstrap executable
         shell: pwsh
         run: |
+          if (-not (Test-Path "$env:GITHUB_WORKSPACE/dist/bin/DanceMonkey.exe")) {
+            Write-Error "Expected executable missing before packaging: $env:GITHUB_WORKSPACE/dist/bin/DanceMonkey.exe"
+            Write-Host "Top-level dist/bin contents:"
+            Get-ChildItem "$env:GITHUB_WORKSPACE/dist/bin" -Force | ForEach-Object { Write-Host "  - $($_.Name)" }
+            exit 1
+          }
+
           Push-Location dist/bin
           7z a -t7z "$env:GITHUB_WORKSPACE/DancingMadInstaller-windows-extras.7z" "*"
 
@@ -116,6 +123,25 @@ jobs:
             Pop $0
           FunctionEnd
 
+          Function ChooseLaunchPath
+            StrCpy $0 "$INSTDIR\DanceMonkey.exe"
+            IfFileExists "$0" 0 +3
+              Push $0
+              Return
+
+            StrCpy $0 "$INSTDIR\bin\DanceMonkey.exe"
+            IfFileExists "$0" 0 +3
+              Push $0
+              Return
+
+            StrCpy $0 "$INSTDIR\dist\bin\DanceMonkey.exe"
+            IfFileExists "$0" 0 +3
+              Push $0
+              Return
+
+            Push ""
+          FunctionEnd
+
           Function .onInit
             Delete "$TEMP\DancingMadInstaller-bootstrap.log"
             Push "Bootstrap start"
@@ -129,15 +155,29 @@ jobs:
             Push "Extracting files to $INSTDIR"
             Call LogLine
             File /r "${GITHUB_WORKSPACE}\dist\bin\*"
-            IfFileExists "$INSTDIR\DanceMonkey.exe" +3 0
-              Push "DanceMonkey.exe missing after extract"
+
+            Call ChooseLaunchPath
+            Pop $0
+            StrCmp $0 "" 0 +6
+              Push "DanceMonkey.exe missing after extract; top-level listing follows"
               Call LogLine
+              FindFirst $1 $2 "$INSTDIR\*"
+              Push "Top-level in $INSTDIR:"
+              Call LogLine
+              loop:
+              StrCmp $2 "" done
+                Push "  - $2"
+                Call LogLine
+                FindNext $1 $2
+                Goto loop
+              done:
+              FindClose $1
               MessageBox MB_ICONSTOP "Failed to launch installer: DanceMonkey.exe missing."
               Abort
 
-            Push "Launching $INSTDIR\\DanceMonkey.exe"
+            Push "Launching $0"
             Call LogLine
-            Exec '"$INSTDIR\DanceMonkey.exe"'
+            Exec '"$0"'
             IfErrors 0 +3
               Push "Exec failed"
               Call LogLine
