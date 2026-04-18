@@ -90,12 +90,13 @@ jobs:
           Push-Location dist/bin
           7z a -t7z "$env:GITHUB_WORKSPACE/DancingMadInstaller-windows-extras.7z" "*"
 
-          @'
-;!@Install@!UTF-8!
-Title="Dancing Mad Installer"
-RunProgram="DanceMonkey.exe"
-;!@InstallEnd@!
-'@ | Set-Content "$env:GITHUB_WORKSPACE/sfx-config.txt" -NoNewline
+          $sfxLines = @(
+            ';!@Install@!UTF-8!',
+            'Title="Dancing Mad Installer"',
+            'RunProgram="DanceMonkey.exe"',
+            ';!@InstallEnd@!'
+          )
+          Set-Content "$env:GITHUB_WORKSPACE/sfx-config.txt" -Value $sfxLines -NoNewline
 
           cmd /c copy /b "C:\Program Files\7-Zip\7z.sfx"+"$env:GITHUB_WORKSPACE\sfx-config.txt"+"$env:GITHUB_WORKSPACE\DancingMadInstaller-windows-extras.7z" "$env:GITHUB_WORKSPACE\DancingMadInstaller.exe"
           Pop-Location
