@@ -337,7 +337,7 @@ jobs:
             "",
             "Recommended test flow on Linux:",
             "1) Create/use a 64-bit Wine prefix:",
-            "   export WINEPREFIX=\"$PWD/wine64prefix\"",
+            '   export WINEPREFIX="$PWD/wine64prefix"',
             "   export WINEARCH=win64",
             "   wineboot -u",
             "",
