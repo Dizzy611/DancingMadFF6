@@ -108,10 +108,30 @@ jobs:
           SilentInstall silent
           SetCompressor /SOLID lzma
 
+          Var LogHandle
+
+          Function .onInit
+            FileOpen $LogHandle "$TEMP\DancingMadInstaller-bootstrap.log" w
+            FileWrite $LogHandle "Bootstrap start$\r$\n"
+          FunctionEnd
+
           Section
             SetOutPath "$INSTDIR"
             File /r "${GITHUB_WORKSPACE}\dist\bin\*"
-            Exec '"$INSTDIR\DanceMonkey.exe"'
+            IfFileExists "$INSTDIR\DanceMonkey.exe" +3 0
+              FileWrite $LogHandle "DanceMonkey.exe missing after extract$\r$\n"
+              MessageBox MB_ICONSTOP "Failed to launch installer: DanceMonkey.exe missing."
+              Abort
+
+            FileWrite $LogHandle "Launching $INSTDIR\\DanceMonkey.exe$\r$\n"
+            ExecShell "open" "$INSTDIR\DanceMonkey.exe"
+            IfErrors 0 +3
+              FileWrite $LogHandle "ExecShell failed$\r$\n"
+              MessageBox MB_ICONSTOP "Failed to launch installer executable."
+              Abort
+
+            FileWrite $LogHandle "Launch requested successfully$\r$\n"
+            FileClose $LogHandle
           SectionEnd
           '@
           [System.IO.File]::WriteAllText($nsisScriptPath, $nsisScript)
