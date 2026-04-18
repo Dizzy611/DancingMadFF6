@@ -40,6 +40,14 @@ def env_to_bool(raw: Optional[str], default: bool = False) -> bool:
     return default
 
 
+def is_pull_request(issue: dict) -> bool:
+    """Return True only when issue payload is actually a PR.
+
+    Some forge APIs include `pull_request: null` on normal issues.
+    """
+    return issue.get("pull_request") not in (None, False)
+
+
 def parse_repo(value: str, flag_name: str) -> Tuple[str, str]:
     if "/" not in value:
         raise ValueError(f"{flag_name} must be in owner/repo format")
@@ -115,7 +123,7 @@ def collect_existing_github_mirrors(
     mapping: Dict[int, int] = {}
     url = f"{GITHUB_API}/repos/{gh_owner}/{gh_repo}/issues"
     for issue in paged_get(url, {"state": "all", "sort": "created", "direction": "asc"}, gh_headers):
-        if "pull_request" in issue:
+        if is_pull_request(issue):
             continue
         body = issue.get("body") or ""
         match = MIRROR_MARKER_RE.search(body)
@@ -260,7 +268,7 @@ def comment_on_codeberg_issue(
 
 
 def should_import(issue: dict, since: Optional[dt.datetime]) -> bool:
-    if "pull_request" in issue:
+    if is_pull_request(issue):
         return False
     if since is None:
         return True
@@ -364,8 +372,6 @@ def main() -> int:
 
     candidates: List[dict] = []
     for issue in codeberg_open_issues:
-        if "pull_request" in issue:
-            continue
         if int(issue["number"]) in existing:
             continue
         if not should_import(issue, since):
