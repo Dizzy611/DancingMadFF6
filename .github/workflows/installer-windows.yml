@@ -136,7 +136,30 @@ jobs:
           $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
           [System.IO.File]::WriteAllText("$env:GITHUB_WORKSPACE/sfx-config.txt", $sfxConfig, $utf8NoBom)
 
-          cmd /c copy /b "$env:GITHUB_WORKSPACE\7z-extra\7zSD.sfx"+"$env:GITHUB_WORKSPACE\sfx-config.txt"+"$env:GITHUB_WORKSPACE\DancingMadInstaller-windows-extras.7z" "$env:GITHUB_WORKSPACE\DancingMadInstaller.exe"
+          $sfxStub = Get-ChildItem -Path "$env:GITHUB_WORKSPACE/7z-extra" -Filter "7zSD.sfx" -Recurse | Select-Object -First 1
+          if (-not $sfxStub) {
+            Write-Error "Unable to find 7zSD.sfx in extracted 7-zip extra package"
+            exit 1
+          }
+
+          $outputExe = "$env:GITHUB_WORKSPACE/DancingMadInstaller.exe"
+          $archivePath = "$env:GITHUB_WORKSPACE/DancingMadInstaller-windows-extras.7z"
+          $configPath = "$env:GITHUB_WORKSPACE/sfx-config.txt"
+
+          $outStream = [System.IO.File]::Open($outputExe, [System.IO.FileMode]::Create, [System.IO.FileAccess]::Write)
+          try {
+            foreach ($inputPath in @($sfxStub.FullName, $configPath, $archivePath)) {
+              $inStream = [System.IO.File]::OpenRead($inputPath)
+              try {
+                $inStream.CopyTo($outStream)
+              } finally {
+                $inStream.Dispose()
+              }
+            }
+          } finally {
+            $outStream.Dispose()
+          }
+
           Pop-Location
 
       - name: Upload Windows artifacts
