@@ -46,6 +46,19 @@ def run_cmd(args: List[str], dry_run: bool = False) -> None:
     subprocess.run(args, check=True)
 
 
+def capture_cmd(args: List[str]) -> str:
+    return subprocess.check_output(args, text=True)
+
+
+def parse_csv_set(raw: str) -> Set[str]:
+    out: Set[str] = set()
+    for part in raw.split(","):
+        val = part.strip()
+        if val:
+            out.add(val)
+    return out
+
+
 def sh_quote(raw: str) -> str:
     if raw == "":
         return "''"
@@ -144,6 +157,7 @@ def mirror_refs(
     cb_repo: str,
     cb_username: str,
     cb_token: str,
+    exclude_branches: Set[str],
     prune_refs: bool,
     dry_run: bool,
 ) -> None:
@@ -155,6 +169,33 @@ def mirror_refs(
     run_cmd(["git", "rev-parse", "--is-inside-work-tree"], dry_run=dry_run)
     run_cmd(["git", "fetch", "origin"], dry_run=dry_run)
 
+    # Mirror only branch names that currently exist on remote origin.
+    # This avoids re-pushing stale local remote-tracking refs.
+    ls_remote_raw = capture_cmd(["git", "ls-remote", "--heads", "origin"])
+    live_branch_names: Set[str] = set()
+    for line in ls_remote_raw.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        parts = line.split()
+        if len(parts) != 2:
+            continue
+        ref = parts[1]
+        if not ref.startswith("refs/heads/"):
+            continue
+        branch = ref.removeprefix("refs/heads/")
+        if branch:
+            live_branch_names.add(branch)
+
+    branch_refspecs: List[str] = []
+    for branch in sorted(live_branch_names):
+        if branch in exclude_branches:
+            print(f"Skipping excluded branch: {branch}")
+            continue
+        ref = f"refs/remotes/origin/{branch}"
+        dest = f"refs/heads/{branch}"
+        branch_refspecs.append(f"+{ref}:{dest}")
+
     branch_push_cmd = ["git", "push"]
     tag_push_cmd = ["git", "push"]
     if prune_refs:
@@ -162,10 +203,14 @@ def mirror_refs(
         tag_push_cmd.append("--prune")
 
     # Mirror exactly what exists on origin/*, not just locally checked-out branches.
-    branch_push_cmd.extend([push_url, "+refs/remotes/origin/*:refs/heads/*"])
+    branch_push_cmd.append(push_url)
+    branch_push_cmd.extend(branch_refspecs)
     tag_push_cmd.extend([push_url, "+refs/tags/*:refs/tags/*"])
 
-    run_cmd(branch_push_cmd, dry_run=dry_run)
+    if not branch_refspecs:
+        print("No origin branch refs found to mirror.")
+    else:
+        run_cmd(branch_push_cmd, dry_run=dry_run)
     run_cmd(tag_push_cmd, dry_run=dry_run)
 
 
@@ -308,6 +353,11 @@ def main() -> int:
     )
     parser.add_argument("--skip-refs", action="store_true", help="Do not mirror branches/tags.")
     parser.add_argument(
+        "--exclude-branches",
+        default=os.environ.get("CODEBERG_SYNC_EXCLUDE_BRANCHES", ""),
+        help="Comma-separated branch names to exclude from ref mirroring.",
+    )
+    parser.add_argument(
         "--prune-refs",
         action="store_true",
         help="Allow pruning refs on CodeBerg that no longer exist on GitHub origin.",
@@ -352,11 +402,13 @@ def main() -> int:
         return 0
 
     if not args.skip_refs:
+        excluded = parse_csv_set(args.exclude_branches)
         mirror_refs(
             cb_owner=cb_owner,
             cb_repo=cb_repo,
             cb_username=args.codeberg_username or "",
             cb_token=args.codeberg_token or "",
+            exclude_branches=excluded,
             prune_refs=args.prune_refs,
             dry_run=args.dry_run,
         )

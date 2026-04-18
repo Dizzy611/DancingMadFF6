@@ -34,6 +34,7 @@ Recommended:
 2. Variable `CODEBERG_SYNC_MAX_IMPORT` (default `25`)
 3. Variable `CODEBERG_SYNC_LABEL_PREFIX` (optional)
 4. Variable `CODEBERG_SYNC_CREATE_MISSING_LABELS` (`true` or `false`)
+5. Variable `CODEBERG_SYNC_EXCLUDE_BRANCHES` (optional, comma-separated)
 
 Token scope notes:
 
@@ -98,6 +99,7 @@ Behavior notes:
 
 * Ref prune is OFF by default (safer). The mirror will not delete CodeBerg branches/tags unless you explicitly pass `--prune-refs`.
 * It mirrors branches from `origin/*` refs so CI checkout state does not accidentally narrow the branch set.
+* Branches can be explicitly excluded (for old/dead branches) via `CODEBERG_SYNC_EXCLUDE_BRANCHES`.
 * It does not delete existing CodeBerg release assets.
 * It updates existing CodeBerg release metadata to match GitHub.
 * Draft GitHub releases are skipped unless you pass `--include-drafts`.
@@ -126,6 +128,7 @@ python3 utils/sync_codeberg_repo.py --dry-run \
 Useful flags:
 
 * `--skip-refs`
+* `--exclude-branches <branch1,branch2,...>`
 * `--prune-refs` (dangerous unless intentional)
 * `--skip-releases`
 * `--include-drafts`

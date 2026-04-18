@@ -33,6 +33,7 @@ jobs:
           CODEBERG_USERNAME: ${{ vars.CODEBERG_USERNAME }}
           CODEBERG_TOKEN: ${{ secrets.CODEBERG_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CODEBERG_SYNC_EXCLUDE_BRANCHES: ${{ vars.CODEBERG_SYNC_EXCLUDE_BRANCHES }}
         run: |
           python3 utils/sync_codeberg_repo.py \
             --github-repo "${{ vars.GH_REPO }}" \
