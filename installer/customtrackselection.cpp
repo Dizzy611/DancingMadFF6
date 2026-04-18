@@ -9,7 +9,6 @@ CustomTrackSelection::CustomTrackSelection(QWidget *parent)
     , ui(new Ui::CustomTrackSelection)
 {
     ui->setupUi(this);
-    this->findChild<QScrollArea*>("scrollArea")->setWidget(this->findChild<QVBoxLayout*>("verticalLayout")->widget());
 }
 
 CustomTrackSelection::~CustomTrackSelection()
