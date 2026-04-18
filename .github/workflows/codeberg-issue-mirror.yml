@@ -23,8 +23,6 @@ jobs:
 
       - name: Mirror CodeBerg issues into GitHub
         env:
-          GITHUB_REPO: ${{ vars.GITHUB_REPO }}
-          CODEBERG_REPO: ${{ vars.CODEBERG_REPO }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CODEBERG_TOKEN: ${{ secrets.CODEBERG_TOKEN }}
           CODEBERG_SYNC_SINCE: ${{ vars.CODEBERG_SYNC_SINCE }}
@@ -32,4 +30,6 @@ jobs:
           CODEBERG_SYNC_LABEL_PREFIX: ${{ vars.CODEBERG_SYNC_LABEL_PREFIX }}
           CODEBERG_SYNC_CREATE_MISSING_LABELS: ${{ vars.CODEBERG_SYNC_CREATE_MISSING_LABELS }}
         run: |
-          python3 utils/sync_codeberg_issues.py
+          python3 utils/sync_codeberg_issues.py \
+            --github-repo "${{ vars.GH_REPO }}" \
+            --codeberg-repo "${{ vars.CODEBERG_REPO }}"

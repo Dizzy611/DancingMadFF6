@@ -31,10 +31,10 @@ jobs:
 
       - name: Mirror branches/tags/releases to CodeBerg
         env:
-          GITHUB_REPO: ${{ vars.GITHUB_REPO }}
-          CODEBERG_REPO: ${{ vars.CODEBERG_REPO }}
           CODEBERG_USERNAME: ${{ vars.CODEBERG_USERNAME }}
           CODEBERG_TOKEN: ${{ secrets.CODEBERG_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          python3 utils/sync_codeberg_repo.py
+          python3 utils/sync_codeberg_repo.py \
+            --github-repo "${{ vars.GH_REPO }}" \
+            --codeberg-repo "${{ vars.CODEBERG_REPO }}"

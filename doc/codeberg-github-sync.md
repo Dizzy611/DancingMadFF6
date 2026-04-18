@@ -25,7 +25,7 @@ Required (do these first):
 
 1. Secret `CODEBERG_TOKEN`
 2. Variable `CODEBERG_USERNAME`
-3. Variable `GITHUB_REPO` (example: `Dizzy611/DancingMadFF6`)
+3. Variable `GH_REPO` (example: `Dizzy611/DancingMadFF6`)
 4. Variable `CODEBERG_REPO` (example: `Dizzy611/DancingMadFF6`)
 
 Recommended:
