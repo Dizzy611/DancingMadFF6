@@ -111,6 +111,14 @@ def api_upload_bytes(url: str, data: bytes, headers: Dict[str, str], dry_run: bo
         raise RuntimeError(f"Network error while uploading to {url}: {exc}") from exc
 
 
+def fetch_codeberg_repo_metadata(cb_owner: str, cb_repo: str, cb_headers: Dict[str, str]) -> dict:
+    url = f"{CODEBERG_API}/repos/{cb_owner}/{cb_repo}"
+    payload = api_request_json("GET", url, headers=cb_headers)
+    if not isinstance(payload, dict):
+        raise RuntimeError("Unexpected repository metadata response from CodeBerg")
+    return payload
+
+
 def paged_list(url: str, params: dict, headers: Dict[str, str]) -> Iterable[dict]:
     page = 1
     per_page = 100
@@ -336,6 +344,21 @@ def main() -> int:
         )
 
     if not args.skip_releases:
+        cb_repo_meta = fetch_codeberg_repo_metadata(cb_owner, cb_repo, cb_headers)
+        has_releases = bool(cb_repo_meta.get("has_releases", False))
+        if not has_releases:
+            msg = (
+                "CodeBerg releases are disabled for this repository "
+                f"({cb_owner}/{cb_repo}). Enable Releases in the CodeBerg repo settings, "
+                "or run with --skip-releases."
+            )
+            if args.dry_run:
+                print(f"DRY RUN: {msg}")
+                print("DRY RUN: skipping release sync because releases are disabled.")
+                print("Done.")
+                return 0
+            raise RuntimeError(msg)
+
         sync_releases(
             gh_owner=gh_owner,
             gh_repo=gh_repo,
