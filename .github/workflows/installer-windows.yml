@@ -44,45 +44,49 @@ jobs:
             exit 1
           }
 
-      - name: Install Qt5 (MSVC)
-        uses: jurplel/install-qt-action@v4
+      - name: Set up MSYS2 (Qt5 toolchain)
+        uses: msys2/setup-msys2@v2
         with:
-          version: 5.15.2
-          host: windows
-          target: desktop
-          arch: win64_msvc2019_64
-          modules: qtmultimedia
-          cache: true
+          msystem: MINGW64
+          update: true
+          install: >-
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-ninja
+            mingw-w64-x86_64-qt5-base
+            mingw-w64-x86_64-qt5-multimedia
 
       - name: Install packaging tools
         shell: pwsh
         run: |
-          choco install ninja 7zip -y
+          choco install 7zip -y
 
       - name: Configure installer (Qt5)
-        shell: pwsh
+        shell: msys2 {0}
         run: |
-          cmake -S installer -B build-installer `
-            -G Ninja `
-            -DQT_DEFAULT_MAJOR_VERSION=5 `
+          cmake -S installer -B build-installer \
+            -G Ninja \
+            -DQT_DEFAULT_MAJOR_VERSION=5 \
             -DCMAKE_BUILD_TYPE=Release
 
       - name: Build installer
-        shell: pwsh
+        shell: msys2 {0}
         run: |
           cmake --build build-installer --parallel
 
       - name: Stage install tree
-        shell: pwsh
+        shell: msys2 {0}
         run: |
-          cmake --install build-installer --prefix "$env:GITHUB_WORKSPACE/dist"
+          cmake --install build-installer --prefix "$GITHUB_WORKSPACE/dist"
 
       - name: Deploy Qt runtime
-        shell: pwsh
+        shell: msys2 {0}
         run: |
-          Push-Location dist/bin
-          windeployqt --release --compiler-runtime DanceMonkey.exe
-          Pop-Location
+          if [[ -x /mingw64/bin/windeployqt-qt5.exe ]]; then
+            /mingw64/bin/windeployqt-qt5.exe --release --compiler-runtime "$GITHUB_WORKSPACE/dist/bin/DanceMonkey.exe"
+          else
+            /mingw64/bin/windeployqt.exe --release --compiler-runtime "$GITHUB_WORKSPACE/dist/bin/DanceMonkey.exe"
+          fi
 
       - name: Build 7z + SFX executable
         shell: pwsh
