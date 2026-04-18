@@ -23,6 +23,7 @@ from typing import Dict, Iterable, List, Optional, Tuple
 GITHUB_API = "https://api.github.com"
 CODEBERG_API = "https://codeberg.org/api/v1"
 MIRROR_MARKER_RE = re.compile(r"<!--\s*mirrored-from-codeberg:\s*([^#\s]+/[\w.-]+)#(\d+)\s*-->")
+CB_TITLE_PREFIX_RE = re.compile(r"^\s*\[\s*codeberg\s*#\d+\s*\]\s*", re.IGNORECASE)
 
 
 def eprint(msg: str) -> None:
@@ -58,6 +59,13 @@ def is_pull_request(issue: dict) -> bool:
     Some forge APIs include `pull_request: null` on normal issues.
     """
     return issue.get("pull_request") not in (None, False)
+
+
+def normalize_title_for_dedupe(title: str) -> str:
+    # Remove mirror prefix, collapse whitespace, and compare case-insensitively.
+    t = CB_TITLE_PREFIX_RE.sub("", title or "")
+    t = re.sub(r"\s+", " ", t).strip().lower()
+    return t
 
 
 def parse_repo(value: str, flag_name: str) -> Tuple[str, str]:
@@ -145,6 +153,31 @@ def collect_existing_github_mirrors(
         gh_number = int(issue["number"])
         mapping[cb_number] = gh_number
     return mapping
+
+
+def collect_existing_github_issue_signatures(
+    gh_owner: str, gh_repo: str, gh_headers: Dict[str, str]
+) -> Tuple[Set[str], Set[str], Dict[int, str]]:
+    """Return (source_urls, normalized_titles, issue_number->normalized_title)."""
+    source_urls: Set[str] = set()
+    normalized_titles: Set[str] = set()
+    number_to_title: Dict[int, str] = {}
+    url = f"{GITHUB_API}/repos/{gh_owner}/{gh_repo}/issues"
+    for issue in paged_get(url, {"state": "all", "sort": "created", "direction": "asc"}, gh_headers):
+        if is_pull_request(issue):
+            continue
+        gh_num = issue.get("number")
+        title = issue.get("title")
+        if isinstance(title, str) and title.strip():
+            norm = normalize_title_for_dedupe(title)
+            normalized_titles.add(norm)
+            if isinstance(gh_num, int):
+                number_to_title[gh_num] = norm
+        body = issue.get("body")
+        if isinstance(body, str) and body:
+            for match in re.findall(r"https?://codeberg\.org/[^\s)]+/issues/\d+", body, flags=re.IGNORECASE):
+                source_urls.add(match.rstrip(". "))
+    return source_urls, normalized_titles, number_to_title
 
 
 def normalize_issue_body(body: Optional[str]) -> str:
@@ -338,6 +371,21 @@ def main() -> int:
         help="Allow mirroring old pre-existing open issues when --since is not set.",
     )
     parser.add_argument(
+        "--dedupe-by-title",
+        action="store_true",
+        default=env_to_bool(os.environ.get("CODEBERG_SYNC_DEDUPE_BY_TITLE"), default=True),
+        help="Skip mirror create if a GitHub issue already exists with the same normalized title.",
+    )
+    parser.add_argument(
+        "--dedupe-legacy-number-title",
+        action="store_true",
+        default=env_to_bool(os.environ.get("CODEBERG_SYNC_DEDUPE_LEGACY_NUMBER_TITLE"), default=True),
+        help=(
+            "Skip mirror create when a GitHub issue with the same numeric id exists and has the same normalized title "
+            "(helps with historical GitHub->CodeBerg import duplicates)."
+        ),
+    )
+    parser.add_argument(
         "--no-codeberg-comment",
         action="store_true",
         help="Do not post a backlink comment on the source CodeBerg issue.",
@@ -373,6 +421,11 @@ def main() -> int:
     eprint("Loading existing GitHub mirrored issue markers...")
     existing = collect_existing_github_mirrors(gh_owner, gh_repo, gh_headers)
 
+    eprint("Loading existing GitHub issue signatures for duplicate detection...")
+    existing_source_urls, existing_norm_titles, existing_num_to_title = collect_existing_github_issue_signatures(
+        gh_owner, gh_repo, gh_headers
+    )
+
     eprint("Loading GitHub labels for mapping...")
     gh_label_map = fetch_github_labels(gh_owner, gh_repo, gh_headers)
 
@@ -388,6 +441,25 @@ def main() -> int:
             continue
         if not should_import(issue, since):
             continue
+        source_url = (issue.get("html_url") or "").strip()
+        if source_url and source_url in existing_source_urls:
+            print(f"Skipping CodeBerg #{issue['number']} (source URL already referenced in GitHub issue body)")
+            continue
+        if args.dedupe_legacy_number_title:
+            cb_num = int(issue["number"])
+            cb_title_norm = normalize_title_for_dedupe(issue.get("title") or "")
+            gh_same_num_title = existing_num_to_title.get(cb_num)
+            if cb_title_norm and gh_same_num_title and cb_title_norm == gh_same_num_title:
+                print(
+                    f"Skipping CodeBerg #{cb_num} (legacy import duplicate: GitHub issue #{cb_num} has same title)"
+                )
+                continue
+        if args.dedupe_by_title:
+            cb_title = issue.get("title") or ""
+            norm_title = normalize_title_for_dedupe(cb_title)
+            if norm_title and norm_title in existing_norm_titles:
+                print(f"Skipping CodeBerg #{issue['number']} (matching GitHub issue title already exists)")
+                continue
         candidates.append(issue)
 
     if since is None and not args.allow_backfill and len(candidates) > args.max_import:
@@ -435,6 +507,12 @@ def main() -> int:
         gh_url = created["html_url"]
         print(f"Mirrored CodeBerg #{number} -> GitHub #{gh_number} ({gh_url})")
         mirrored += 1
+
+        if (issue.get("html_url") or "").strip():
+            existing_source_urls.add(issue["html_url"].strip())
+        normalized_created_title = normalize_title_for_dedupe(gh_title)
+        if normalized_created_title:
+            existing_norm_titles.add(normalized_created_title)
 
         if args.no_codeberg_comment:
             continue

@@ -35,6 +35,8 @@ Recommended:
 3. Variable `CODEBERG_SYNC_LABEL_PREFIX` (optional)
 4. Variable `CODEBERG_SYNC_CREATE_MISSING_LABELS` (`true` or `false`)
 5. Variable `CODEBERG_SYNC_EXCLUDE_BRANCHES` (optional, comma-separated)
+6. Variable `CODEBERG_SYNC_DEDUPE_BY_TITLE` (`true` or `false`, default `true`)
+7. Variable `CODEBERG_SYNC_DEDUPE_LEGACY_NUMBER_TITLE` (`true` or `false`, default `true`)
 
 Token scope notes:
 
@@ -51,6 +53,9 @@ What it does:
 * Can post backlink comments on CodeBerg.
 * Can map labels from CodeBerg to GitHub.
 * Can auto-create missing GitHub labels.
+* Skips duplicates if the CodeBerg issue URL is already referenced in any GitHub issue body.
+* Optionally skips duplicates by normalized title match (`CODEBERG_SYNC_DEDUPE_BY_TITLE`).
+* Skips historical import duplicates where CodeBerg issue `#N` matches GitHub issue `#N` with the same title (`CODEBERG_SYNC_DEDUPE_LEGACY_NUMBER_TITLE`).
 
 Safety note:
 
@@ -84,6 +89,8 @@ Useful flags:
 * `--label-prefix <prefix>`
 * `--create-missing-labels`
 * `--allow-backfill`
+* `--dedupe-by-title`
+* `--dedupe-legacy-number-title`
 * `--no-codeberg-comment`
 
 ## Repo / Release Mirror Details
