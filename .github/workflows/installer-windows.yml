@@ -158,7 +158,9 @@ jobs:
 
             Call ChooseLaunchPath
             Pop $0
-            StrCmp $0 "" 0 +6
+            StrCmp $0 "" missing_exe found_exe
+
+            missing_exe:
               Push "DanceMonkey.exe missing after extract; top-level listing follows"
               Call LogLine
               FindFirst $1 $2 "$INSTDIR\*"
@@ -175,6 +177,7 @@ jobs:
               MessageBox MB_ICONSTOP "Failed to launch installer: DanceMonkey.exe missing."
               Abort
 
+            found_exe:
             Push "Launching $0"
             Call LogLine
             Exec '"$0"'
