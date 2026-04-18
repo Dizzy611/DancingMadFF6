@@ -324,6 +324,37 @@ jobs:
 
           Pop-Location
 
+      - name: Generate Wine test guide
+        shell: pwsh
+        run: |
+          $guidePath = "$env:GITHUB_WORKSPACE/DancingMadInstaller-wine-test-guide.txt"
+          $lines = @(
+            "DancingMadInstaller Wine Validation Guide",
+            "",
+            "Context:",
+            "- This installer is built as x86_64 (PE32+).",
+            "- A 32-bit Wine prefix will fail with 'Bad EXE format'.",
+            "",
+            "Recommended test flow on Linux:",
+            "1) Create/use a 64-bit Wine prefix:",
+            "   export WINEPREFIX=\"$PWD/wine64prefix\"",
+            "   export WINEARCH=win64",
+            "   wineboot -u",
+            "",
+            "2) Run the installer EXE:",
+            "   wine ./DancingMadInstaller.exe",
+            "",
+            "3) If launch fails, inspect bootstrap log:",
+            "   wine cmd /c type %LOCALAPPDATA%\\DancingMadInstaller-bootstrap.log",
+            "",
+            "4) If running raw DanceMonkey.exe directly, ensure required Qt/runtime DLLs are present in the same folder.",
+            "",
+            "Note:",
+            "- CI runner path: Build Installer Windows (Qt5)",
+            "- Artifact names: DancingMadInstaller.exe and DancingMadInstaller-windows-extras.7z"
+          )
+          [System.IO.File]::WriteAllLines($guidePath, $lines)
+
       - name: Upload Windows artifacts
         uses: actions/upload-artifact@v5
         with:
@@ -331,6 +362,14 @@ jobs:
           path: |
             DancingMadInstaller.exe
             DancingMadInstaller-windows-extras.7z
+          if-no-files-found: error
+
+      - name: Upload Wine validation guide artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: DancingMadInstaller-wine-guide-${{ github.sha }}
+          path: |
+            DancingMadInstaller-wine-test-guide.txt
           if-no-files-found: error
 
       - name: Upload Windows artifacts to release
