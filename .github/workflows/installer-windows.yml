@@ -84,9 +84,9 @@ jobs:
         shell: msys2 {0}
         run: |
           if [[ -x /mingw64/bin/windeployqt-qt5.exe ]]; then
-            /mingw64/bin/windeployqt-qt5.exe --release --compiler-runtime "$GITHUB_WORKSPACE/dist/bin/DanceMonkey.exe"
+            /mingw64/bin/windeployqt-qt5.exe --release --compiler-runtime --no-angle "$GITHUB_WORKSPACE/dist/bin/DanceMonkey.exe"
           else
-            /mingw64/bin/windeployqt.exe --release --compiler-runtime "$GITHUB_WORKSPACE/dist/bin/DanceMonkey.exe"
+            /mingw64/bin/windeployqt.exe --release --compiler-runtime --no-angle "$GITHUB_WORKSPACE/dist/bin/DanceMonkey.exe"
           fi
 
       - name: Build 7z + SFX executable
