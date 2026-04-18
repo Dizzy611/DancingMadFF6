@@ -62,6 +62,13 @@ jobs:
         run: |
           choco install 7zip -y
 
+      - name: Fetch 7-Zip extra SFX module
+        shell: pwsh
+        run: |
+          $extraArchive = "$env:GITHUB_WORKSPACE/7z-extra.7z"
+          Invoke-WebRequest -Uri "https://www.7-zip.org/a/7z2409-extra.7z" -OutFile $extraArchive
+          & "C:\Program Files\7-Zip\7z.exe" x $extraArchive "-o$env:GITHUB_WORKSPACE/7z-extra" -y
+
       - name: Configure installer (Qt5)
         shell: msys2 {0}
         run: |
@@ -104,9 +111,10 @@ jobs:
             ';!@InstallEnd@!'
           )
           $sfxConfig = ($sfxLines -join "`r`n") + "`r`n"
-          [System.IO.File]::WriteAllText("$env:GITHUB_WORKSPACE/sfx-config.txt", $sfxConfig, [System.Text.Encoding]::UTF8)
+          $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+          [System.IO.File]::WriteAllText("$env:GITHUB_WORKSPACE/sfx-config.txt", $sfxConfig, $utf8NoBom)
 
-          cmd /c copy /b "C:\Program Files\7-Zip\7z.sfx"+"$env:GITHUB_WORKSPACE\sfx-config.txt"+"$env:GITHUB_WORKSPACE\DancingMadInstaller-windows-extras.7z" "$env:GITHUB_WORKSPACE\DancingMadInstaller.exe"
+          cmd /c copy /b "$env:GITHUB_WORKSPACE\7z-extra\7zSD.sfx"+"$env:GITHUB_WORKSPACE\sfx-config.txt"+"$env:GITHUB_WORKSPACE\DancingMadInstaller-windows-extras.7z" "$env:GITHUB_WORKSPACE\DancingMadInstaller.exe"
           Pop-Location
 
       - name: Upload Windows artifacts
