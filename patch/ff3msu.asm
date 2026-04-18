@@ -783,7 +783,7 @@ NMIHandle:
 FadeRoutine:
     sep #$20
     lda FadeFlag
-    beq _SetFadeFlag
+    beq _EndFadeRoutine
     cmp.b #$01
     beq _FadeZero
     cmp.b #$02
@@ -791,28 +791,6 @@ FadeRoutine:
     cmp.b #$03
     beq _FadeUp
     stz FadeFlag
-    rep #$30
-    rts
-
-_SetFadeFlag:
-    lda PlayVolume          ; target volume
-    cmp MSUCurrentVolume    ; current msu volume
-    beq _EndFadeRoutine
-    cmp.b #$00              ; target volume = 0? fade to zero
-    bne +
-    lda.b #$01
-    sta FadeFlag
-    bra _EndFadeRoutine
-+
-    lda PlayVolume          ; target volume
-    cmp MSUCurrentVolume    ; current msu volume
-    bcs +                   ; target >= current? fade up
-    lda.b #$02
-    sta FadeFlag            ; fade down
-    bra _EndFadeRoutine
-+
-    lda.b #$03
-    sta FadeFlag            ; fade up
 _EndFadeRoutine:
     rep #$30
     rts
