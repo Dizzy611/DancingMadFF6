@@ -54,6 +54,7 @@ jobs:
             mingw-w64-x86_64-cmake
             mingw-w64-x86_64-ninja
             mingw-w64-x86_64-qt5-base
+            mingw-w64-x86_64-qt5-tools
             mingw-w64-x86_64-qt5-multimedia
 
       - name: Install packaging tools
