@@ -1,0 +1,35 @@
+name: CodeBerg Issue Mirror
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '27 * * * *'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  mirror-codeberg-issues:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Mirror CodeBerg issues into GitHub
+        env:
+          GITHUB_REPO: ${{ vars.GITHUB_REPO }}
+          CODEBERG_REPO: ${{ vars.CODEBERG_REPO }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CODEBERG_TOKEN: ${{ secrets.CODEBERG_TOKEN }}
+          CODEBERG_SYNC_SINCE: ${{ vars.CODEBERG_SYNC_SINCE }}
+          CODEBERG_SYNC_MAX_IMPORT: ${{ vars.CODEBERG_SYNC_MAX_IMPORT }}
+          CODEBERG_SYNC_LABEL_PREFIX: ${{ vars.CODEBERG_SYNC_LABEL_PREFIX }}
+          CODEBERG_SYNC_CREATE_MISSING_LABELS: ${{ vars.CODEBERG_SYNC_CREATE_MISSING_LABELS }}
+        run: |
+          python3 utils/sync_codeberg_issues.py

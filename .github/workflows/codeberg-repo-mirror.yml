@@ -1,0 +1,40 @@
+name: CodeBerg Repo Mirror
+
+on:
+  push:
+  release:
+    types: [published, edited, released]
+  workflow_dispatch:
+  schedule:
+    - cron: '14 */6 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  mirror-codeberg-repo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch all refs
+        run: |
+          git fetch --prune origin '+refs/heads/*:refs/remotes/origin/*' '+refs/tags/*:refs/tags/*'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Mirror branches/tags/releases to CodeBerg
+        env:
+          GITHUB_REPO: ${{ vars.GITHUB_REPO }}
+          CODEBERG_REPO: ${{ vars.CODEBERG_REPO }}
+          CODEBERG_USERNAME: ${{ vars.CODEBERG_USERNAME }}
+          CODEBERG_TOKEN: ${{ secrets.CODEBERG_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 utils/sync_codeberg_repo.py
