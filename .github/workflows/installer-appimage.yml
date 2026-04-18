@@ -1,0 +1,113 @@
+name: Build Installer AppImage (Qt5)
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_recipe_tests:
+        description: "Run appimage-builder container tests (requires Docker on runner)"
+        required: false
+        type: boolean
+        default: false
+      publish_to_release:
+        description: "Also upload AppImage to a GitHub release"
+        required: false
+        type: boolean
+        default: false
+      release_tag:
+        description: "Release tag to publish to (required when publish_to_release is true)"
+        required: false
+        type: string
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  build-appimage:
+    name: Build Linux AppImage
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate release input
+        run: |
+          if [[ "${{ inputs.publish_to_release }}" == "true" && -z "${{ inputs.release_tag }}" ]]; then
+            echo "release_tag is required when publish_to_release is true" >&2
+            exit 1
+          fi
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            cmake \
+            ninja-build \
+            pkg-config \
+            python3-pip \
+            patchelf \
+            desktop-file-utils \
+            appstream \
+            squashfs-tools \
+            zsync \
+            fakeroot \
+            qtbase5-dev \
+            qttools5-dev \
+            qttools5-dev-tools \
+            qtmultimedia5-dev \
+            libgl1-mesa-dev \
+            libxkbcommon-x11-0
+
+      - name: Install appimage-builder
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install appimage-builder
+
+      - name: Configure installer (Qt5)
+        run: |
+          cmake -S installer -B build-installer \
+            -G Ninja \
+            -DQT_DEFAULT_MAJOR_VERSION=5 \
+            -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build installer
+        run: cmake --build build-installer --parallel
+
+      - name: Stage AppDir contents
+        run: |
+          mkdir -p installer/appimage/AppDir/usr/bin
+          cmake --install build-installer --prefix "${GITHUB_WORKSPACE}/installer/appimage/AppDir/usr"
+
+      - name: Build AppImage
+        working-directory: installer/appimage
+        run: |
+          if [[ "${{ inputs.run_recipe_tests }}" == "true" ]]; then
+            appimage-builder --recipe AppImageBuilder.yml
+          else
+            appimage-builder --recipe AppImageBuilder.yml --skip-test
+          fi
+
+      - name: Normalize artifact name
+        id: artifact
+        working-directory: installer/appimage
+        run: |
+          APPIMAGE_FILE="$(ls -1 *.AppImage | head -n 1)"
+          NEW_NAME="DancingMadInstaller-qt5-${GITHUB_SHA::7}.AppImage"
+          mv "$APPIMAGE_FILE" "$NEW_NAME"
+          echo "appimage_name=$NEW_NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Upload AppImage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.artifact.outputs.appimage_name }}
+          path: installer/appimage/${{ steps.artifact.outputs.appimage_name }}
+          if-no-files-found: error
+
+      - name: Upload AppImage to release
+        if: ${{ inputs.publish_to_release }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.release_tag }}
+          files: installer/appimage/${{ steps.artifact.outputs.appimage_name }}

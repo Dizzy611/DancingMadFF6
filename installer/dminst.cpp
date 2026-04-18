@@ -37,6 +37,8 @@ This patch is intended to be used only with a legally obtained copy of Final Fan
 #include <QMessageBox>
 #include <QDesktopServices>
 #include <QWindow>
+#include <QCoreApplication>
+#include <QDir>
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     #include <QSound>
 #else
@@ -53,6 +55,12 @@ This patch is intended to be used only with a legally obtained copy of Final Fan
 #include <iostream>
 #include <sstream>
 #include <cstring>
+
+namespace {
+QString bundledDataFilePath(const QString& fileName) {
+    return QDir(QCoreApplication::applicationDirPath()).filePath(fileName);
+}
+}
 
 // DEBUG
 #define LOG_TO_STDERR true
@@ -83,7 +91,7 @@ const char* ff3msuxml = R"(<?xml version="1.0" encoding="UTF-8"?><cartridge regi
 DMInst::DMInst(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::DMInst) {
-    setWindowIcon(QIcon("./kefka-16x16.png"));
+    setWindowIcon(QIcon(bundledDataFilePath("kefka-16x16.png")));
 
     this->mc = new MirrorChecker(this, this->logger);
     this->logger = new DMLogger("./install.log", LOG_TO_STDERR);
@@ -396,11 +404,11 @@ void DMInst::nextStage() {
         this->optpatchqueue.clear();
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         // Use QSound on Qt5 or earlier.
-        QSound::play("kefkalaugh.wav");
+        QSound::play(bundledDataFilePath("kefkalaugh.wav"));
 #else
         QSoundEffect* soundEffect = new QSoundEffect();
         // Use QSoundEffect for Qt6.
-        soundEffect->setSource(QUrl::fromLocalFile("kefkalaugh.wav"));
+        soundEffect->setSource(QUrl::fromLocalFile(bundledDataFilePath("kefkalaugh.wav")));
         soundEffect->setVolume(1.0f);
         soundEffect->play();
         QObject::connect(soundEffect, &QSoundEffect::playingChanged, [soundEffect]() {
@@ -425,7 +433,7 @@ void DMInst::downloadFinished() {
         QByteArray mirrorData = dmgr->downloadedData();
         if (mirrorData.isEmpty()) {
             // mirror data failed to download for one reason or another, response code will have been logged to stdout. use local mirror data if available, else fatal.
-            QFile mirrorDat(QString::fromStdString(data_path) + "/mirrors.dat");
+            QFile mirrorDat(bundledDataFilePath("mirrors.dat"));
             if(!mirrorDat.open(QIODevice::ReadOnly)) {
                 QMessageBox msgBox;
                 msgBox.setText("Unable to download list of mirrors or read local list of mirrors. Installation cannot continue.");
@@ -458,7 +466,7 @@ void DMInst::downloadFinished() {
         QByteArray xmlData = dmgr->downloadedData();
         if (xmlData.isEmpty()) {
             // xml data failed to download for one reason or another, response code will have been logged to stdout. use local mirror data if available, else fatal.
-            QFile songsXml(QString::fromStdString(data_path) + "/songs.xml");
+            QFile songsXml(bundledDataFilePath("songs.xml"));
             if(!songsXml.open(QIODevice::ReadOnly)) {
                 QMessageBox msgBox;
                 msgBox.setText("Unable to download list of songs and presets or read local copy. Installation cannot continue.");
@@ -538,7 +546,7 @@ void DMInst::downloadFinished() {
         QByteArray patchData = dmgr->downloadedData();
         if (patchData.isEmpty()) {
             // patch data failed to download for one reason or another. Try local copy (potentially out of date)
-            QFile patchFile(QString::fromStdString(data_path) + "/ff3msu.ips");
+            QFile patchFile(bundledDataFilePath("ff3msu.ips"));
             if(!patchFile.open(QIODevice::ReadOnly)) {
                 QMessageBox msgBox;
                 msgBox.setText("Unable to download main patch or find local copy. Installation cannot continue.");
