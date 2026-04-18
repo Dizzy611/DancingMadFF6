@@ -1,0 +1,109 @@
+name: Build Installer Windows (Qt5)
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish_to_release:
+        description: "Also upload installer artifacts to a GitHub release"
+        required: false
+        type: boolean
+        default: false
+      release_tag:
+        description: "Release tag to publish to (required when publish_to_release is true)"
+        required: false
+        type: string
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    name: Build Windows Installer
+    runs-on: windows-2022
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Validate release input
+        shell: pwsh
+        run: |
+          if ("${{ inputs.publish_to_release }}" -eq "true" -and [string]::IsNullOrWhiteSpace("${{ inputs.release_tag }}")) {
+            Write-Error "release_tag is required when publish_to_release is true"
+            exit 1
+          }
+
+      - name: Install Qt5 (MSVC)
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: 5.15.2
+          host: windows
+          target: desktop
+          arch: win64_msvc2019_64
+          modules: qtmultimedia
+          cache: true
+
+      - name: Install packaging tools
+        shell: pwsh
+        run: |
+          choco install ninja 7zip -y
+
+      - name: Configure installer (Qt5)
+        shell: pwsh
+        run: |
+          cmake -S installer -B build-installer `
+            -G Ninja `
+            -DQT_DEFAULT_MAJOR_VERSION=5 `
+            -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build installer
+        shell: pwsh
+        run: |
+          cmake --build build-installer --parallel
+
+      - name: Stage install tree
+        shell: pwsh
+        run: |
+          cmake --install build-installer --prefix "$env:GITHUB_WORKSPACE/dist"
+
+      - name: Deploy Qt runtime
+        shell: pwsh
+        run: |
+          Push-Location dist/bin
+          windeployqt --release --compiler-runtime DanceMonkey.exe
+          Pop-Location
+
+      - name: Build 7z + SFX executable
+        shell: pwsh
+        run: |
+          Push-Location dist/bin
+          7z a -t7z "$env:GITHUB_WORKSPACE/DancingMadInstaller-windows-extras.7z" "*"
+
+          @'
+;!@Install@!UTF-8!
+Title="Dancing Mad Installer"
+RunProgram="DanceMonkey.exe"
+;!@InstallEnd@!
+'@ | Set-Content "$env:GITHUB_WORKSPACE/sfx-config.txt" -NoNewline
+
+          cmd /c copy /b "C:\Program Files\7-Zip\7z.sfx"+"$env:GITHUB_WORKSPACE\sfx-config.txt"+"$env:GITHUB_WORKSPACE\DancingMadInstaller-windows-extras.7z" "$env:GITHUB_WORKSPACE\DancingMadInstaller.exe"
+          Pop-Location
+
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v5
+        with:
+          name: DancingMadInstaller-windows-${{ github.sha }}
+          path: |
+            DancingMadInstaller.exe
+            DancingMadInstaller-windows-extras.7z
+          if-no-files-found: error
+
+      - name: Upload Windows artifacts to release
+        if: ${{ inputs.publish_to_release }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.release_tag }}
+          files: |
+            DancingMadInstaller.exe
+            DancingMadInstaller-windows-extras.7z
