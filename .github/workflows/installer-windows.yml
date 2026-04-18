@@ -108,30 +108,44 @@ jobs:
           SilentInstall silent
           SetCompressor /SOLID lzma
 
-          Var LogHandle
+          Function LogLine
+            Exch $0
+            FileOpen $1 "$TEMP\DancingMadInstaller-bootstrap.log" a
+            FileWrite $1 "$0$\r$\n"
+            FileClose $1
+            Pop $0
+          FunctionEnd
 
           Function .onInit
-            FileOpen $LogHandle "$TEMP\DancingMadInstaller-bootstrap.log" w
-            FileWrite $LogHandle "Bootstrap start$\r$\n"
+            Delete "$TEMP\DancingMadInstaller-bootstrap.log"
+            Push "Bootstrap start"
+            Call LogLine
           FunctionEnd
 
           Section
+            Push "Section start"
+            Call LogLine
             SetOutPath "$INSTDIR"
+            Push "Extracting files to $INSTDIR"
+            Call LogLine
             File /r "${GITHUB_WORKSPACE}\dist\bin\*"
             IfFileExists "$INSTDIR\DanceMonkey.exe" +3 0
-              FileWrite $LogHandle "DanceMonkey.exe missing after extract$\r$\n"
+              Push "DanceMonkey.exe missing after extract"
+              Call LogLine
               MessageBox MB_ICONSTOP "Failed to launch installer: DanceMonkey.exe missing."
               Abort
 
-            FileWrite $LogHandle "Launching $INSTDIR\\DanceMonkey.exe$\r$\n"
-            ExecShell "open" "$INSTDIR\DanceMonkey.exe"
+            Push "Launching $INSTDIR\\DanceMonkey.exe"
+            Call LogLine
+            Exec '"$INSTDIR\DanceMonkey.exe"'
             IfErrors 0 +3
-              FileWrite $LogHandle "ExecShell failed$\r$\n"
+              Push "Exec failed"
+              Call LogLine
               MessageBox MB_ICONSTOP "Failed to launch installer executable."
               Abort
 
-            FileWrite $LogHandle "Launch requested successfully$\r$\n"
-            FileClose $LogHandle
+            Push "Launch requested successfully"
+            Call LogLine
           SectionEnd
           '@
           [System.IO.File]::WriteAllText($nsisScriptPath, $nsisScript)
