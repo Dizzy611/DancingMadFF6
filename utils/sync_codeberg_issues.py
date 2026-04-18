@@ -40,6 +40,18 @@ def env_to_bool(raw: Optional[str], default: bool = False) -> bool:
     return default
 
 
+def env_to_int(raw: Optional[str], default: int, var_name: str) -> int:
+    if raw is None:
+        return default
+    trimmed = raw.strip()
+    if not trimmed:
+        return default
+    try:
+        return int(trimmed)
+    except ValueError as exc:
+        raise ValueError(f"{var_name} must be an integer, got: {raw!r}") from exc
+
+
 def is_pull_request(issue: dict) -> bool:
     """Return True only when issue payload is actually a PR.
 
@@ -306,7 +318,7 @@ def main() -> int:
     parser.add_argument(
         "--max-import",
         type=int,
-        default=int(os.environ.get("CODEBERG_SYNC_MAX_IMPORT", "25")),
+        default=env_to_int(os.environ.get("CODEBERG_SYNC_MAX_IMPORT"), 25, "CODEBERG_SYNC_MAX_IMPORT"),
         help="Safety cap on number of issues to mirror in one run.",
     )
     parser.add_argument(
