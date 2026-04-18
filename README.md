@@ -123,4 +123,9 @@ The following are 7zip files with all the data needed (.pcm, .msu, and .ips/.bps
 
 * Due to personal issues outside my control, I may take unscheduled hiatuses from this project for months at a time. Please continue to report issues during this time.
 
+### Responsible Disclosure (AI Assistance) ###
+
+* As of April 2026, this project has begun using GitHub Copilot primarily for debugging assistance, research support, and build/release automation work.
+* AI/LLM-generated changes to functional patch and installer code have been minimal; core functional behavior remains primarily authored and reviewed by the project maintainer.
+
 
