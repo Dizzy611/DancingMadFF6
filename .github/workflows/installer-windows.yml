@@ -61,35 +61,7 @@ jobs:
         shell: pwsh
         run: |
           choco install 7zip -y
-
-      - name: Fetch 7-Zip extra SFX module
-        shell: pwsh
-        run: |
-          $extraArchive = "$env:GITHUB_WORKSPACE/7z-extra.7z"
-
-          $candidateUrls = @(
-            "https://www.7-zip.org/a/7z2501-extra.7z",
-            "https://www.7-zip.org/a/7z2301-extra.7z"
-          )
-
-          $downloaded = $false
-          foreach ($url in $candidateUrls) {
-            try {
-              Invoke-WebRequest -Uri $url -OutFile $extraArchive
-              $downloaded = $true
-              Write-Host "Downloaded 7-Zip extra package from $url"
-              break
-            } catch {
-              Write-Warning "Failed to download $url"
-            }
-          }
-
-          if (-not $downloaded) {
-            Write-Error "Unable to download a compatible 7-Zip extra package from any candidate URL"
-            exit 1
-          }
-
-          & "C:\Program Files\7-Zip\7z.exe" x $extraArchive "-o$env:GITHUB_WORKSPACE/7z-extra" -y
+          choco install nsis -y
 
       - name: Configure installer (Qt5)
         shell: msys2 {0}
@@ -118,46 +90,45 @@ jobs:
             /mingw64/bin/windeployqt.exe --release --compiler-runtime --no-angle "$GITHUB_WORKSPACE/dist/bin/DanceMonkey.exe"
           fi
 
-      - name: Build 7z + SFX executable
+      - name: Build archive + bootstrap executable
         shell: pwsh
         run: |
           Push-Location dist/bin
           7z a -t7z "$env:GITHUB_WORKSPACE/DancingMadInstaller-windows-extras.7z" "*"
 
-          $sfxLines = @(
-            ';!@Install@!UTF-8!',
-            'GUIMode="2"',
-            'InstallPath="%TEMP%\\DancingMadInstaller"',
-            'Title="Dancing Mad Installer"',
-            'RunProgram="DanceMonkey.exe"',
-            ';!@InstallEnd@!'
-          )
-          $sfxConfig = ($sfxLines -join "`r`n") + "`r`n"
-          $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
-          [System.IO.File]::WriteAllText("$env:GITHUB_WORKSPACE/sfx-config.txt", $sfxConfig, $utf8NoBom)
+          $nsisScriptPath = "$env:GITHUB_WORKSPACE/bootstrap-installer.nsi"
+          $nsisScript = @'
+          Unicode true
+          Name "Dancing Mad Installer"
+          OutFile "${GITHUB_WORKSPACE}\DancingMadInstaller.exe"
+          RequestExecutionLevel user
+          InstallDir "$TEMP\DancingMadInstaller"
+          AutoCloseWindow true
+          ShowInstDetails nevershow
+          SilentInstall silent
+          SetCompressor /SOLID lzma
 
-          $sfxStub = Get-ChildItem -Path "$env:GITHUB_WORKSPACE/7z-extra" -Filter "7zSD.sfx" -Recurse | Select-Object -First 1
-          if (-not $sfxStub) {
-            Write-Error "Unable to find 7zSD.sfx in extracted 7-zip extra package"
+          Section
+            SetOutPath "$INSTDIR"
+            File /r "${GITHUB_WORKSPACE}\dist\bin\*"
+            Exec '"$INSTDIR\DanceMonkey.exe"'
+          SectionEnd
+          '@
+          [System.IO.File]::WriteAllText($nsisScriptPath, $nsisScript)
+
+          $makensis = "${env:ProgramFiles(x86)}\NSIS\makensis.exe"
+          if (-not (Test-Path $makensis)) {
+            $makensis = "$env:ProgramFiles\NSIS\makensis.exe"
+          }
+          if (-not (Test-Path $makensis)) {
+            Write-Error "Unable to find makensis.exe after installing NSIS"
             exit 1
           }
 
-          $outputExe = "$env:GITHUB_WORKSPACE/DancingMadInstaller.exe"
-          $archivePath = "$env:GITHUB_WORKSPACE/DancingMadInstaller-windows-extras.7z"
-          $configPath = "$env:GITHUB_WORKSPACE/sfx-config.txt"
-
-          $outStream = [System.IO.File]::Open($outputExe, [System.IO.FileMode]::Create, [System.IO.FileAccess]::Write)
-          try {
-            foreach ($inputPath in @($sfxStub.FullName, $configPath, $archivePath)) {
-              $inStream = [System.IO.File]::OpenRead($inputPath)
-              try {
-                $inStream.CopyTo($outStream)
-              } finally {
-                $inStream.Dispose()
-              }
-            }
-          } finally {
-            $outStream.Dispose()
+          & $makensis /V2 /DGITHUB_WORKSPACE="$env:GITHUB_WORKSPACE" $nsisScriptPath
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "NSIS bootstrap build failed"
+            exit 1
           }
 
           Pop-Location
