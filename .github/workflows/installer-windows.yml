@@ -180,12 +180,22 @@ jobs:
             found_exe:
             Push "Launching $0"
             Call LogLine
+            ClearErrors
             Exec '"$0"'
-            IfErrors 0 +3
-              Push "Exec failed"
-              Call LogLine
-              MessageBox MB_ICONSTOP "Failed to launch installer executable."
-              Abort
+            IfErrors 0 launch_ok
+
+            Push "Exec failed; trying ExecShell fallback"
+            Call LogLine
+            ClearErrors
+            ExecShell "open" "$0"
+            IfErrors 0 launch_ok
+
+            Push "ExecShell fallback also failed"
+            Call LogLine
+            MessageBox MB_ICONSTOP "Failed to launch installer executable."
+            Abort
+
+            launch_ok:
 
             Push "Launch requested successfully"
             Call LogLine
