@@ -109,7 +109,7 @@ jobs:
           Name "Dancing Mad Installer"
           OutFile "${GITHUB_WORKSPACE}\DancingMadInstaller.exe"
           RequestExecutionLevel user
-          InstallDir "$TEMP\DancingMadInstaller"
+          InstallDir "$LocalAppData\DancingMadInstaller"
           AutoCloseWindow true
           ShowInstDetails nevershow
           SilentInstall silent
@@ -192,7 +192,7 @@ jobs:
 
             Push "ExecShell fallback also failed"
             Call LogLine
-            MessageBox MB_ICONSTOP "Failed to launch installer executable."
+            MessageBox MB_ICONSTOP "Failed to launch installer executable from $INSTDIR. Check security policy/noexec restrictions for that location."
             Abort
 
             launch_ok:
