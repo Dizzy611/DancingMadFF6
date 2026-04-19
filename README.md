@@ -126,11 +126,9 @@ The following are 7zip files with all the data needed (.pcm, .msu, and .ips/.bps
 ### Responsible Disclosure (AI Assistance) ###
 
 * As of April 2026, this project has begun using GitHub Copilot primarily for debugging assistance and research support.
-* The following areas include AI/LLM-generated code contributions:
-* Experimental FMV support based on ikari's reference implementation.
-* General low-impact bug fixes.
-* GitHub Actions automation.
-* Commit-message convention: when a commit contains directly AI-generated code, prefix the subject with `[AI Assisted] `.
-* Do not use `[AI Assisted] ` for debugging/research-only assistance where no AI-generated code was merged.
-
-
+* The following areas specifically include AI/LLM-generated code contributions:
+  * Experimental FMV support based on ikari's reference implementation. 
+  * General low-impact bug fixes.
+  * GitHub Actions automation.
+  * Other commits tagged with `[AI Assisted]`.
+* Commit-message convention: when a commit contains directly AI-generated code, prefix the subject with `[AI Assisted]`
