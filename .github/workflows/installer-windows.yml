@@ -1,0 +1,449 @@
+name: Build Installer Windows (Qt5)
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish_to_release:
+        description: "Also upload installer artifacts to a GitHub release"
+        required: false
+        type: boolean
+        default: false
+      release_tag:
+        description: "Release tag to publish to (required when publish_to_release is true)"
+        required: false
+        type: string
+        default: ""
+  workflow_call:
+    inputs:
+      publish_to_release:
+        required: false
+        type: boolean
+        default: false
+      release_tag:
+        required: false
+        type: string
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    name: Build Windows Installer
+    runs-on: windows-2022
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Validate release input
+        shell: pwsh
+        run: |
+          if ("${{ inputs.publish_to_release }}" -eq "true" -and [string]::IsNullOrWhiteSpace("${{ inputs.release_tag }}")) {
+            Write-Error "release_tag is required when publish_to_release is true"
+            exit 1
+          }
+
+      - name: Set up MSYS2 (Qt5 toolchain)
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-ninja
+            mingw-w64-x86_64-qt5-base
+            mingw-w64-x86_64-qt5-tools
+            mingw-w64-x86_64-qt5-multimedia
+
+      - name: Install packaging tools
+        shell: pwsh
+        run: |
+          choco install 7zip -y
+          choco install nsis -y
+
+      - name: Configure installer (Qt5)
+        shell: msys2 {0}
+        run: |
+          cmake -S installer -B build-installer \
+            -G Ninja \
+            -DQT_DEFAULT_MAJOR_VERSION=5 \
+            -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build installer
+        shell: msys2 {0}
+        run: |
+          cmake --build build-installer --parallel
+
+      - name: Stage install tree
+        shell: msys2 {0}
+        run: |
+          cmake --install build-installer --prefix "$GITHUB_WORKSPACE/dist"
+
+      - name: Deploy Qt runtime
+        shell: msys2 {0}
+        run: |
+          if [[ -x /mingw64/bin/windeployqt-qt5.exe ]]; then
+            /mingw64/bin/windeployqt-qt5.exe --release --compiler-runtime --no-angle "$GITHUB_WORKSPACE/dist/bin/DanceMonkey.exe"
+          else
+            /mingw64/bin/windeployqt.exe --release --compiler-runtime --no-angle "$GITHUB_WORKSPACE/dist/bin/DanceMonkey.exe"
+          fi
+
+      - name: Copy transitive MinGW runtime DLLs
+        shell: msys2 {0}
+        run: |
+          set -euo pipefail
+
+          dist_dir="$GITHUB_WORKSPACE/dist/bin"
+          declare -A seen
+          queue=("$dist_dir/DanceMonkey.exe")
+
+          # Recursively resolve and copy dependencies available in /mingw64/bin.
+          while [[ ${#queue[@]} -gt 0 ]]; do
+            current="${queue[0]}"
+            queue=("${queue[@]:1}")
+
+            [[ -f "$current" ]] || continue
+
+            while IFS= read -r dll; do
+              [[ -n "$dll" ]] || continue
+              key="$(echo "$dll" | tr '[:upper:]' '[:lower:]')"
+              [[ -n "${seen[$key]+x}" ]] && continue
+              seen[$key]=1
+
+              src="/mingw64/bin/$dll"
+              dst="$dist_dir/$dll"
+
+              if [[ -f "$src" ]]; then
+                if [[ ! -f "$dst" ]]; then
+                  cp "$src" "$dst"
+                  echo "Copied runtime DLL: $dll"
+                fi
+                queue+=("$dst")
+              fi
+            done < <(x86_64-w64-mingw32-objdump -p "$current" | sed -n 's/^[[:space:]]*DLL Name: //p')
+          done
+
+          # Sanity checks for known problem DLL chain under Wine.
+          required_exact=(
+            "Qt5Core.dll"
+            "Qt5Gui.dll"
+            "Qt5Widgets.dll"
+            "Qt5Network.dll"
+            "Qt5Multimedia.dll"
+            "Qt5Xml.dll"
+            "zlib1.dll"
+            "libdouble-conversion.dll"
+            "libpcre2-16-0.dll"
+            "libzstd.dll"
+            "libharfbuzz-0.dll"
+            "libmd4c.dll"
+            "libpng16-16.dll"
+          )
+
+          for dll in "${required_exact[@]}"; do
+            if [[ ! -f "$dist_dir/$dll" ]]; then
+              echo "Missing required runtime DLL after dependency copy: $dll"
+              exit 1
+            fi
+          done
+
+          shopt -s nullglob
+          icu_candidates=("$dist_dir"/libicuin*.dll "$dist_dir"/libicuuc*.dll)
+          shopt -u nullglob
+          if [[ ${#icu_candidates[@]} -eq 0 ]]; then
+            echo "Missing ICU runtime DLLs (expected libicuin*.dll and libicuuc*.dll)"
+            exit 1
+          fi
+
+      - name: Validate staged Windows executable
+        shell: pwsh
+        run: |
+          function Test-PeExecutable {
+            param([string]$Path)
+
+            if (-not (Test-Path $Path)) {
+              return $false
+            }
+
+            $bytes = [System.IO.File]::ReadAllBytes($Path)
+            if ($bytes.Length -lt 512) {
+              return $false
+            }
+
+            if ($bytes[0] -ne 0x4D -or $bytes[1] -ne 0x5A) {
+              return $false
+            }
+
+            $peOffset = [BitConverter]::ToInt32($bytes, 0x3C)
+            if ($peOffset -lt 0 -or ($peOffset + 6) -ge $bytes.Length) {
+              return $false
+            }
+
+            if ($bytes[$peOffset] -ne 0x50 -or $bytes[$peOffset + 1] -ne 0x45 -or $bytes[$peOffset + 2] -ne 0x00 -or $bytes[$peOffset + 3] -ne 0x00) {
+              return $false
+            }
+
+            $machine = [BitConverter]::ToUInt16($bytes, $peOffset + 4)
+            if ($machine -ne 0x8664 -and $machine -ne 0x014c) {
+              return $false
+            }
+
+            return $true
+          }
+
+          $stagedExe = "$env:GITHUB_WORKSPACE/dist/bin/DanceMonkey.exe"
+          $builtExeCandidates = @(
+            "$env:GITHUB_WORKSPACE/build-installer/DanceMonkey.exe",
+            "$env:GITHUB_WORKSPACE/build-installer/Release/DanceMonkey.exe"
+          )
+
+          $stagedValid = Test-PeExecutable -Path $stagedExe
+          Write-Host "Staged exe valid PE: $stagedValid"
+
+          if (-not $stagedValid) {
+            $replacement = $null
+            foreach ($candidate in $builtExeCandidates) {
+              if (Test-PeExecutable -Path $candidate) {
+                $replacement = $candidate
+                break
+              }
+            }
+
+            if (-not $replacement) {
+              Write-Error "Staged executable is invalid and no valid build output executable was found."
+              exit 1
+            }
+
+            Write-Warning "Replacing invalid staged executable with build output: $replacement"
+            Copy-Item -Path $replacement -Destination $stagedExe -Force
+          }
+
+          $stagedInfo = Get-Item $stagedExe
+          $stagedHash = (Get-FileHash -Algorithm SHA256 $stagedExe).Hash
+          Write-Host "Final staged executable: $($stagedInfo.FullName)"
+          Write-Host "Size: $($stagedInfo.Length) bytes"
+          Write-Host "SHA256: $stagedHash"
+
+      - name: Validate staged executable format
+        shell: pwsh
+        run: |
+          $stagedExe = "$env:GITHUB_WORKSPACE/dist/bin/DanceMonkey.exe"
+          if (-not (Test-Path $stagedExe)) {
+            Write-Error "Staged executable not found: $stagedExe"
+            exit 1
+          }
+
+          $bytes = [System.IO.File]::ReadAllBytes($stagedExe)
+          if ($bytes.Length -lt 2 -or $bytes[0] -ne 0x4D -or $bytes[1] -ne 0x5A) {
+            Write-Warning "dist/bin/DanceMonkey.exe is not a valid PE (MZ) binary. Attempting repair from build output."
+            $candidates = Get-ChildItem "$env:GITHUB_WORKSPACE/build-installer" -Recurse -File |
+              Where-Object { $_.Name -in @("DanceMonkey.exe", "DancingMadInstaller.exe") }
+
+            if (-not $candidates) {
+              Write-Error "No candidate built executable found under build-installer"
+              exit 1
+            }
+
+            # Use the largest candidate to avoid selecting tiny placeholders.
+            $sourceExe = $candidates | Sort-Object Length -Descending | Select-Object -First 1
+            Write-Host "Repair source selected: $($sourceExe.FullName) ($($sourceExe.Length) bytes)"
+            Copy-Item $sourceExe.FullName $stagedExe -Force
+
+            $bytes = [System.IO.File]::ReadAllBytes($stagedExe)
+            if ($bytes.Length -lt 2 -or $bytes[0] -ne 0x4D -or $bytes[1] -ne 0x5A) {
+              Write-Error "Repair failed: staged executable is still not a valid MZ PE binary"
+              exit 1
+            }
+          }
+
+          $size = (Get-Item $stagedExe).Length
+          Write-Host "Validated PE executable: $stagedExe ($size bytes)"
+
+      - name: Build archive + bootstrap executable
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "$env:GITHUB_WORKSPACE/dist/bin/DanceMonkey.exe")) {
+            Write-Error "Expected executable missing before packaging: $env:GITHUB_WORKSPACE/dist/bin/DanceMonkey.exe"
+            Write-Host "Top-level dist/bin contents:"
+            Get-ChildItem "$env:GITHUB_WORKSPACE/dist/bin" -Force | ForEach-Object { Write-Host "  - $($_.Name)" }
+            exit 1
+          }
+
+          Push-Location dist/bin
+          7z a -t7z "$env:GITHUB_WORKSPACE/DancingMadInstaller-windows-extras.7z" "*"
+
+          $nsisScriptPath = "$env:GITHUB_WORKSPACE/bootstrap-installer.nsi"
+          $nsisScript = @'
+          Unicode true
+          Name "Dancing Mad Installer"
+          OutFile "${GITHUB_WORKSPACE}\DancingMadInstaller.exe"
+          RequestExecutionLevel user
+          InstallDir "$LocalAppData\DancingMadInstaller"
+          AutoCloseWindow true
+          ShowInstDetails nevershow
+          SilentInstall silent
+          SetCompressor /SOLID lzma
+
+          Function LogLine
+            Exch $0
+            FileOpen $1 "$TEMP\DancingMadInstaller-bootstrap.log" a
+            FileWrite $1 "$0$\r$\n"
+            FileClose $1
+            Pop $0
+          FunctionEnd
+
+          Function ChooseLaunchPath
+            StrCpy $0 "$INSTDIR\DanceMonkey.exe"
+            IfFileExists "$0" 0 +3
+              Push $0
+              Return
+
+            StrCpy $0 "$INSTDIR\bin\DanceMonkey.exe"
+            IfFileExists "$0" 0 +3
+              Push $0
+              Return
+
+            StrCpy $0 "$INSTDIR\dist\bin\DanceMonkey.exe"
+            IfFileExists "$0" 0 +3
+              Push $0
+              Return
+
+            Push ""
+          FunctionEnd
+
+          Function .onInit
+            Delete "$TEMP\DancingMadInstaller-bootstrap.log"
+            Push "Bootstrap start"
+            Call LogLine
+          FunctionEnd
+
+          Section
+            Push "Section start"
+            Call LogLine
+            SetOutPath "$INSTDIR"
+            Push "Extracting files to $INSTDIR"
+            Call LogLine
+            File /r "${GITHUB_WORKSPACE}\dist\bin\*"
+
+            Call ChooseLaunchPath
+            Pop $0
+            StrCmp $0 "" missing_exe found_exe
+
+            missing_exe:
+              Push "DanceMonkey.exe missing after extract; top-level listing follows"
+              Call LogLine
+              FindFirst $1 $2 "$INSTDIR\*"
+              Push "Top-level in $INSTDIR:"
+              Call LogLine
+              loop:
+              StrCmp $2 "" done
+                Push "  - $2"
+                Call LogLine
+                FindNext $1 $2
+                Goto loop
+              done:
+              FindClose $1
+              MessageBox MB_ICONSTOP "Failed to launch installer: DanceMonkey.exe missing."
+              Abort
+
+            found_exe:
+            Push "Launching $0"
+            Call LogLine
+            ClearErrors
+            Exec '"$0"'
+            IfErrors 0 launch_ok
+
+            Push "Exec failed; trying ExecShell fallback"
+            Call LogLine
+            ClearErrors
+            ExecShell "open" "$0"
+            IfErrors 0 launch_ok
+
+            Push "ExecShell fallback also failed"
+            Call LogLine
+            MessageBox MB_ICONSTOP "Failed to launch installer executable from $INSTDIR. Check security policy/noexec restrictions for that location."
+            Abort
+
+            launch_ok:
+
+            Push "Launch requested successfully"
+            Call LogLine
+          SectionEnd
+          '@
+          [System.IO.File]::WriteAllText($nsisScriptPath, $nsisScript)
+
+          $makensis = "${env:ProgramFiles(x86)}\NSIS\makensis.exe"
+          if (-not (Test-Path $makensis)) {
+            $makensis = "$env:ProgramFiles\NSIS\makensis.exe"
+          }
+          if (-not (Test-Path $makensis)) {
+            Write-Error "Unable to find makensis.exe after installing NSIS"
+            exit 1
+          }
+
+          & $makensis /V2 /DGITHUB_WORKSPACE="$env:GITHUB_WORKSPACE" $nsisScriptPath
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "NSIS bootstrap build failed"
+            exit 1
+          }
+
+          Pop-Location
+
+      - name: Generate Wine test guide
+        shell: pwsh
+        run: |
+          $guidePath = "$env:GITHUB_WORKSPACE/DancingMadInstaller-wine-test-guide.txt"
+          $lines = @(
+            "DancingMadInstaller Wine Validation Guide",
+            "",
+            "Context:",
+            "- This installer is built as x86_64 (PE32+).",
+            "- A 32-bit Wine prefix will fail with 'Bad EXE format'.",
+            "",
+            "Recommended test flow on Linux:",
+            "1) Create/use a 64-bit Wine prefix:",
+            '   export WINEPREFIX="$PWD/wine64prefix"',
+            "   export WINEARCH=win64",
+            "   wineboot -u",
+            "",
+            "2) Run the installer EXE:",
+            "   wine ./DancingMadInstaller.exe",
+            "",
+            "3) If launch fails, inspect bootstrap log:",
+            "   wine cmd /c type %LOCALAPPDATA%\\DancingMadInstaller-bootstrap.log",
+            "",
+            "4) If running raw DanceMonkey.exe directly, ensure required Qt/runtime DLLs are present in the same folder.",
+            "",
+            "Note:",
+            "- CI runner path: Build Installer Windows (Qt5)",
+            "- Artifact names: DancingMadInstaller.exe and DancingMadInstaller-windows-extras.7z"
+          )
+          [System.IO.File]::WriteAllLines($guidePath, $lines)
+
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v5
+        with:
+          name: DancingMadInstaller-windows-${{ github.sha }}
+          path: |
+            DancingMadInstaller.exe
+            DancingMadInstaller-windows-extras.7z
+          if-no-files-found: error
+
+      - name: Upload Wine validation guide artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: DancingMadInstaller-wine-guide-${{ github.sha }}
+          path: |
+            DancingMadInstaller-wine-test-guide.txt
+          if-no-files-found: error
+
+      - name: Upload Windows artifacts to release
+        if: ${{ inputs.publish_to_release }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.release_tag }}
+          files: |
+            DancingMadInstaller.exe
+            DancingMadInstaller-windows-extras.7z
