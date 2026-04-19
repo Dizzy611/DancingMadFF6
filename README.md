@@ -130,5 +130,7 @@ The following are 7zip files with all the data needed (.pcm, .msu, and .ips/.bps
 * Experimental FMV support based on ikari's reference implementation.
 * General low-impact bug fixes.
 * GitHub Actions automation.
+* Commit-message convention: when a commit contains directly AI-generated code, prefix the subject with `[AI Assisted] `.
+* Do not use `[AI Assisted] ` for debugging/research-only assistance where no AI-generated code was merged.
 
 
