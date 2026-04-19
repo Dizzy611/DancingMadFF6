@@ -71,6 +71,24 @@ jobs:
           path: release-assets
           merge-multiple: true
 
+      - name: Normalize AppImage filename
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          appimages=(release-assets/*.AppImage)
+
+          if [[ ${#appimages[@]} -lt 1 ]]; then
+            echo "No AppImage artifact found" >&2
+            exit 1
+          fi
+
+          src_appimage="${appimages[0]}"
+          dst_appimage="release-assets/DancingMadInstaller-qt5.AppImage"
+
+          if [[ "$src_appimage" != "$dst_appimage" ]]; then
+            mv -f "$src_appimage" "$dst_appimage"
+          fi
+
       - name: Verify expected files
         run: |
           set -e
@@ -79,7 +97,6 @@ jobs:
           shopt -s nullglob
           appimages=(release-assets/*.AppImage)
           windows_exe=(release-assets/DancingMadInstaller.exe)
-          windows_7z=(release-assets/DancingMadInstaller-windows-extras.7z)
           mac_universal=(release-assets/DancingMadInstaller-macos-universal.dmg)
 
           if [[ ${#appimages[@]} -lt 1 ]]; then
@@ -88,10 +105,6 @@ jobs:
           fi
           if [[ ${#windows_exe[@]} -ne 1 ]]; then
             echo "Windows SFX executable missing" >&2
-            exit 1
-          fi
-          if [[ ${#windows_7z[@]} -ne 1 ]]; then
-            echo "Windows 7z package missing" >&2
             exit 1
           fi
           if [[ ${#mac_universal[@]} -ne 1 ]]; then
@@ -106,5 +119,4 @@ jobs:
           files: |
             release-assets/*.AppImage
             release-assets/DancingMadInstaller.exe
-            release-assets/DancingMadInstaller-windows-extras.7z
             release-assets/DancingMadInstaller-macos-universal.dmg
