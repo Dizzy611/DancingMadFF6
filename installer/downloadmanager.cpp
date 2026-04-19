@@ -65,6 +65,14 @@ void DownloadManager::fileDownloaded(QNetworkReply* pReply) {
         } else {
             m_DownloadedData = pReply->readAll();
         }
+    } else {
+        // No HTTP status at all — network-level failure (DNS, TLS, timeout, etc.)
+        if (this->logger != nullptr) {
+            this->logger->doLog("DEBUG: Network error (no HTTP status): code="
+                + std::to_string(static_cast<int>(pReply->error()))
+                + " " + pReply->errorString().toStdString());
+        }
+        m_DownloadedData = "";
     }
     pReply->deleteLater();
     emit downloaded();

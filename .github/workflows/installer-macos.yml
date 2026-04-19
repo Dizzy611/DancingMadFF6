@@ -1,0 +1,209 @@
+name: Build Installer macOS (Qt6)
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish_to_release:
+        description: "Also upload DMG artifacts to a GitHub release"
+        required: false
+        type: boolean
+        default: false
+      release_tag:
+        description: "Release tag to publish to (required when publish_to_release is true)"
+        required: false
+        type: string
+        default: ""
+  workflow_call:
+    inputs:
+      publish_to_release:
+        required: false
+        type: boolean
+        default: false
+      release_tag:
+        required: false
+        type: string
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  build-macos:
+    name: Build macOS ${{ matrix.arch }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-13
+            arch: x86_64
+            qt_arch: clang_64
+          - os: macos-14
+            arch: arm64
+            qt_arch: clang_arm64
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Validate release input
+        run: |
+          if [[ "${{ inputs.publish_to_release }}" == "true" && -z "${{ inputs.release_tag }}" ]]; then
+            echo "release_tag is required when publish_to_release is true" >&2
+            exit 1
+          fi
+
+      - name: Install Qt6
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: 6.7.3
+          host: mac
+          target: desktop
+          arch: ${{ matrix.qt_arch }}
+          modules: qtmultimedia
+          cache: true
+
+      - name: Install build tools
+        run: |
+          brew update
+          brew install ninja
+
+      - name: Configure installer (Qt6)
+        run: |
+          cmake -S installer -B build-installer \
+            -G Ninja \
+            -DQT_DEFAULT_MAJOR_VERSION=6 \
+            -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build installer
+        run: |
+          cmake --build build-installer --parallel
+
+      - name: Stage install tree
+        run: |
+          cmake --install build-installer --prefix "$GITHUB_WORKSPACE/dist"
+
+      - name: Embed offline extras inside .app
+        run: |
+          APP_PATH="$GITHUB_WORKSPACE/dist/DanceMonkey.app"
+          APP_BIN_PATH="$APP_PATH/Contents/MacOS"
+
+          cp "$GITHUB_WORKSPACE/installer/kefka-16x16.png" "$APP_BIN_PATH/"
+          cp "$GITHUB_WORKSPACE/installer/kefka.ico" "$APP_BIN_PATH/"
+          cp "$GITHUB_WORKSPACE/installer/kefkalaugh.wav" "$APP_BIN_PATH/"
+          cp "$GITHUB_WORKSPACE/installer/mirrors.dat" "$APP_BIN_PATH/"
+          cp "$GITHUB_WORKSPACE/installer/songs.xml" "$APP_BIN_PATH/"
+          cp "$GITHUB_WORKSPACE/patch/ff3msu.ips" "$APP_BIN_PATH/"
+
+      - name: macdeployqt + DMG
+        run: |
+          APP_PATH="$GITHUB_WORKSPACE/dist/DanceMonkey.app"
+          macdeployqt "$APP_PATH" -dmg
+          mv "$GITHUB_WORKSPACE/dist/DanceMonkey.dmg" "$GITHUB_WORKSPACE/DancingMadInstaller-macos-${{ matrix.arch }}.dmg"
+
+      - name: Archive .app bundle
+        run: |
+          ditto -c -k --sequesterRsrc --keepParent "$GITHUB_WORKSPACE/dist/DanceMonkey.app" "$GITHUB_WORKSPACE/DanceMonkey-macos-${{ matrix.arch }}.zip"
+
+      - name: Upload macOS app artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: DanceMonkey-app-macos-${{ matrix.arch }}
+          path: DanceMonkey-macos-${{ matrix.arch }}.zip
+          if-no-files-found: error
+
+      - name: Upload macOS artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: DancingMadInstaller-macos-${{ matrix.arch }}
+          path: DancingMadInstaller-macos-${{ matrix.arch }}.dmg
+          if-no-files-found: error
+
+      - name: Upload macOS artifact to release
+        if: ${{ inputs.publish_to_release }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.release_tag }}
+          files: DancingMadInstaller-macos-${{ matrix.arch }}.dmg
+
+  build-macos-universal:
+    name: Build macOS universal
+    runs-on: macos-14
+    needs: build-macos
+
+    steps:
+      - name: Validate release input
+        run: |
+          if [[ "${{ inputs.publish_to_release }}" == "true" && -z "${{ inputs.release_tag }}" ]]; then
+            echo "release_tag is required when publish_to_release is true" >&2
+            exit 1
+          fi
+
+      - name: Download x86_64 app artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: DanceMonkey-app-macos-x86_64
+          path: /tmp/macos-apps/x86_64
+
+      - name: Download arm64 app artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: DanceMonkey-app-macos-arm64
+          path: /tmp/macos-apps/arm64
+
+      - name: Create universal .app bundle
+        run: |
+          set -e
+          mkdir -p "$GITHUB_WORKSPACE/dist"
+          ditto -x -k /tmp/macos-apps/x86_64/DanceMonkey-macos-x86_64.zip /tmp/macos-apps
+          ditto -x -k /tmp/macos-apps/arm64/DanceMonkey-macos-arm64.zip /tmp/macos-apps
+
+          X86_APP="/tmp/macos-apps/DanceMonkey.app"
+          ARM_APP="/tmp/macos-apps/DanceMonkey.app"
+
+          # Re-expand to separate locations to avoid collisions.
+          rm -rf /tmp/macos-apps/x86_app /tmp/macos-apps/arm_app
+          mkdir -p /tmp/macos-apps/x86_app /tmp/macos-apps/arm_app
+          ditto -x -k /tmp/macos-apps/x86_64/DanceMonkey-macos-x86_64.zip /tmp/macos-apps/x86_app
+          ditto -x -k /tmp/macos-apps/arm64/DanceMonkey-macos-arm64.zip /tmp/macos-apps/arm_app
+
+          X86_APP="/tmp/macos-apps/x86_app/DanceMonkey.app"
+          ARM_APP="/tmp/macos-apps/arm_app/DanceMonkey.app"
+          UNI_APP="$GITHUB_WORKSPACE/dist/DanceMonkey.app"
+
+          rm -rf "$UNI_APP"
+          cp -R "$X86_APP" "$UNI_APP"
+
+          # Merge Mach-O binaries where both slices exist.
+          while IFS= read -r -d '' path; do
+            relpath="${path#./}"
+            xfile="$X86_APP/$relpath"
+            afile="$ARM_APP/$relpath"
+            ufile="$UNI_APP/$relpath"
+
+            if [[ -f "$afile" && -f "$xfile" ]]; then
+              if file "$xfile" | grep -q "Mach-O"; then
+                lipo -create -output "$ufile" "$xfile" "$afile"
+              fi
+            fi
+          done < <(cd "$X86_APP" && find . -type f -print0)
+
+      - name: Build universal DMG
+        run: |
+          APP_PATH="$GITHUB_WORKSPACE/dist/DanceMonkey.app"
+          macdeployqt "$APP_PATH" -dmg
+          mv "$GITHUB_WORKSPACE/dist/DanceMonkey.dmg" "$GITHUB_WORKSPACE/DancingMadInstaller-macos-universal.dmg"
+
+      - name: Upload universal macOS artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: DancingMadInstaller-macos-universal
+          path: DancingMadInstaller-macos-universal.dmg
+          if-no-files-found: error
+
+      - name: Upload universal macOS artifact to release
+        if: ${{ inputs.publish_to_release }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.release_tag }}
+          files: DancingMadInstaller-macos-universal.dmg

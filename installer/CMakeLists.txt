@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.5)
 
 project(DancingMadInstaller VERSION 0.1 LANGUAGES CXX C)
 
+option(DMINST_WINDOWS_FORCE_STATIC "Force static linking for Windows build (legacy)" OFF)
+
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -9,9 +11,17 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(QT_DEFAULT_MAJOR_VERSION 6)
+if(NOT DEFINED QT_DEFAULT_MAJOR_VERSION)
+    set(QT_DEFAULT_MAJOR_VERSION 6)
+endif()
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets LinguistTools Xml Network Multimedia)
+if(QT_DEFAULT_MAJOR_VERSION EQUAL 5)
+    find_package(QT NAMES Qt5 Qt6 REQUIRED COMPONENTS Widgets LinguistTools Xml Network Multimedia)
+elseif(QT_DEFAULT_MAJOR_VERSION EQUAL 6)
+    find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets LinguistTools Xml Network Multimedia)
+else()
+    message(FATAL_ERROR "QT_DEFAULT_MAJOR_VERSION must be 5 or 6")
+endif()
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets LinguistTools Xml Network Multimedia)
 
 set(TS_FILES DanceMonkey_en_US.ts)
@@ -98,6 +108,7 @@ if(${QT_VERSION} VERSION_LESS 6.1.0)
 endif()
 set_target_properties(DancingMadInstaller PROPERTIES
     ${BUNDLE_ID_OPTION}
+    OUTPUT_NAME DanceMonkey
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
     MACOSX_BUNDLE TRUE
@@ -107,7 +118,9 @@ set_target_properties(DancingMadInstaller PROPERTIES
 include(GNUInstallDirs)
 # explicitly include G++14 stuff, as Qt Creator is being dumb
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    include_directories("/usr/include/x86_64-linux-gnu/c++/14/")
+    if(EXISTS "/usr/include/x86_64-linux-gnu/c++/14/")
+        include_directories("/usr/include/x86_64-linux-gnu/c++/14/")
+    endif()
 endif()
 
 # explicitly include local includes and libraries
@@ -120,12 +133,29 @@ install(TARGETS DancingMadInstaller
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
+install(FILES
+    kefka-16x16.png
+    kefka.ico
+    kefkalaugh.wav
+    mirrors.dat
+    songs.xml
+    DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+if(EXISTS "${CMAKE_SOURCE_DIR}/../patch/ff3msu.ips")
+    install(FILES
+        "${CMAKE_SOURCE_DIR}/../patch/ff3msu.ips"
+        DESTINATION ${CMAKE_INSTALL_BINDIR}
+    )
+endif()
+
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(DancingMadInstaller)
 endif()
 
-# statically link on windows
-if(WIN32)
+# Legacy static linking can produce brittle executables with modern MSYS2/Qt packaging.
+# Keep it opt-in for manual experiments only.
+if(WIN32 AND DMINST_WINDOWS_FORCE_STATIC)
     set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
     target_link_options(DancingMadInstaller PRIVATE "-static")
 endif()

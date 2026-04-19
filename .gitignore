@@ -120,5 +120,12 @@ CMakeLists.txt.user*
 *.dll
 *.exe
 
+# Permanent local-content excludes
+/external/
+patch/FF6-RevisedOldStyleEdition_v2-03_NH.ips
+
+# TEMPORARY (remove after Issue #32 checklist completion)
+doc/issue-32-sfx-test-checklist.md
+
 
 patch/FF6-RevisedOldStyleEdition_v2-03_NH.ips

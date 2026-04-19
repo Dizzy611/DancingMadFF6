@@ -14,15 +14,20 @@
    <string>Dancing Mad Installer</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QWidget" name="verticalLayoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>0</y>
-      <width>491</width>
-      <height>582</height>
-     </rect>
-    </property>
+     <layout class="QVBoxLayout" name="centralLayout">
+        <property name="leftMargin">
+         <number>10</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>10</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
     <layout class="QVBoxLayout" name="mainLayout">
      <item>
       <widget class="QLabel" name="stepLabel_1">
@@ -488,13 +493,17 @@
        <property name="text">
         <string>Waiting on user... Select your ROM, soundtrack, and patches and press GO when ready!</string>
        </property>
+             <property name="wordWrap">
+                <bool>true</bool>
+             </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </item>
     </layout>
-   </widget>
+        </item>
+     </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

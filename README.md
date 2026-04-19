@@ -8,7 +8,9 @@ Prepacks include two IPS files, ff3msu.ips and ff3msu-alloptions.ips. The latter
 
 # Dancing Mad FF6 MSU-1 Music Replacer #
 
-Welcome to the repository for Dancing Mad. Please submit any issues using the Issues tab on the left. 
+Welcome to the repository for Dancing Mad. GitHub is still the main home for issue triage and closure.
+If you open an issue on CodeBerg, it will be mirrored here automatically.
+I also mirror branches/tags/releases from GitHub back to CodeBerg so folks there are not stuck on old builds.
 
 ### Summary ###
 
@@ -33,7 +35,7 @@ Welcome to the repository for Dancing Mad. Please submit any issues using the Is
 
 * Feel free to fork and submit pull requests. This is the preferred method of submitting fixes to the code/contributions. 
 
-* Please submit bugs using the Issues tracker. Please state clearly whether you're using the beta provided, my code that hasn't been released as a new beta, or your own code. 
+* Please submit bugs using the GitHub Issues tracker whenever possible. Reports filed on CodeBerg are mirrored into GitHub so everything still ends up in one place. Please state clearly whether you're using the beta provided, my code that hasn't been released as a new beta, or your own code. 
 
 
 
@@ -121,4 +123,12 @@ The following are 7zip files with all the data needed (.pcm, .msu, and .ips/.bps
 
 * Due to personal issues outside my control, I may take unscheduled hiatuses from this project for months at a time. Please continue to report issues during this time.
 
+### Responsible Disclosure (AI Assistance) ###
 
+* As of April 2026, this project has begun using GitHub Copilot primarily for debugging assistance and research support.
+* The following areas specifically include AI/LLM-generated code contributions:
+  * Experimental FMV support based on ikari's reference implementation. 
+  * General low-impact bug fixes.
+  * GitHub Actions automation.
+  * Other commits tagged with `[AI Assisted]`.
+* Commit-message convention: when a commit contains directly AI-generated code, prefix the subject with `[AI Assisted]`

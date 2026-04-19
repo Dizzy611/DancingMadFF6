@@ -8,8 +8,6 @@
 #include "dmlogger.h"
 #include "customtrackselection.h"
 
-// data path will depend on whether we're running in an AppImage/a MacOS .app bundle or directly on Linux/Windows. Should be "." for the latter, set as default here.
-const std::string data_path = ".";
 const std::string mirrors_url = "https://github.com/Dizzy611/DancingMadFF6/raw/refs/heads/master/installer/mirrors.dat";
 const std::string xml_url = "https://github.com/Dizzy611/DancingMadFF6/raw/refs/heads/master/installer/songs.xml";
 const std::string patch_url = "https://github.com/Dizzy611/DancingMadFF6/raw/refs/heads/master/patch/ff3msu.ips";
@@ -76,6 +74,7 @@ private:
     MirrorChecker *mc;
     DMLogger *logger;
     bool customized = false;
+    bool offlineMode = false;
     void nextStage();
 };
 #endif // DMINST_H

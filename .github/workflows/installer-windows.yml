@@ -51,6 +51,7 @@ jobs:
           update: true
           install: >-
             mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-binutils
             mingw-w64-x86_64-cmake
             mingw-w64-x86_64-ninja
             mingw-w64-x86_64-qt5-base
@@ -96,8 +97,26 @@ jobs:
           set -euo pipefail
 
           dist_dir="$GITHUB_WORKSPACE/dist/bin"
+
+          if command -v x86_64-w64-mingw32-objdump >/dev/null 2>&1; then
+            OBJDUMP_CMD="x86_64-w64-mingw32-objdump"
+          elif command -v objdump >/dev/null 2>&1; then
+            OBJDUMP_CMD="objdump"
+          elif [[ -x /mingw64/bin/objdump.exe ]]; then
+            OBJDUMP_CMD="/mingw64/bin/objdump.exe"
+          else
+            echo "No usable objdump found in MSYS2 environment"
+            exit 1
+          fi
+          echo "Using objdump command: $OBJDUMP_CMD"
+
           declare -A seen
           queue=("$dist_dir/DanceMonkey.exe")
+
+          # Include Qt plugin DLLs so transitive deps (e.g., qjpeg -> libjpeg-8.dll) are captured.
+          while IFS= read -r pluginDll; do
+            queue+=("$pluginDll")
+          done < <(find "$dist_dir" -type f -path '*/plugins/*' -name '*.dll' 2>/dev/null)
 
           # Recursively resolve and copy dependencies available in /mingw64/bin.
           while [[ ${#queue[@]} -gt 0 ]]; do
@@ -122,7 +141,7 @@ jobs:
                 fi
                 queue+=("$dst")
               fi
-            done < <(x86_64-w64-mingw32-objdump -p "$current" | sed -n 's/^[[:space:]]*DLL Name: //p')
+            done < <("$OBJDUMP_CMD" -p "$current" | sed -n 's/^[[:space:]]*DLL Name: //p')
           done
 
           # Sanity checks for known problem DLL chain under Wine.
@@ -155,6 +174,26 @@ jobs:
           if [[ ${#icu_candidates[@]} -eq 0 ]]; then
             echo "Missing ICU runtime DLLs (expected libicuin*.dll and libicuuc*.dll)"
             exit 1
+          fi
+
+          qjpeg_candidates=("$dist_dir"/plugins/imageformats/qjpeg.dll)
+          if [[ -f "${qjpeg_candidates[0]}" && ! -f "$dist_dir/libjpeg-8.dll" ]]; then
+            echo "qjpeg plugin present but libjpeg-8.dll is missing"
+            exit 1
+          fi
+
+          # Qt5Network requires OpenSSL for HTTPS. The recursive objdump walk should
+          # copy these, but verify they're present so Wine/native TLS actually works.
+          shopt -s nullglob
+          ssl_candidates=("$dist_dir"/libssl*.dll)
+          crypto_candidates=("$dist_dir"/libcrypto*.dll)
+          shopt -u nullglob
+          if [[ ${#ssl_candidates[@]} -eq 0 || ${#crypto_candidates[@]} -eq 0 ]]; then
+            echo "WARNING: OpenSSL DLLs (libssl/libcrypto) not found — HTTPS will fail at runtime"
+            echo "Attempting manual copy from /mingw64/bin..."
+            for ssl_dll in /mingw64/bin/libssl*.dll /mingw64/bin/libcrypto*.dll; do
+              [[ -f "$ssl_dll" ]] && cp "$ssl_dll" "$dist_dir/" && echo "Copied $(basename "$ssl_dll")"
+            done
           fi
 
       - name: Validate staged Windows executable

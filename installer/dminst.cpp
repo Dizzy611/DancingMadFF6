@@ -37,6 +37,8 @@ This patch is intended to be used only with a legally obtained copy of Final Fan
 #include <QMessageBox>
 #include <QDesktopServices>
 #include <QWindow>
+#include <QCoreApplication>
+#include <QDir>
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     #include <QSound>
 #else
@@ -53,6 +55,12 @@ This patch is intended to be used only with a legally obtained copy of Final Fan
 #include <iostream>
 #include <sstream>
 #include <cstring>
+
+namespace {
+QString bundledDataFilePath(const QString& fileName) {
+    return QDir(QCoreApplication::applicationDirPath()).filePath(fileName);
+}
+}
 
 // DEBUG
 #define LOG_TO_STDERR true
@@ -83,10 +91,10 @@ const char* ff3msuxml = R"(<?xml version="1.0" encoding="UTF-8"?><cartridge regi
 DMInst::DMInst(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::DMInst) {
-    setWindowIcon(QIcon("./kefka-16x16.png"));
+    setWindowIcon(QIcon(bundledDataFilePath("kefka-16x16.png")));
 
-    this->mc = new MirrorChecker(this, this->logger);
     this->logger = new DMLogger("./install.log", LOG_TO_STDERR);
+    this->mc = new MirrorChecker(this, this->logger);
     this->logger->doLog("Dancing Mad installer (DanceMonkey alpha) loaded...");
 
     QUrl mirrorsUrl(QString::fromStdString(mirrors_url));
@@ -189,9 +197,49 @@ void DMInst::on_goButton_clicked()
         this->findChild<QPushButton*>("goButton")->setEnabled(false);
         this->destdir = QFileDialog::getExistingDirectory(this, tr("Choose destination directory"), QDir::homePath()).toStdString() + "/";
         this->logger->moveLog(this->destdir + "install.log");
+
+        bool needsSongDownloads = false;
+        for (const auto& [songId, source] : this->selections) {
+            (void)songId;
+            if (source != "spc") {
+                needsSongDownloads = true;
+                break;
+            }
+        }
+
+        // In offline mode, only allow patch-only installs (no song downloads).
+        if (this->offlineMode) {
+            if (needsSongDownloads) {
+                QMessageBox msgBox;
+                msgBox.setText("You are in offline mode (no network was available at startup). Song downloads are not possible. Please select None/SPC for your soundtrack, or restart with network access.");
+                msgBox.setStandardButtons(QMessageBox::Ok);
+                msgBox.setDefaultButton(QMessageBox::Ok);
+                msgBox.exec();
+                this->findChild<QPushButton*>("goButton")->setEnabled(true);
+                return;
+            }
+            this->logger->doLog("Offline mode: no song downloads needed, proceeding to patch stage.");
+            this->nextStage();
+            return;
+        }
+
         // check if mirror list has been validated and at least one valid mirror has been returned.
         if (mc->isDone()) {
-            if (mc->getMirror() != "") {
+            if (!needsSongDownloads) {
+                this->logger->doLog("No song downloads selected; skipping mirror requirement and continuing to patch stage.");
+                this->nextStage();
+                return;
+            }
+
+            std::vector<std::string> mirrorList = mc->getMirrors();
+            if (mirrorList.empty()) {
+                // Mirror precheck can fail on some environments (e.g., TLS/cert or root URL behavior)
+                // even when direct file URLs are reachable. Fall back to raw mirrors.dat entries.
+                mirrorList = this->mirrors;
+                this->logger->doLog("WARNING: MirrorChecker returned no valid mirrors; falling back to raw mirror list from mirrors.dat");
+            }
+
+            if (!mirrorList.empty()) {
                 QDir directory(QString::fromStdString(this->destdir));
                 QStringList existingFiles = directory.entryList(QStringList() << "*.pcm" << "*.PCM",QDir::Files);
                 this->findChild<QLabel*>("statusLabel")->setText("Hashing any existing .pcm files in destination directory...");
@@ -214,8 +262,6 @@ void DMInst::on_goButton_clicked()
                 }
                 this->findChild<QProgressBar*>("downloadProgressBar")->setRange(0,100);
                 this->findChild<QProgressBar*>("downloadProgressBar")->setValue(0);
-
-                std::vector<std::string> mirrorList = mc->getMirrors();
                     for (i = 0; i < songs.size(); i++) {
                         for (auto const & pcm : songs[i].pcms) {
                             if ((this->selections.contains(i)) && (this->selections.at(i) != "spc")) {
@@ -325,7 +371,12 @@ void DMInst::nextStage() {
             this->logger->doLog("\t" + element);
         }
 
-        this->findChild<QLabel*>("statusLabel")->setText("Waiting on user... Select your ROM, soundtrack, and patches and press GO when ready!");
+        if (this->offlineMode) {
+            this->findChild<QLabel*>("statusLabel")->setText("Offline mode — only SPC/patch-only installs available. Song downloads require network.");
+            this->logger->doLog("Offline mode active. Song downloads will not be available.");
+        } else {
+            this->findChild<QLabel*>("statusLabel")->setText("Waiting on user... Select your ROM, soundtrack, and patches and press GO when ready!");
+        }
         this->findChild<QPushButton*>("ROMSelectBrowse")->setEnabled(true);
         break;
     }
@@ -352,6 +403,10 @@ void DMInst::nextStage() {
         } else {
             //std::string selectedmirror = this->mc->getMirror(); // if we got this far, we should have at least one valid mirror, so testing is not necessary (song download is necessary first)
             std::vector<std::string> mirrorList = mc->getMirrors();
+            if (mirrorList.empty()) {
+                mirrorList = this->mirrors;
+                this->logger->doLog("WARNING: MirrorChecker returned no valid mirrors for optional patch stage; falling back to raw mirror list from mirrors.dat");
+            }
             if (twue) {
                 this->mmoptpatchqueue.push_back(buildMirroredUrls(mirrorList, "contrib/twue.ips"));
             }
@@ -396,11 +451,11 @@ void DMInst::nextStage() {
         this->optpatchqueue.clear();
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         // Use QSound on Qt5 or earlier.
-        QSound::play("kefkalaugh.wav");
+        QSound::play(bundledDataFilePath("kefkalaugh.wav"));
 #else
         QSoundEffect* soundEffect = new QSoundEffect();
         // Use QSoundEffect for Qt6.
-        soundEffect->setSource(QUrl::fromLocalFile("kefkalaugh.wav"));
+        soundEffect->setSource(QUrl::fromLocalFile(bundledDataFilePath("kefkalaugh.wav")));
         soundEffect->setVolume(1.0f);
         soundEffect->play();
         QObject::connect(soundEffect, &QSoundEffect::playingChanged, [soundEffect]() {
@@ -425,7 +480,9 @@ void DMInst::downloadFinished() {
         QByteArray mirrorData = dmgr->downloadedData();
         if (mirrorData.isEmpty()) {
             // mirror data failed to download for one reason or another, response code will have been logged to stdout. use local mirror data if available, else fatal.
-            QFile mirrorDat(QString::fromStdString(data_path) + "/mirrors.dat");
+            this->offlineMode = true;
+            this->logger->doLog("mirrors.dat download failed; entering offline mode.");
+            QFile mirrorDat(bundledDataFilePath("mirrors.dat"));
             if(!mirrorDat.open(QIODevice::ReadOnly)) {
                 QMessageBox msgBox;
                 msgBox.setText("Unable to download list of mirrors or read local list of mirrors. Installation cannot continue.");
@@ -458,7 +515,9 @@ void DMInst::downloadFinished() {
         QByteArray xmlData = dmgr->downloadedData();
         if (xmlData.isEmpty()) {
             // xml data failed to download for one reason or another, response code will have been logged to stdout. use local mirror data if available, else fatal.
-            QFile songsXml(QString::fromStdString(data_path) + "/songs.xml");
+            this->offlineMode = true;
+            this->logger->doLog("songs.xml download failed; entering offline mode.");
+            QFile songsXml(bundledDataFilePath("songs.xml"));
             if(!songsXml.open(QIODevice::ReadOnly)) {
                 QMessageBox msgBox;
                 msgBox.setText("Unable to download list of songs and presets or read local copy. Installation cannot continue.");
@@ -538,7 +597,7 @@ void DMInst::downloadFinished() {
         QByteArray patchData = dmgr->downloadedData();
         if (patchData.isEmpty()) {
             // patch data failed to download for one reason or another. Try local copy (potentially out of date)
-            QFile patchFile(QString::fromStdString(data_path) + "/ff3msu.ips");
+            QFile patchFile(bundledDataFilePath("ff3msu.ips"));
             if(!patchFile.open(QIODevice::ReadOnly)) {
                 QMessageBox msgBox;
                 msgBox.setText("Unable to download main patch or find local copy. Installation cannot continue.");
