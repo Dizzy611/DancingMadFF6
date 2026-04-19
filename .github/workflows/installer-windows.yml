@@ -90,6 +90,73 @@ jobs:
             /mingw64/bin/windeployqt.exe --release --compiler-runtime --no-angle "$GITHUB_WORKSPACE/dist/bin/DanceMonkey.exe"
           fi
 
+      - name: Copy transitive MinGW runtime DLLs
+        shell: msys2 {0}
+        run: |
+          set -euo pipefail
+
+          dist_dir="$GITHUB_WORKSPACE/dist/bin"
+          declare -A seen
+          queue=("$dist_dir/DanceMonkey.exe")
+
+          # Recursively resolve and copy dependencies available in /mingw64/bin.
+          while [[ ${#queue[@]} -gt 0 ]]; do
+            current="${queue[0]}"
+            queue=("${queue[@]:1}")
+
+            [[ -f "$current" ]] || continue
+
+            while IFS= read -r dll; do
+              [[ -n "$dll" ]] || continue
+              key="$(echo "$dll" | tr '[:upper:]' '[:lower:]')"
+              [[ -n "${seen[$key]+x}" ]] && continue
+              seen[$key]=1
+
+              src="/mingw64/bin/$dll"
+              dst="$dist_dir/$dll"
+
+              if [[ -f "$src" ]]; then
+                if [[ ! -f "$dst" ]]; then
+                  cp "$src" "$dst"
+                  echo "Copied runtime DLL: $dll"
+                fi
+                queue+=("$dst")
+              fi
+            done < <(x86_64-w64-mingw32-objdump -p "$current" | sed -n 's/^[[:space:]]*DLL Name: //p')
+          done
+
+          # Sanity checks for known problem DLL chain under Wine.
+          required_exact=(
+            "Qt5Core.dll"
+            "Qt5Gui.dll"
+            "Qt5Widgets.dll"
+            "Qt5Network.dll"
+            "Qt5Multimedia.dll"
+            "Qt5Xml.dll"
+            "zlib1.dll"
+            "libdouble-conversion.dll"
+            "libpcre2-16-0.dll"
+            "libzstd.dll"
+            "libharfbuzz-0.dll"
+            "libmd4c.dll"
+            "libpng16-16.dll"
+          )
+
+          for dll in "${required_exact[@]}"; do
+            if [[ ! -f "$dist_dir/$dll" ]]; then
+              echo "Missing required runtime DLL after dependency copy: $dll"
+              exit 1
+            fi
+          done
+
+          shopt -s nullglob
+          icu_candidates=("$dist_dir"/libicuin*.dll "$dist_dir"/libicuuc*.dll)
+          shopt -u nullglob
+          if [[ ${#icu_candidates[@]} -eq 0 ]]; then
+            echo "Missing ICU runtime DLLs (expected libicuin*.dll and libicuuc*.dll)"
+            exit 1
+          fi
+
       - name: Validate staged Windows executable
         shell: pwsh
         run: |
