@@ -175,6 +175,16 @@ jobs:
             exit 1
           fi
 
+      - name: Install Qt6 tools for macdeployqt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: 6.7.3
+          host: mac
+          target: desktop
+          arch: clang_64
+          modules: qtmultimedia
+          cache: true
+
       - name: Download x86_64 app artifact
         uses: actions/download-artifact@v5
         with:
