@@ -207,6 +207,22 @@ void DMInst::on_goButton_clicked()
             }
         }
 
+        // In offline mode, only allow patch-only installs (no song downloads).
+        if (this->offlineMode) {
+            if (needsSongDownloads) {
+                QMessageBox msgBox;
+                msgBox.setText("You are in offline mode (no network was available at startup). Song downloads are not possible. Please select None/SPC for your soundtrack, or restart with network access.");
+                msgBox.setStandardButtons(QMessageBox::Ok);
+                msgBox.setDefaultButton(QMessageBox::Ok);
+                msgBox.exec();
+                this->findChild<QPushButton*>("goButton")->setEnabled(true);
+                return;
+            }
+            this->logger->doLog("Offline mode: no song downloads needed, proceeding to patch stage.");
+            this->nextStage();
+            return;
+        }
+
         // check if mirror list has been validated and at least one valid mirror has been returned.
         if (mc->isDone()) {
             if (!needsSongDownloads) {
@@ -355,7 +371,12 @@ void DMInst::nextStage() {
             this->logger->doLog("\t" + element);
         }
 
-        this->findChild<QLabel*>("statusLabel")->setText("Waiting on user... Select your ROM, soundtrack, and patches and press GO when ready!");
+        if (this->offlineMode) {
+            this->findChild<QLabel*>("statusLabel")->setText("Offline mode — only SPC/patch-only installs available. Song downloads require network.");
+            this->logger->doLog("Offline mode active. Song downloads will not be available.");
+        } else {
+            this->findChild<QLabel*>("statusLabel")->setText("Waiting on user... Select your ROM, soundtrack, and patches and press GO when ready!");
+        }
         this->findChild<QPushButton*>("ROMSelectBrowse")->setEnabled(true);
         break;
     }
@@ -459,6 +480,8 @@ void DMInst::downloadFinished() {
         QByteArray mirrorData = dmgr->downloadedData();
         if (mirrorData.isEmpty()) {
             // mirror data failed to download for one reason or another, response code will have been logged to stdout. use local mirror data if available, else fatal.
+            this->offlineMode = true;
+            this->logger->doLog("mirrors.dat download failed; entering offline mode.");
             QFile mirrorDat(bundledDataFilePath("mirrors.dat"));
             if(!mirrorDat.open(QIODevice::ReadOnly)) {
                 QMessageBox msgBox;
@@ -492,6 +515,8 @@ void DMInst::downloadFinished() {
         QByteArray xmlData = dmgr->downloadedData();
         if (xmlData.isEmpty()) {
             // xml data failed to download for one reason or another, response code will have been logged to stdout. use local mirror data if available, else fatal.
+            this->offlineMode = true;
+            this->logger->doLog("songs.xml download failed; entering offline mode.");
             QFile songsXml(bundledDataFilePath("songs.xml"));
             if(!songsXml.open(QIODevice::ReadOnly)) {
                 QMessageBox msgBox;

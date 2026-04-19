@@ -74,6 +74,7 @@ private:
     MirrorChecker *mc;
     DMLogger *logger;
     bool customized = false;
+    bool offlineMode = false;
     void nextStage();
 };
 #endif // DMINST_H
