@@ -113,7 +113,7 @@ jobs:
           echo "appimage_name=$NEW_NAME" >> "$GITHUB_OUTPUT"
 
       - name: Upload AppImage artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ steps.artifact.outputs.appimage_name }}
           path: installer/appimage/${{ steps.artifact.outputs.appimage_name }}

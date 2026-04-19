@@ -142,14 +142,14 @@ jobs:
           ditto -c -k --sequesterRsrc --keepParent "$GITHUB_WORKSPACE/dist/DanceMonkey.app" "$GITHUB_WORKSPACE/DanceMonkey-macos-${{ matrix.arch }}.zip"
 
       - name: Upload macOS app artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: DanceMonkey-app-macos-${{ matrix.arch }}
           path: DanceMonkey-macos-${{ matrix.arch }}.zip
           if-no-files-found: error
 
       - name: Upload macOS artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: DancingMadInstaller-macos-${{ matrix.arch }}
           path: DancingMadInstaller-macos-${{ matrix.arch }}.dmg
@@ -186,13 +186,13 @@ jobs:
           cache: true
 
       - name: Download x86_64 app artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           name: DanceMonkey-app-macos-x86_64
           path: /tmp/macos-apps/x86_64
 
       - name: Download arm64 app artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           name: DanceMonkey-app-macos-arm64
           path: /tmp/macos-apps/arm64
@@ -252,7 +252,7 @@ jobs:
           mv "$GITHUB_WORKSPACE/dist/DanceMonkey.dmg" "$GITHUB_WORKSPACE/DancingMadInstaller-macos-universal.dmg"
 
       - name: Upload universal macOS artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: DancingMadInstaller-macos-universal
           path: DancingMadInstaller-macos-universal.dmg
