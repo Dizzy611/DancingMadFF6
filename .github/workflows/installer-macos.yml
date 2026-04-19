@@ -41,7 +41,7 @@ jobs:
             cmake_osx_arch: x86_64
           - os: macos-14
             arch: arm64
-            qt_arch: clang_64
+            qt_arch: clang_arm64
             cmake_osx_arch: arm64
 
     steps:
@@ -103,6 +103,39 @@ jobs:
           APP_PATH="$GITHUB_WORKSPACE/dist/DanceMonkey.app"
           macdeployqt "$APP_PATH" -dmg
           mv "$GITHUB_WORKSPACE/dist/DanceMonkey.dmg" "$GITHUB_WORKSPACE/DancingMadInstaller-macos-${{ matrix.arch }}.dmg"
+
+      - name: Validate packaged app architecture
+        run: |
+          set -euo pipefail
+          APP_PATH="$GITHUB_WORKSPACE/dist/DanceMonkey.app"
+          EXPECTED_ARCH="${{ matrix.arch }}"
+
+          check_arch() {
+            local bin_path="$1"
+            if [[ ! -f "$bin_path" ]]; then
+              echo "Missing expected binary: $bin_path" >&2
+              exit 1
+            fi
+
+            local archs
+            archs="$(lipo -archs "$bin_path" 2>/dev/null || true)"
+            if [[ -z "$archs" ]]; then
+              echo "Could not read architectures for: $bin_path" >&2
+              exit 1
+            fi
+
+            if ! grep -qw "$EXPECTED_ARCH" <<< "$archs"; then
+              echo "Architecture mismatch for $bin_path" >&2
+              echo "Expected to include: $EXPECTED_ARCH" >&2
+              echo "Found: $archs" >&2
+              exit 1
+            fi
+
+            echo "$bin_path -> $archs"
+          }
+
+          check_arch "$APP_PATH/Contents/MacOS/DanceMonkey"
+          check_arch "$APP_PATH/Contents/PlugIns/platforms/libqcocoa.dylib"
 
       - name: Archive .app bundle
         run: |
@@ -186,6 +219,14 @@ jobs:
 
             if [[ -f "$afile" && -f "$xfile" ]]; then
               if file "$xfile" | grep -q "Mach-O"; then
+                x_archs="$(lipo -archs "$xfile" 2>/dev/null || true)"
+                a_archs="$(lipo -archs "$afile" 2>/dev/null || true)"
+
+                # If both files already carry the same slices, keep the base copy.
+                if [[ -n "$x_archs" && "$x_archs" == "$a_archs" ]]; then
+                  continue
+                fi
+
                 lipo -create -output "$ufile" "$xfile" "$afile"
               fi
             fi
