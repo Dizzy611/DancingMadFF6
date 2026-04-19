@@ -244,12 +244,42 @@ jobs:
 
       - name: Build universal DMG
         run: |
+          set -euo pipefail
           APP_PATH="$GITHUB_WORKSPACE/dist/DanceMonkey.app"
+          OUT_DMG="$GITHUB_WORKSPACE/dist/DanceMonkey.dmg"
+          FINAL_DMG="$GITHUB_WORKSPACE/DancingMadInstaller-macos-universal.dmg"
+
           # The merged app already contains qt.conf from prior per-arch packaging.
           # Remove it so macdeployqt can regenerate a consistent file for this bundle.
           rm -f "$APP_PATH/Contents/Resources/qt.conf"
-          macdeployqt "$APP_PATH" -dmg
-          mv "$GITHUB_WORKSPACE/dist/DanceMonkey.dmg" "$GITHUB_WORKSPACE/DancingMadInstaller-macos-universal.dmg"
+
+          rm -f "$OUT_DMG" "$FINAL_DMG"
+
+          success=0
+          for attempt in 1 2 3; do
+            echo "Building universal DMG (attempt $attempt/3)"
+
+            if macdeployqt "$APP_PATH" -dmg && [[ -f "$OUT_DMG" ]]; then
+              success=1
+              break
+            fi
+
+            echo "macdeployqt DMG build failed or output missing; detaching stale mounted images before retry"
+            hdiutil info | awk '/\/Volumes\/DanceMonkey/{print $1}' | while read -r dev; do
+              if [[ -n "$dev" ]]; then
+                hdiutil detach -force "$dev" || true
+              fi
+            done
+
+            rm -f "$OUT_DMG"
+          done
+
+          if [[ "$success" -ne 1 ]]; then
+            echo "Failed to build universal DMG after 3 attempts" >&2
+            exit 1
+          fi
+
+          mv "$OUT_DMG" "$FINAL_DMG"
 
       - name: Upload universal macOS artifact
         uses: actions/upload-artifact@v7
