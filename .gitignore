@@ -45,10 +45,8 @@ utils/reshacker/
 patch/test/
 patch/ff3msu.ips
 installer/DancingMad-linux.tar
-video/video-player-test.msu
-video/ff3msu-intro.msu
-video/reference/
-video/*.html
+# Remove this on video-implementation branch/when merging said branch
+video/
 *.bak
 
 
