@@ -245,6 +245,9 @@ jobs:
       - name: Build universal DMG
         run: |
           APP_PATH="$GITHUB_WORKSPACE/dist/DanceMonkey.app"
+          # The merged app already contains qt.conf from prior per-arch packaging.
+          # Remove it so macdeployqt can regenerate a consistent file for this bundle.
+          rm -f "$APP_PATH/Contents/Resources/qt.conf"
           macdeployqt "$APP_PATH" -dmg
           mv "$GITHUB_WORKSPACE/dist/DanceMonkey.dmg" "$GITHUB_WORKSPACE/DancingMadInstaller-macos-universal.dmg"
 
