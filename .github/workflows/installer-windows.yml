@@ -113,6 +113,11 @@ jobs:
           declare -A seen
           queue=("$dist_dir/DanceMonkey.exe")
 
+          # Include Qt plugin DLLs so transitive deps (e.g., qjpeg -> libjpeg-8.dll) are captured.
+          while IFS= read -r pluginDll; do
+            queue+=("$pluginDll")
+          done < <(find "$dist_dir" -type f -path '*/plugins/*' -name '*.dll' 2>/dev/null)
+
           # Recursively resolve and copy dependencies available in /mingw64/bin.
           while [[ ${#queue[@]} -gt 0 ]]; do
             current="${queue[0]}"
@@ -168,6 +173,12 @@ jobs:
           shopt -u nullglob
           if [[ ${#icu_candidates[@]} -eq 0 ]]; then
             echo "Missing ICU runtime DLLs (expected libicuin*.dll and libicuuc*.dll)"
+            exit 1
+          fi
+
+          qjpeg_candidates=("$dist_dir"/plugins/imageformats/qjpeg.dll)
+          if [[ -f "${qjpeg_candidates[0]}" && ! -f "$dist_dir/libjpeg-8.dll" ]]; then
+            echo "qjpeg plugin present but libjpeg-8.dll is missing"
             exit 1
           fi
 

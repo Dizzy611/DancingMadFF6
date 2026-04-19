@@ -93,8 +93,8 @@ DMInst::DMInst(QWidget *parent)
     , ui(new Ui::DMInst) {
     setWindowIcon(QIcon(bundledDataFilePath("kefka-16x16.png")));
 
-    this->mc = new MirrorChecker(this, this->logger);
     this->logger = new DMLogger("./install.log", LOG_TO_STDERR);
+    this->mc = new MirrorChecker(this, this->logger);
     this->logger->doLog("Dancing Mad installer (DanceMonkey alpha) loaded...");
 
     QUrl mirrorsUrl(QString::fromStdString(mirrors_url));
@@ -197,8 +197,24 @@ void DMInst::on_goButton_clicked()
         this->findChild<QPushButton*>("goButton")->setEnabled(false);
         this->destdir = QFileDialog::getExistingDirectory(this, tr("Choose destination directory"), QDir::homePath()).toStdString() + "/";
         this->logger->moveLog(this->destdir + "install.log");
+
+        bool needsSongDownloads = false;
+        for (const auto& [songId, source] : this->selections) {
+            (void)songId;
+            if (source != "spc") {
+                needsSongDownloads = true;
+                break;
+            }
+        }
+
         // check if mirror list has been validated and at least one valid mirror has been returned.
         if (mc->isDone()) {
+            if (!needsSongDownloads) {
+                this->logger->doLog("No song downloads selected; skipping mirror requirement and continuing to patch stage.");
+                this->nextStage();
+                return;
+            }
+
             if (mc->getMirror() != "") {
                 QDir directory(QString::fromStdString(this->destdir));
                 QStringList existingFiles = directory.entryList(QStringList() << "*.pcm" << "*.PCM",QDir::Files);
