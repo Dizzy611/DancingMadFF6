@@ -182,6 +182,20 @@ jobs:
             exit 1
           fi
 
+          # Qt5Network requires OpenSSL for HTTPS. The recursive objdump walk should
+          # copy these, but verify they're present so Wine/native TLS actually works.
+          shopt -s nullglob
+          ssl_candidates=("$dist_dir"/libssl*.dll)
+          crypto_candidates=("$dist_dir"/libcrypto*.dll)
+          shopt -u nullglob
+          if [[ ${#ssl_candidates[@]} -eq 0 || ${#crypto_candidates[@]} -eq 0 ]]; then
+            echo "WARNING: OpenSSL DLLs (libssl/libcrypto) not found — HTTPS will fail at runtime"
+            echo "Attempting manual copy from /mingw64/bin..."
+            for ssl_dll in /mingw64/bin/libssl*.dll /mingw64/bin/libcrypto*.dll; do
+              [[ -f "$ssl_dll" ]] && cp "$ssl_dll" "$dist_dir/" && echo "Copied $(basename "$ssl_dll")"
+            done
+          fi
+
       - name: Validate staged Windows executable
         shell: pwsh
         run: |

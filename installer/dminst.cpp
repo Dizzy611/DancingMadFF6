@@ -215,7 +215,15 @@ void DMInst::on_goButton_clicked()
                 return;
             }
 
-            if (mc->getMirror() != "") {
+            std::vector<std::string> mirrorList = mc->getMirrors();
+            if (mirrorList.empty()) {
+                // Mirror precheck can fail on some environments (e.g., TLS/cert or root URL behavior)
+                // even when direct file URLs are reachable. Fall back to raw mirrors.dat entries.
+                mirrorList = this->mirrors;
+                this->logger->doLog("WARNING: MirrorChecker returned no valid mirrors; falling back to raw mirror list from mirrors.dat");
+            }
+
+            if (!mirrorList.empty()) {
                 QDir directory(QString::fromStdString(this->destdir));
                 QStringList existingFiles = directory.entryList(QStringList() << "*.pcm" << "*.PCM",QDir::Files);
                 this->findChild<QLabel*>("statusLabel")->setText("Hashing any existing .pcm files in destination directory...");
@@ -238,8 +246,6 @@ void DMInst::on_goButton_clicked()
                 }
                 this->findChild<QProgressBar*>("downloadProgressBar")->setRange(0,100);
                 this->findChild<QProgressBar*>("downloadProgressBar")->setValue(0);
-
-                std::vector<std::string> mirrorList = mc->getMirrors();
                     for (i = 0; i < songs.size(); i++) {
                         for (auto const & pcm : songs[i].pcms) {
                             if ((this->selections.contains(i)) && (this->selections.at(i) != "spc")) {
@@ -376,6 +382,10 @@ void DMInst::nextStage() {
         } else {
             //std::string selectedmirror = this->mc->getMirror(); // if we got this far, we should have at least one valid mirror, so testing is not necessary (song download is necessary first)
             std::vector<std::string> mirrorList = mc->getMirrors();
+            if (mirrorList.empty()) {
+                mirrorList = this->mirrors;
+                this->logger->doLog("WARNING: MirrorChecker returned no valid mirrors for optional patch stage; falling back to raw mirror list from mirrors.dat");
+            }
             if (twue) {
                 this->mmoptpatchqueue.push_back(buildMirroredUrls(mirrorList, "contrib/twue.ips"));
             }
