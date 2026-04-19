@@ -7,6 +7,12 @@ DMLogger::DMLogger(std::string const& logfilename, bool toStderrSet) {
 }
 
 void DMLogger::moveLog(std::string const& newlogfilename) {
+    // Guard against self-copy (e.g. GO pressed twice with same dest dir)
+    if (newlogfilename == this->logfilename) {
+        this->doLog("moveLog: destination is same as current log file, skipping move.");
+        return;
+    }
+
     // close current ofstream
     this->logfile.close();
 
@@ -24,7 +30,7 @@ void DMLogger::moveLog(std::string const& newlogfilename) {
     this->logfile = std::ofstream(this->logfilename, std::ios_base::app);
 
     // log change
-    this->doLog("Moved log file to" + this->logfilename);
+    this->doLog("Moved log file to " + this->logfilename);
 
 }
 

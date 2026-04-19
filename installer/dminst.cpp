@@ -313,6 +313,7 @@ void DMInst::on_goButton_clicked()
                 this->findChild<QPushButton*>("goButton")->setEnabled(true);
             }
         } else {
+            this->logger->doLog("MirrorChecker not yet finished; asking user to wait.");
             this->findChild<QLabel*>("statusLabel")->setText("Still checking for valid mirrors, please wait...");
             this->findChild<QPushButton*>("goButton")->setEnabled(true);
         }
