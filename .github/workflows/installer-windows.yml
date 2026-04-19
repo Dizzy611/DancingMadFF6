@@ -51,6 +51,7 @@ jobs:
           update: true
           install: >-
             mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-binutils
             mingw-w64-x86_64-cmake
             mingw-w64-x86_64-ninja
             mingw-w64-x86_64-qt5-base
@@ -96,6 +97,19 @@ jobs:
           set -euo pipefail
 
           dist_dir="$GITHUB_WORKSPACE/dist/bin"
+
+          if command -v x86_64-w64-mingw32-objdump >/dev/null 2>&1; then
+            OBJDUMP_CMD="x86_64-w64-mingw32-objdump"
+          elif command -v objdump >/dev/null 2>&1; then
+            OBJDUMP_CMD="objdump"
+          elif [[ -x /mingw64/bin/objdump.exe ]]; then
+            OBJDUMP_CMD="/mingw64/bin/objdump.exe"
+          else
+            echo "No usable objdump found in MSYS2 environment"
+            exit 1
+          fi
+          echo "Using objdump command: $OBJDUMP_CMD"
+
           declare -A seen
           queue=("$dist_dir/DanceMonkey.exe")
 
@@ -122,7 +136,7 @@ jobs:
                 fi
                 queue+=("$dst")
               fi
-            done < <(x86_64-w64-mingw32-objdump -p "$current" | sed -n 's/^[[:space:]]*DLL Name: //p')
+            done < <("$OBJDUMP_CMD" -p "$current" | sed -n 's/^[[:space:]]*DLL Name: //p')
           done
 
           # Sanity checks for known problem DLL chain under Wine.
