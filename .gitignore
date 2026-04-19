@@ -46,7 +46,6 @@ patch/test/
 patch/ff3msu.ips
 installer/DancingMad-linux.tar
 # Remove this on video-implementation branch/when merging said branch
-video/
 *.bak
 
 
