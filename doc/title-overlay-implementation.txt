@@ -1,0 +1,325 @@
+Title Screen Metadata Overlay — Implementation Summary
+=======================================================
+Last updated: 2026-04-20
+
+Overview
+--------
+The title screen overlay displays "DM" + build date (YYMMDD) + optional
+patch indicator letters (T/P/C for TWUE/MP/CSR) as OBJ sprites on the FF6
+title screen's splash page ("1994 SQUARE"), below the Nintendo copyright
+text.  It has three layers: build-time metadata embedding, installer flag
+stamping, and a runtime NMI hook that patches the title screen's sprite
+table and uploads custom font tiles into OBJ VRAM.
+
+Note: the overlay depends on a 5-byte signature guard in the decompressed
+cutscene code.  Patches that modify the compressed cutscene blob (e.g.
+TWUE) change the decompressed bytes, causing the guard to fail and the
+overlay to be silently disabled.  See "TWUE Compatibility" below.
+
+Architecture
+============
+
+1. Build-Time Metadata (patch/Makefile + patch/ff3msu.asm)
+----------------------------------------------------------
+- Makefile generates build_date.inc containing `.DB "YYYYMMDD"` from the
+  system clock (GNU date on Linux, PowerShell on Windows).
+- ff3msu.asm includes it into a 14-byte PATCHMETADATA block at C4:B000:
+    +0x00: "DMVS"            (4-byte magic)
+    +0x04: "260419"           (6-byte ASCII date YYMMDD from build_date.inc)
+    +0x0A: option flags       (1 byte, bit0=TWUE, bit1=MP, bit2=CSR)
+    +0x0B: $01                (metadata version)
+    +0x0C: $00,$00            (reserved)
+
+2. Installer Flag Stamping (installer/dminst.cpp)
+-------------------------------------------------
+- stampPatchMetadataFlags() writes a single byte at ROM file offset
+  0x04B00A (= C4:B00A) with bits set for whichever installer options
+  (TWUE, MP, CSR) the user checked.
+- Called at install stage 4 (after IPS patching, before finalization).
+- After stamping, the installer logs an install summary to install.log:
+    === Install Summary ===
+    Patch build date: YYMMDD
+    Optional patches: TWUE MP CSR  (or "none")
+    =======================
+  The build date is read back from the patched ROM's metadata block at
+  0x04B000 (verified via "DMVS" magic).  This provides a diagnostic
+  fallback when the on-screen overlay is not visible (e.g. with TWUE).
+
+3. Runtime Hook Chain
+---------------------
+a) Title wrapper hook (C2:680F → C4:A4C0, 4-byte JML overwrite):
+   - C2:680F is originally `JML $7E5000` (jump to decompressed cutscene
+     code).  We redirect to TitleWrapperHook which:
+     - Checks 5 signature bytes at 7E:5280-5284 to confirm title code is
+       loaded (prevents false triggers when C2:680F runs in other contexts)
+     - Copies 16 bytes from C4:B000 to 7E:1E20 (DMMetaMirror) for debugger
+       visibility
+     - Resets DMOverlayInit to 0 so the NMI overlay re-initializes (needed
+       after soft reset, which wipes VRAM tiles but not SRAM-mirror RAM)
+     - Falls through to `JML $7E5000` (original target)
+
+b) NMI overlay (called via JSL from MSU NMI handler):
+   - TitleMetadataOverlay (C4:A520) runs every NMI frame while the gate
+     at $7E5000 contains $4C (JMP opcode from decompressed cutscene code).
+   - Same 5-byte signature guard as above.
+   - On first activation (DMOverlayInit != 1), calls
+     TitleMetadataPrepareSprites once, then sets DMOverlayInit=$01.
+   - After initialization, self-seals the NMI gate by writing $00 to
+     $7E5000.  This permanently prevents the overlay from running during
+     gameplay, regardless of what value DMOverlayInit has.  (The
+     decompressed cutscene code persists in WRAM permanently — field,
+     battle, and menu modes never clear $5000+ — so without the seal,
+     the gate would leak every NMI frame for the entire game session.)
+   - Soft reset re-decompresses fresh code (restoring $4C), and
+     TitleWrapperHook resets DMOverlayInit, so the overlay re-initializes
+     on the next title screen.
+
+4. Sprite Setup (TitleMetadataPrepareSprites)
+---------------------------------------------
+The FF6 title screen uses two DefaultAnimTask instances for text:
+  - TitleTextAnim1: base ($40,$A0), 13 sprite entries ("1994 SQUARE" etc.)
+  - TitleTextAnim2: base ($90,$A0), 4 sprite entries (Nintendo logo)
+
+We append sprites to TitleTextAnim2's sprite table at 7E:7A97+:
+  - Increment sprite count from 4 → 14-17 (at 7E:7A97)
+  - Write 2 "DM" prefix entries + 8 date digit entries + 0-3 flag entries
+  - Byte offset starts at $10 (after Nintendo's 4 entries × 4 bytes)
+
+Sprite entry format:
+  - x_off: relative to task base X=$90.  Bit 7 clear = small (16x16).
+    "DM" at $00/$08, date digits at $10-$48, flags at $50+
+  - y_off: $20 (relative to task base Y=$A0 → screen Y=$C0)
+  - tile#: digits from DigitTileNumTbl lookup; letters hardcoded
+    D=$A4, M=$A6, T=$A8, P=$AA, C=$AC
+  - attr: $33 (priority 3, OBJ palette 1, name table 1)
+
+Flag indicators (conditional, based on DMMetaMirror+$0C):
+  - bit 0 set → "T" (TWUE patch applied)
+  - bit 1 set → "P" (MP patch applied)
+  - bit 2 set → "C" (CSR patch applied)
+  Sprite count is computed dynamically from Y offset after all entries.
+
+5. Font Tile Upload
+-------------------
+15 glyphs (digits 0-9 + letters D, M, T, P, C) are embedded as 32-byte
+4bpp 8x8 tiles in DigitFontTiles.  All 15 are uploaded to OBJ VRAM during
+the one-time init (conditional flag letters are uploaded even if unused).
+
+Tile numbering (stride-2 to avoid 16x16 sub-tile overlap):
+  Digits 0-7: tiles $80,$82,$84,$86,$88,$8A,$8C,$8E
+  Digits 8-9: tiles $A0,$A2
+  Letters D,M,T,P,C: tiles $A4,$A6,$A8,$AA,$AC
+
+VRAM word addresses (name table 1 base $7000 + tile# × $10):
+  Digits: $7800,$7820,...,$78E0,$7A00,$7A20
+  Letters: $7A40,$7A60,$7A80,$7AA0,$7AC0
+
+These are ABOVE LoadTitleGfx's decompressed data range ($7000-$77DB),
+so the TR/BL/BR sub-tiles of each 16x16 sprite remain zeroed (transparent)
+from ClearVRAM.  Only the TL sub-tile contains the glyph.
+
+WRAM Addresses Used
+-------------------
+  7E:1E20-1E2D  DMMetaMirror (14-byte ROM metadata copy)
+  7E:1E36       DMOverlayInit (one-time init guard)
+  7E:7A97       TitleTextAnim2 sprite count
+  7E:7A98+      TitleTextAnim2 sprite entry data
+
+ROM Space Used
+--------------
+  C2:680F       4 bytes (JML hook, overwrites original JML $7E5000)
+  C4:A4C0-A51F  96 bytes (TitleWrapperHook section)
+  C4:A520-A925  1030 bytes (TitleMetadataOverlay + sprites + font data)
+  C4:B000-B00F  16 bytes (PATCHMETADATA block)
+
+Pitfalls Encountered During Development
+========================================
+
+Bug 1: Wrong VRAM base address ($1600 instead of $6600)
+  Initial implementation computed VRAM addresses relative to $0000 instead
+  of the OBJ name table base.  OBSEL=$63 means first name table at $6000,
+  second at $7000.  Writing to $1600 overwrote BG tilemap data.
+
+Bug 2: Sprite x_offset bit 7 = large sprite flag
+  SNES OAM byte 0 bit 7 doesn't extend the X coordinate—it selects the
+  "large" sprite size from OBSEL.  Nintendo compensation offsets had bit 7
+  set, making the engine render 32x32 sprites instead of 16x16.
+
+Bug 3: Reading write-only register $2115 (VMAIN)
+  Attempted to save/restore VMAIN by reading $2115, which is write-only.
+  The read returned open bus, corrupting the restore.
+
+Bug 4: Consecutive tile numbers overlap 16x16 sub-tiles
+  A 16x16 sprite with tile N uses sub-tiles N, N+1, N+16, N+17.  Using
+  consecutive tile numbers (N, N+1, N+2...) causes sub-tile overlap.
+  Fix: stride-2 numbering ($80,$82,$84...).
+
+Bug 5: All four 16x16 sub-tile quadrants got the same glyph data
+  Only the top-left sub-tile should contain the glyph; TR/BL/BR should
+  be transparent (zero).  Initial code wrote glyph data to all four.
+
+Bug 6: VRAM address $6600 instead of $7600
+  Confused first name table ($6000) with second name table ($7000).
+  Sprite attr bit 0 = 1 selects name table 1, so tile base is $7000,
+  not $6000.  $6600 landed in BG1 character data, corrupting the logo.
+
+Bug 7: B register garbage in TAX (8-bit accumulator mode)
+  When m=1 (8-bit A), the B register (high byte of the 16-bit C
+  accumulator) doesn't get cleared.  TAX transfers the full 16-bit C,
+  so random B values corrupt the X index.  Fix: briefly switch to 16-bit
+  A, AND #$00FF to zero B, then back to 8-bit.
+
+Bug 8: Font source offset ×16 instead of ×32
+  Each 4bpp 8×8 tile is 32 bytes (16 bytes planes 0-1 + 16 bytes planes
+  2-3).  Original code multiplied by 16, reading overlapping data.
+
+Bug 9: DBR=$00 during lda.w table reads
+  The MSU NMI handler sets DBR=$00.  `lda.w DigitVramAddrTbl,x` resolves
+  to bank $00 (hardware registers / RAM) instead of bank $C4 (ROM).
+  Fix: use `lda.l` (absolute long,X) for ALL ROM table reads.
+
+Bug 10: VMAIN restored to $00 instead of $80
+  After upload, code restored VMAIN to $00 (byte-increment mode).  The
+  cutscene engine expects $80 (word-increment after high byte write).
+  This caused per-frame BG corruption.  Fix: leave VMAIN at $80.
+
+Bug 11: LoadTitleGfx overwrites tile area at VRAM $7600+
+  LoadTitleGfx decompresses OBJ sprite data to $7000 with size $0FB8,
+  reaching up to ~$77DB.  Our original tile area at $7600+ was partly
+  overwritten by decompressed data.  Only the TL sub-tile was uploaded
+  by our code; TR/BL/BR retained garbage from the decompress.
+  Fix: relocate tiles to $80+/$A0+ (VRAM $7800+), above the decompress
+  range.
+
+Bug 12: Font pixel color = black (invisible)
+  4bpp tiles with only bitplane 0 set produce color index 1.  In OBJ
+  palette 1, color index 1 = $0000 (black).  Black pixels on a dark
+  background are invisible.  Fix: duplicate bitplane 0 data into
+  bitplane 2 so pixels hit color index 5 = $77BD (bright near-white,
+  matching the Nintendo text).
+
+Bug 13: Boot freeze from missing sep #$20 before NMI gate compare
+  FadeRoutine returns with rep #$30 (16-bit A/XY).  The gate check
+  `lda.l $7E5000; cmp.b #$4C` was assembled as a 16-bit immediate
+  (2-byte operand) because WLA-DX inferred 16-bit accumulator mode.
+  This shifted every subsequent instruction by 1 byte, garbling the
+  code stream.  Fix: add `sep #$20` before the gate check.
+
+Bug 14: NMI gate leaks into gameplay (VRAM corruption on save/load)
+  The decompressed cutscene blob at $7E5000 persists in WRAM permanently.
+  Field, battle, and menu modes never clear the $5000+ region.  ClearRAM
+  during soft reset only clears $0000-$1200.  The $4C opcode (JMP) at
+  $7E5000 survived indefinitely, so the NMI gate never rejected.
+  Additionally, DMOverlayInit at $1E36 is in the SRAM mirror ($1600-$1FFF).
+  Loading old/unpatched save data could overwrite it with 0, causing the
+  overlay to re-run full VRAM upload during gameplay — corrupting graphics.
+  Fix: self-seal the gate by writing $00 to $7E5000 after overlay init.
+  The 5-byte signature guard at $7E5280 has the same persistence problem,
+  but the gate seal makes it irrelevant.
+
+Bug 15: Title overlay absent after soft reset
+  Soft reset clears VRAM (ClearVRAM) but does NOT clear ClearRAM's range
+  beyond $1200.  DMOverlayInit at $1E36 remains 1 from the first title
+  screen.  The overlay sees DMOverlayInit=1 → skips re-init → no font
+  tiles in VRAM → invisible text.
+  Fix: TitleWrapperHook now does `stz DMOverlayInit` inside the signature
+  guard, forcing re-initialization on every title screen entry.
+
+Key SNES/PPU Lessons
+====================
+- $2115 (VMAIN) is write-only.  Never read it.
+- OBSEL encodes both sprite sizes and two name table bases.  Study the
+  encoding before computing VRAM addresses.
+- Sprite entry byte 0 bit 7 = large/small size select, NOT an X coord bit.
+- 16x16 sprites use 4 sub-tiles (N, N+1, N+16, N+17).  Tile numbers must
+  be stride-2 or you get sub-tile overlap.
+- DBR affects all `lda.w addr,X` instructions.  In NMI handlers where DBR
+  may be $00, use `lda.l` for ROM table reads.
+- The B register (high byte of 16-bit C) is NOT cleared by 8-bit LDA.
+  TAX transfers all 16 bits of C regardless of m flag.
+- 4bpp tile format: bytes 0-15 are planes 0/1 interleaved, bytes 16-31
+  are planes 2/3.  Color index = bp0 + bp1×2 + bp2×4 + bp3×8.
+- Always verify VRAM ranges against what the engine's init/decompression
+  routines actually populate—the decompressed size may be larger than the
+  "intended" region.
+- Decompressed cutscene code at $7E5000+ persists in WRAM permanently.
+  Field, battle, and menu modes never overwrite it.  ClearRAM only clears
+  $0000-$1200.  Any byte-check gate using this region MUST be explicitly
+  sealed after use, or it will leak for the entire game session.
+- DMOverlayInit ($1E36) is in the SRAM mirror ($1600-$1FFF).  Save/load
+  copies SRAM directly over existing WRAM contents.  Never rely on a flag
+  in this region surviving a save/load cycle — use it only as a soft hint,
+  not a hard gate.
+
+MSU-1 Audio Integration Notes
+=============================
+The following notes document MSU-1 audio behaviors discovered during the
+overlay bugfix sessions.  They are recorded here because the root-cause
+investigation for overlay bugs (14, 15) also uncovered a pre-existing
+audio regression (commit 49ce2c2).
+
+Vanilla $1305 (CurrentTrack) invalidation protocol:
+  Vanilla PlaySong at C5:0182 does `lda $01; cmp $05; beq Exit` — when
+  the requested track equals the current track, it's a pure no-op.  No
+  volume is sent to the SPC, no song data is loaded.
+  TitleState_01 deliberately writes $FF to $1305 before re-requesting the
+  same song, forcing a mismatch so PlaySong processes the command and
+  sends the new volume to the SPC.  This is a vanilla pattern: $FF in
+  $1305 means "forget what you're playing" (cache invalidation).
+
+MSU DoNothing path and the $1305 check:
+  The MSU patch replaces the comparison target: MSUMain checks PlayTrack
+  against MSUCurrentTrack ($1E31), not vanilla's $1305.  TitleState_01's
+  $FF write to $1305 is invisible to MSU.
+  OriginalCode masks non-position-marker tracks to $51 for the SPC, so
+  $1305 is normally $51 when MSU is active.  It's only $FF when:
+    - Cold boot init (before any track plays)
+    - TitleState_01 explicitly writes it
+    - Stop song ($F0/$F1) command clears it
+  The DoNothing path now checks `lda CurrentTrack; cmp #$FF` to detect
+  vanilla invalidation, and syncs MSU volume accordingly.
+  Area/menu transitions also re-request tracks at $FF volume, but $1305
+  stays $51 from OriginalCode masking, so DoNothing correctly ignores them.
+
+Removed _SetFadeFlag (commit 49ce2c2):
+  The old FadeRoutine had a _SetFadeFlag block that ran every NMI frame
+  when FadeFlag=0.  It polled PlayVolume ($1302) vs MSUCurrentVolume and
+  auto-initiated fades on mismatch.  This accidentally fixed the title
+  unmute (PlayVolume=$FF vs MSUCurrentVolume=$00 → fade up), but also
+  caught stale $FF writes from area/menu transitions, causing the wind
+  SFX (track 57) to blow out to max volume in South Figaro.
+  The _SetFadeFlag removal was correct in intent, but broke the title
+  screen unmute as collateral.  The $1305 check in DoNothing is the
+  targeted replacement.
+
+TWUE Compatibility
+==================
+Analysis performed 2026-04-19 by decompressing both vanilla and TWUE
+cutscene blobs (FF6 LZSS at C2:686C → 7E:5000).
+
+Findings:
+- TWUE modifies the compressed cutscene data at C2:686C+.  No DM ROM
+  regions (C2:680F hook, C4:A4C0-A91F overlay, C4:B000-B00F metadata)
+  are overwritten — zero conflicts.
+- TWUE removes the splash screen ("1994 SQUARE" license page) from the
+  decompressed title module.  Vanilla has 6 sequential JSRs in the title
+  entry at 7E:500C (init, init2, SPLASH, TITLE, cleanup, cleanup); TWUE
+  has 5 (init, init2, TITLE, cleanup, cleanup — splash JSR removed).
+- The title screen proper (12-state machine) is fully intact in TWUE.
+- Code reorganization shifts all addresses, so our 5-byte signature guard
+  at 7E:5280 (vanilla: A4 15 D0 12 E6) reads entirely different bytes
+  under TWUE (F9 79 9D 00 35).  The guard fails, overlay is silently
+  disabled, and the title runs normally without it.
+- Even if the guard were fixed, the overlay would appear on the title
+  menu rather than the splash (which no longer exists under TWUE).
+
+Decision: accepted as-is.  The overlay works for vanilla and for the MP
+and CSR optional patches.  The install log summary (see section 2) serves
+as a diagnostic fallback for TWUE users and any other scenario where the
+on-screen overlay is not visible.
+
+Upcoming Work
+=============
+- Position tweaking once visual balance is confirmed
+- FMV branch compatibility: relocate C4 allocations and C2:680F hook to
+  avoid conflicts with FMVCODE (which owns C4:A4C0-B9FF and C2:680F)
