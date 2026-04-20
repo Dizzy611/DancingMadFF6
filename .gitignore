@@ -26,6 +26,7 @@ installer/tmp/
 *.srm
 *.log
 patch/ff3msu.link
+patch/build_date.inc
 *.obj
 installer/build/
 build/
@@ -36,7 +37,6 @@ utils/rr/
 utils/wla-*/
 utils/reshacker/
 patch/test/
-patch/ff3msu.ips
 installer/DancingMad-linux.tar
 *.bak
 
@@ -115,6 +115,9 @@ CMakeLists.txt.user*
 # Permanent local-content excludes
 /external/
 patch/FF6-RevisedOldStyleEdition_v2-03_NH.ips
+
+# Private workflow notes (not for public repo)
+doc/model-workflow-notes.txt
 
 # TEMPORARY (remove after Issue #32 checklist completion)
 doc/issue-32-sfx-test-checklist.md

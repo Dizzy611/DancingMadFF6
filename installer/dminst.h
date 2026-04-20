@@ -75,6 +75,7 @@ private:
     DMLogger *logger;
     bool customized = false;
     bool offlineMode = false;
+    bool stampPatchMetadataFlags(bool twue, bool mp, bool csr);
     void nextStage();
 };
 #endif // DMINST_H
