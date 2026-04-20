@@ -35,12 +35,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: macos-13
+          - os: macos-14
             arch: x86_64
             qt_arch: clang_64
+            cmake_osx_arch: x86_64
           - os: macos-14
             arch: arm64
-            qt_arch: clang_arm64
+            qt_arch: clang_64
+            cmake_osx_arch: arm64
 
     steps:
       - name: Checkout repository
@@ -73,7 +75,8 @@ jobs:
           cmake -S installer -B build-installer \
             -G Ninja \
             -DQT_DEFAULT_MAJOR_VERSION=6 \
-            -DCMAKE_BUILD_TYPE=Release
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_OSX_ARCHITECTURES=${{ matrix.cmake_osx_arch }}
 
       - name: Build installer
         run: |
@@ -101,19 +104,52 @@ jobs:
           macdeployqt "$APP_PATH" -dmg
           mv "$GITHUB_WORKSPACE/dist/DanceMonkey.dmg" "$GITHUB_WORKSPACE/DancingMadInstaller-macos-${{ matrix.arch }}.dmg"
 
+      - name: Validate packaged app architecture
+        run: |
+          set -euo pipefail
+          APP_PATH="$GITHUB_WORKSPACE/dist/DanceMonkey.app"
+          EXPECTED_ARCH="${{ matrix.arch }}"
+
+          check_arch() {
+            local bin_path="$1"
+            if [[ ! -f "$bin_path" ]]; then
+              echo "Missing expected binary: $bin_path" >&2
+              exit 1
+            fi
+
+            local archs
+            archs="$(lipo -archs "$bin_path" 2>/dev/null || true)"
+            if [[ -z "$archs" ]]; then
+              echo "Could not read architectures for: $bin_path" >&2
+              exit 1
+            fi
+
+            if ! grep -qw "$EXPECTED_ARCH" <<< "$archs"; then
+              echo "Architecture mismatch for $bin_path" >&2
+              echo "Expected to include: $EXPECTED_ARCH" >&2
+              echo "Found: $archs" >&2
+              exit 1
+            fi
+
+            echo "$bin_path -> $archs"
+          }
+
+          check_arch "$APP_PATH/Contents/MacOS/DanceMonkey"
+          check_arch "$APP_PATH/Contents/PlugIns/platforms/libqcocoa.dylib"
+
       - name: Archive .app bundle
         run: |
           ditto -c -k --sequesterRsrc --keepParent "$GITHUB_WORKSPACE/dist/DanceMonkey.app" "$GITHUB_WORKSPACE/DanceMonkey-macos-${{ matrix.arch }}.zip"
 
       - name: Upload macOS app artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: DanceMonkey-app-macos-${{ matrix.arch }}
           path: DanceMonkey-macos-${{ matrix.arch }}.zip
           if-no-files-found: error
 
       - name: Upload macOS artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: DancingMadInstaller-macos-${{ matrix.arch }}
           path: DancingMadInstaller-macos-${{ matrix.arch }}.dmg
@@ -139,14 +175,24 @@ jobs:
             exit 1
           fi
 
+      - name: Install Qt6 tools for macdeployqt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: 6.7.3
+          host: mac
+          target: desktop
+          arch: clang_64
+          modules: qtmultimedia
+          cache: true
+
       - name: Download x86_64 app artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           name: DanceMonkey-app-macos-x86_64
           path: /tmp/macos-apps/x86_64
 
       - name: Download arm64 app artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           name: DanceMonkey-app-macos-arm64
           path: /tmp/macos-apps/arm64
@@ -183,6 +229,14 @@ jobs:
 
             if [[ -f "$afile" && -f "$xfile" ]]; then
               if file "$xfile" | grep -q "Mach-O"; then
+                x_archs="$(lipo -archs "$xfile" 2>/dev/null || true)"
+                a_archs="$(lipo -archs "$afile" 2>/dev/null || true)"
+
+                # If both files already carry the same slices, keep the base copy.
+                if [[ -n "$x_archs" && "$x_archs" == "$a_archs" ]]; then
+                  continue
+                fi
+
                 lipo -create -output "$ufile" "$xfile" "$afile"
               fi
             fi
@@ -190,12 +244,45 @@ jobs:
 
       - name: Build universal DMG
         run: |
+          set -euo pipefail
           APP_PATH="$GITHUB_WORKSPACE/dist/DanceMonkey.app"
-          macdeployqt "$APP_PATH" -dmg
-          mv "$GITHUB_WORKSPACE/dist/DanceMonkey.dmg" "$GITHUB_WORKSPACE/DancingMadInstaller-macos-universal.dmg"
+          OUT_DMG="$GITHUB_WORKSPACE/dist/DanceMonkey.dmg"
+          FINAL_DMG="$GITHUB_WORKSPACE/DancingMadInstaller-macos-universal.dmg"
+
+          # The merged app already contains qt.conf from prior per-arch packaging.
+          # Remove it so macdeployqt can regenerate a consistent file for this bundle.
+          rm -f "$APP_PATH/Contents/Resources/qt.conf"
+
+          rm -f "$OUT_DMG" "$FINAL_DMG"
+
+          success=0
+          for attempt in 1 2 3; do
+            echo "Building universal DMG (attempt $attempt/3)"
+
+            if macdeployqt "$APP_PATH" -dmg && [[ -f "$OUT_DMG" ]]; then
+              success=1
+              break
+            fi
+
+            echo "macdeployqt DMG build failed or output missing; detaching stale mounted images before retry"
+            hdiutil info | awk '/\/Volumes\/DanceMonkey/{print $1}' | while read -r dev; do
+              if [[ -n "$dev" ]]; then
+                hdiutil detach -force "$dev" || true
+              fi
+            done
+
+            rm -f "$OUT_DMG"
+          done
+
+          if [[ "$success" -ne 1 ]]; then
+            echo "Failed to build universal DMG after 3 attempts" >&2
+            exit 1
+          fi
+
+          mv "$OUT_DMG" "$FINAL_DMG"
 
       - name: Upload universal macOS artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: DancingMadInstaller-macos-universal
           path: DancingMadInstaller-macos-universal.dmg

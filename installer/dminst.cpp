@@ -55,11 +55,51 @@ This patch is intended to be used only with a legally obtained copy of Final Fan
 #include <iostream>
 #include <sstream>
 #include <cstring>
+#include <fstream>
 
 namespace {
 QString bundledDataFilePath(const QString& fileName) {
     return QDir(QCoreApplication::applicationDirPath()).filePath(fileName);
 }
+
+constexpr std::streamoff kPatchMetadataFlagsOffset = 0x04B00A;
+}
+
+bool DMInst::stampPatchMetadataFlags(bool twue, bool mp, bool csr) {
+    unsigned char flags = 0;
+    if (twue) {
+        flags |= 0x01;
+    }
+    if (mp) {
+        flags |= 0x02;
+    }
+    if (csr) {
+        flags |= 0x04;
+    }
+
+    const std::string romPath = this->destdir + "ff3.sfc";
+    std::fstream rom(romPath, std::ios::in | std::ios::out | std::ios::binary);
+    if (!rom.is_open()) {
+        this->logger->doLog("WARNING: Unable to open patched ROM to stamp metadata flags.");
+        return false;
+    }
+
+    rom.seekp(kPatchMetadataFlagsOffset, std::ios::beg);
+    if (!rom.good()) {
+        this->logger->doLog("WARNING: Failed to seek to metadata flags offset in ROM.");
+        return false;
+    }
+
+    rom.write(reinterpret_cast<const char*>(&flags), 1);
+    if (!rom.good()) {
+        this->logger->doLog("WARNING: Failed writing metadata flags byte to ROM.");
+        return false;
+    }
+
+    std::ostringstream oss;
+    oss << "Stamped metadata flags byte: 0x" << std::hex << std::uppercase << static_cast<int>(flags);
+    this->logger->doLog(oss.str());
+    return true;
 }
 
 // DEBUG
@@ -434,6 +474,37 @@ void DMInst::nextStage() {
     }
     case 4:
         {
+        bool twue = this->findChild<QCheckBox*>("patchCheck_1")->checkState();
+        bool mp   = this->findChild<QCheckBox*>("patchCheck_2")->checkState();
+        bool csr  = this->findChild<QCheckBox*>("patchCheck_3")->checkState();
+        stampPatchMetadataFlags(twue, mp, csr);
+
+        // Log install summary: build date from ROM metadata + optional patch selections.
+        {
+            const std::string romPath = this->destdir + "ff3.sfc";
+            std::ifstream rom(romPath, std::ios::binary);
+            std::string buildDate = "(unknown)";
+            if (rom.is_open()) {
+                constexpr std::streamoff kPatchMetadataOffset = 0x04B000;
+                rom.seekg(kPatchMetadataOffset, std::ios::beg);
+                char meta[14] = {};
+                if (rom.read(meta, 14) && std::string(meta, 4) == "DMVS") {
+                    buildDate = std::string(meta + 4, 6);
+                }
+            }
+
+            std::string optPatches;
+            if (twue) optPatches += "TWUE ";
+            if (mp)   optPatches += "MP ";
+            if (csr)  optPatches += "CSR ";
+            if (optPatches.empty()) optPatches = "none";
+
+            this->logger->doLog("=== Install Summary ===");
+            this->logger->doLog("Patch build date: " + buildDate);
+            this->logger->doLog("Optional patches: " + optPatches);
+            this->logger->doLog("=======================");
+        }
+
         if(!this->warnings.empty()) {
             std::string boxString = "Unable to download the following paths from any mirror. Please try again in 5 minutes. If this error persists, please contact the developer.\n\n";
             for (auto const & warning : this->warnings) {

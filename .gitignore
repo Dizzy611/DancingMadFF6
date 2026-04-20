@@ -32,6 +32,8 @@ installer/dist/
 installer/tmp/
 *.srm
 *.log
+patch/ff3msu.link
+patch/build_date.inc
 **/*.link
 *.obj
 installer/build/

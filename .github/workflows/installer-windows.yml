@@ -462,7 +462,7 @@ jobs:
           [System.IO.File]::WriteAllLines($guidePath, $lines)
 
       - name: Upload Windows artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: DancingMadInstaller-windows-${{ github.sha }}
           path: |
@@ -471,7 +471,7 @@ jobs:
           if-no-files-found: error
 
       - name: Upload Wine validation guide artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: DancingMadInstaller-wine-guide-${{ github.sha }}
           path: |

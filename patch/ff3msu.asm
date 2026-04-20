@@ -51,7 +51,12 @@
 .DEFINE DancingFlag        $1E33
 .DEFINE TrainFlag          $1E34
 .DEFINE FadeInPending      $1E35
+.DEFINE DMOverlayInit      $1E36
 .DEFINE MSULastTrackSet    $7EF001
+
+; Runtime copy of ROM metadata for debugger visibility during title flow.
+; 14 bytes mirrored from C4:B000 to high WRAM to avoid FMV state overlap.
+.DEFINE DMMetaMirror       $7EF440
 
 ; FMV RAM allocations ($1E20-$1E2F are unused in FF6)
 .DEFINE FMVState           $1E20
@@ -211,6 +216,28 @@ jml EventCmdFAHook
 .SECTION "TitleScreenHook" SIZE 4 OVERWRITE
 
 jml TitleScreenHook
+
+.ENDS
+
+
+; Patch metadata block for diagnostics/versioning.
+; File offset: 0x04B000 (PC offset in 4MB HiROM image).
+; Layout:
+;   +0x00..0x03: magic "DMVS"
+;   +0x04..0x09: build date ASCII YYMMDD
+;   +0x0A: installer option flags (bit0=TWUE, bit1=MP, bit2=CSR)
+;   +0x0B: metadata version
+;   +0x0C..0x0D: reserved
+.BANK 4
+.ORG $B000
+.SECTION "PATCHMETADATA" SIZE 14 OVERWRITE
+
+.DB "DMVS"
+.INCLUDE "build_date.inc"
+.DB $00
+.DB $01
+.DB $00
+.DB $00
 
 .ENDS
 
@@ -568,6 +595,15 @@ SpecialHandlingBack:
     and #MSUStatus_AudioPlaying
     beq NotPlaying
 DoNothing:
+    ; Same track already playing - normally a no-op (matches vanilla SPC).
+    ; If vanilla forces a replay by writing $FF to CurrentTrack, sync volume.
+    lda CurrentTrack
+    cmp.b #$FF
+    bne +
+    lda PlayVolume
+    sta MSUCurrentVolume
+    sta MSUVolume
++
     jmp OriginalCode
 NotPlaying:
     ; Fall through even on volume=0. EventCmd_f3 sends volume=0 play then a
@@ -866,6 +902,13 @@ NMIHandle:
     bra _NMIHandleDone
 _NMIHandleNormal:
     jsr FadeRoutine
+    ; Gate: only call overlay when title cutscene code is present at $7E5000.
+    sep #$20
+    lda.l $7E5000
+    cmp.b #$4C
+    bne _SkipOverlay
+    jsl TitleMetadataOverlay
+_SkipOverlay:
 _NMIHandleDone:
     rep #$30
     plb
@@ -953,50 +996,410 @@ _FadeUpStore:
     rts
 
 .ENDS
+
+.BANK 4
+.ORG $BA00
+.SECTION "TITLEOVERLAY" SIZE 1036 OVERWRITE
+
+; If title code is active, install a date overlay once by patching the title
+; sprite table in WRAM and uploading digit glyph tiles into OBJ VRAM.
+TitleMetadataOverlay:
+    sep #$20
+    lda.l $7E5280
+    cmp.b #$A4
+    beq _TitleOverlaySignatureOK
+    ; After FMV hook install, $7E5280 = $22 (JSL), $7E5283 = $C4 (bank).
+    cmp.b #$22
+    bne _TitleOverlayNotActive
+    lda.l $7E5283
+    cmp.b #$C4
+    beq _TitleOverlaySignatureOK
+    bra _TitleOverlayNotActive
+_TitleOverlaySignatureOK:
+    ; Valid title context — either original state or our FMV hook.
+
+    lda DMOverlayInit
+    cmp.b #$01
+    beq _TitleOverlayDone
+
+    jsr TitleMetadataPrepareSprites
+    lda.b #$01
+    sta DMOverlayInit
+    ; Self-seal NMI gate: the title JMP at $7E5000 has already executed
+    ; during cutscene init and is never re-entered.  Clearing it ensures
+    ; no future NMI (gameplay, save/load) can reach this overlay code.
+    ; Soft reset re-decompresses the cutscene blob, restoring $4C.
+    lda.b #$00
+    sta.l $7E5000
+    bra _TitleOverlayDone
+
+_TitleOverlayNotActive:
+    stz DMOverlayInit
+
+_TitleOverlayDone:
+    rep #$30
+    rtl
+
+TitleMetadataPrepareSprites:
+    rep #$10               ; Ensure 16-bit index — callers may have 8-bit (sep #$30).
+    ; Mirror metadata from ROM to WRAM in case this NMI path initializes first.
+    ldx.w #$0000
+_MetaMirrorLoop:
+    lda.l $C4B000,x
+    sta.l DMMetaMirror,x
+    inx
+    cpx.w #$000E
+    bne _MetaMirrorLoop
+
+    ; --- Build display: "DM" + date + optional flag indicators ---
+    ; Task base is ($90,$A0). Nintendo's 4 entries are untouched.
+    ; All sprites at y_off=$20 (screen Y=$C0, below Nintendo at $B0).
+    ; "DM" at x_off $00/$08, date at $10-$48, flags starting at $50.
+    ; All offsets have bit7 clear → "small" (16x16 under OBSEL=$63).
+    phb
+    lda.b #$7E
+    pha
+    plb
+
+    ldy.w #$0010           ; byte offset past Nintendo's 4 entries
+
+    ; --- "D" prefix sprite ---
+    lda.b #$00
+    sta $7A98,y            ; x_off
+    lda.b #$20
+    sta $7A99,y            ; y_off
+    lda.b #$A4             ; tile# for "D"
+    sta $7A9A,y
+    lda.b #$33
+    sta $7A9B,y            ; attr
+    iny
+    iny
+    iny
+    iny
+
+    ; --- "M" prefix sprite ---
+    lda.b #$08
+    sta $7A98,y
+    lda.b #$20
+    sta $7A99,y
+    lda.b #$A6             ; tile# for "M"
+    sta $7A9A,y
+    lda.b #$33
+    sta $7A9B,y
+    iny
+    iny
+    iny
+    iny
+
+    ; --- 6 date-digit sprites (YYMMDD, skip century) ---
+    ldx.w #$0000           ; digit index 0-5
+_DateSpriteLoop:
+    lda.l DMMetaMirror+4,x ; ASCII char from build date (YYMMDD)
+    sec
+    sbc.b #$30             ; ASCII '0' → 0
+    cmp.b #$0A
+    bcc +
+    lda.b #$00             ; clamp non-digit to 0
++
+    phx
+    rep #$20               ; 16-bit A to clear B (high byte of C)
+    and.w #$00FF
+    tax
+    sep #$20
+    lda.l DigitTileNumTbl,x
+    plx
+    sta $7A9A,y            ; tile number
+
+    txa                    ; digit index
+    asl a
+    asl a
+    asl a                  ; × 8
+    clc
+    adc.b #$10             ; shift right for "DM" prefix
+    sta $7A98,y            ; x_off
+    lda.b #$20
+    sta $7A99,y            ; y_off
+    lda.b #$33
+    sta $7A9B,y            ; attr
+
+    iny
+    iny
+    iny
+    iny
+    inx
+    cpx.w #$0006
+    bne _DateSpriteLoop
+
+    ; --- Optional flag indicator sprites ---
+    ; Flags byte at DMMetaMirror+$0A: bit0=TWUE, bit1=MP, bit2=CSR.
+    ; Displayed as single letters T, P, C at x_off $40+ in 8px steps.
+    lda.b #$40
+    pha                    ; running x_off on stack
+
+    lda.l DMMetaMirror+$0A
+    and.b #$01             ; TWUE?
+    beq _SkipTWUE
+    pla
+    sta $7A98,y
+    clc
+    adc.b #$08
+    pha
+    lda.b #$20
+    sta $7A99,y
+    lda.b #$A8             ; tile# for "T"
+    sta $7A9A,y
+    lda.b #$33
+    sta $7A9B,y
+    iny
+    iny
+    iny
+    iny
+_SkipTWUE:
+
+    lda.l DMMetaMirror+$0A
+    and.b #$02             ; MP?
+    beq _SkipMP
+    pla
+    sta $7A98,y
+    clc
+    adc.b #$08
+    pha
+    lda.b #$20
+    sta $7A99,y
+    lda.b #$AA             ; tile# for "P"
+    sta $7A9A,y
+    lda.b #$33
+    sta $7A9B,y
+    iny
+    iny
+    iny
+    iny
+_SkipMP:
+
+    lda.l DMMetaMirror+$0A
+    and.b #$04             ; CSR?
+    beq _SkipCSR
+    pla
+    sta $7A98,y
+    clc
+    adc.b #$08
+    pha
+    lda.b #$20
+    sta $7A99,y
+    lda.b #$AC             ; tile# for "C"
+    sta $7A9A,y
+    lda.b #$33
+    sta $7A9B,y
+    iny
+    iny
+    iny
+    iny
+_SkipCSR:
+
+    pla                    ; discard running x_off
+
+    ; Compute and store final sprite count.
+    ; Y = byte offset past all entries.  Entries = (Y-$10)/4 + 4 Nintendo.
+    tya
+    sec
+    sbc.b #$10
+    lsr a
+    lsr a
+    clc
+    adc.b #$04
+    sta $7A97
+
+    plb
+
+    ; --- Upload digit font tiles into OBJ VRAM ---
+    ; OBSEL=$63 → OBJ first table at VRAM $6000, second table at $7000.
+    ; Attr bit 0 = 1 ($33) selects name table 1 at $7000.
+    ; 16x16 sprite at tile N uses sub-tiles N, N+1, N+16, N+17.
+    ; We write the 8x8 digit glyph into the top-left sub-tile only;
+    ; the other three sub-tiles are already zero (ClearVRAM during InitTitle).
+    ;
+    ; VMAIN ($2115) must be $80 (increment after high-byte write) for 16-bit
+    ; STA $2118.  The engine also expects $80, so we set it and leave it.
+    ;
+    ; IMPORTANT: This function may be called with any DBR (NMI uses $00,
+    ; TitleScreenHook uses $7E).  ROM table reads already use lda.l.
+    ; I/O register writes MUST use absolute long addressing (sta.l) so
+    ; they always hit bank $00 hardware regardless of DBR.
+    sep #$20
+    lda.b #$80
+    sta.l $002115
+
+    ; Upload each glyph's 8x8 tile into its top-left sub-tile VRAM slot.
+    ; No zero-fill needed: ClearVRAM zeroed all VRAM during title init, and
+    ; our tile area ($7800+) is not touched by LoadTitleGfx.
+    rep #$30
+    ldx.w #$0000           ; outer digit index (0-9)
+_UploadDigitLoop:
+    ; Set VRAM destination for this digit's TL sub-tile.
+    phx
+    txa
+    asl a                  ; × 2 (word-sized table entries)
+    tax
+    lda.l DigitVramAddrTbl,x  ; long,X → reads from bank $C4 ✓
+    sta.l $002116
+    plx
+
+    ; Compute font source byte offset: digit × 32 bytes.
+    phx
+    txa
+    asl a
+    asl a
+    asl a
+    asl a
+    asl a                  ; × 32
+    tax                    ; X = source byte offset
+
+    ; Upload 16 words (32 bytes = one 8x8 4bpp tile).
+    ldy.w #$0010
+_UploadTileLoop:
+    lda.l DigitFontTiles,x    ; long,X → reads from bank $C4 ✓
+    sta.l $002118
+    inx
+    inx
+    dey
+    bne _UploadTileLoop
+
+    plx                    ; restore outer digit index
+    inx
+    cpx.w #$000F           ; 10 digits + 5 letters
+    bne _UploadDigitLoop
+
+    ; Leave VMAIN=$80 — this is the engine's expected state.
+    sep #$20
+    rts
+
+; Tile number lookup: digits 0-9, then letters D, M, T, P, C.
+; 16x16 sprites need stride-2 tile numbers to avoid sub-tile overlap.
+; Tiles at $80+ map to VRAM $7800+, ABOVE LoadTitleGfx range ($7000-$77DB).
+; TR/BL/BR sub-tiles stay zeroed from ClearVRAM (transparent).
+DigitTileNumTbl:
+    .DB $80,$82,$84,$86,$88,$8A,$8C,$8E,$A0,$A2
+    .DB $A4,$A6,$A8,$AA,$AC             ; D, M, T, P, C
+
+; VRAM word addresses for each glyph's top-left sub-tile.
+; Name table 1 base $7000 + tile_number × $10.
+DigitVramAddrTbl:
+    .DW $7800,$7820,$7840,$7860,$7880,$78A0,$78C0,$78E0,$7A00,$7A20
+    .DW $7A40,$7A60,$7A80,$7AA0,$7AC0   ; D, M, T, P, C
+
+; 8x8 4bpp glyph font: digits 0-9, then letters D, M, T, P, C.
+; Format: 16 bytes planes 0-1 interleaved, then 16 bytes planes 2-3.
+; Planes 2-3 mirror planes 0-1 so set pixels hit color index 5 ($77BD,
+; the brightest color in OBJ palette 1 — matches the Nintendo text).
+DigitFontTiles:
+    ; 0
+    .DB $3C,$00,$66,$00,$6E,$00,$76,$00,$66,$00,$66,$00,$3C,$00,$00,$00
+    .DB $3C,$00,$66,$00,$6E,$00,$76,$00,$66,$00,$66,$00,$3C,$00,$00,$00
+    ; 1
+    .DB $18,$00,$38,$00,$18,$00,$18,$00,$18,$00,$18,$00,$7E,$00,$00,$00
+    .DB $18,$00,$38,$00,$18,$00,$18,$00,$18,$00,$18,$00,$7E,$00,$00,$00
+    ; 2
+    .DB $3C,$00,$66,$00,$06,$00,$0C,$00,$30,$00,$60,$00,$7E,$00,$00,$00
+    .DB $3C,$00,$66,$00,$06,$00,$0C,$00,$30,$00,$60,$00,$7E,$00,$00,$00
+    ; 3
+    .DB $3C,$00,$66,$00,$06,$00,$1C,$00,$06,$00,$66,$00,$3C,$00,$00,$00
+    .DB $3C,$00,$66,$00,$06,$00,$1C,$00,$06,$00,$66,$00,$3C,$00,$00,$00
+    ; 4
+    .DB $0C,$00,$1C,$00,$3C,$00,$6C,$00,$7E,$00,$0C,$00,$0C,$00,$00,$00
+    .DB $0C,$00,$1C,$00,$3C,$00,$6C,$00,$7E,$00,$0C,$00,$0C,$00,$00,$00
+    ; 5
+    .DB $7E,$00,$60,$00,$7C,$00,$06,$00,$06,$00,$66,$00,$3C,$00,$00,$00
+    .DB $7E,$00,$60,$00,$7C,$00,$06,$00,$06,$00,$66,$00,$3C,$00,$00,$00
+    ; 6
+    .DB $1C,$00,$30,$00,$60,$00,$7C,$00,$66,$00,$66,$00,$3C,$00,$00,$00
+    .DB $1C,$00,$30,$00,$60,$00,$7C,$00,$66,$00,$66,$00,$3C,$00,$00,$00
+    ; 7
+    .DB $7E,$00,$66,$00,$06,$00,$0C,$00,$18,$00,$18,$00,$18,$00,$00,$00
+    .DB $7E,$00,$66,$00,$06,$00,$0C,$00,$18,$00,$18,$00,$18,$00,$00,$00
+    ; 8
+    .DB $3C,$00,$66,$00,$66,$00,$3C,$00,$66,$00,$66,$00,$3C,$00,$00,$00
+    .DB $3C,$00,$66,$00,$66,$00,$3C,$00,$66,$00,$66,$00,$3C,$00,$00,$00
+    ; 9
+    .DB $3C,$00,$66,$00,$66,$00,$3E,$00,$06,$00,$0C,$00,$38,$00,$00,$00
+    .DB $3C,$00,$66,$00,$66,$00,$3E,$00,$06,$00,$0C,$00,$38,$00,$00,$00
+    ; D
+    .DB $7C,$00,$66,$00,$66,$00,$66,$00,$66,$00,$66,$00,$7C,$00,$00,$00
+    .DB $7C,$00,$66,$00,$66,$00,$66,$00,$66,$00,$66,$00,$7C,$00,$00,$00
+    ; M
+    .DB $C6,$00,$EE,$00,$FE,$00,$D6,$00,$C6,$00,$C6,$00,$C6,$00,$00,$00
+    .DB $C6,$00,$EE,$00,$FE,$00,$D6,$00,$C6,$00,$C6,$00,$C6,$00,$00,$00
+    ; T
+    .DB $7E,$00,$18,$00,$18,$00,$18,$00,$18,$00,$18,$00,$18,$00,$00,$00
+    .DB $7E,$00,$18,$00,$18,$00,$18,$00,$18,$00,$18,$00,$18,$00,$00,$00
+    ; P
+    .DB $7C,$00,$66,$00,$66,$00,$7C,$00,$60,$00,$60,$00,$60,$00,$00,$00
+    .DB $7C,$00,$66,$00,$66,$00,$7C,$00,$60,$00,$60,$00,$60,$00,$00,$00
+    ; C
+    .DB $3C,$00,$66,$00,$60,$00,$60,$00,$60,$00,$66,$00,$3C,$00,$00,$00
+    .DB $3C,$00,$66,$00,$60,$00,$60,$00,$60,$00,$66,$00,$3C,$00,$00,$00
+
+.ENDS
+
 ; FMV code region at $C4:A4C0.
 .BANK 4
 .ORG $A4C0
 .SECTION "FMVCODE" SIZE 5440 OVERWRITE
+
+; WLA-DX width state can leak across sections. Set known 8-bit entry widths
+; before any bare immediates in this JML/JSL hook region.
+.ACCU 8
+.INDEX 8
 
 ; Patch WRAM TitleState_01 to jump into our FMV hook after title decompression.
 TitleScreenHook:
     php
     sep #$30
     phb
-    lda #$7e
+    lda.b #$7e
     pha
     plb
     ; Only patch if WRAM has the expected bytes — this hook can fire from non-title flows too.
     lda TitleState01Patch
-    cmp #$a4
+    cmp.b #$a4
     bne _TitleScreenHookDone
     lda TitleState01Patch+1
-    cmp #$15
+    cmp.b #$15
     bne _TitleScreenHookDone
     lda TitleState01Patch+2
-    cmp #$d0
+    cmp.b #$d0
     bne _TitleScreenHookDone
     lda TitleState01Patch+3
-    cmp #$12
+    cmp.b #$12
     bne _TitleScreenHookDone
     lda TitleState01Patch+4
-    cmp #$e6
+    cmp.b #$e6
     bne _TitleScreenHookDone
+
+    ; Mirror patch metadata for debugger visibility and overlay rendering.
+    ldx.b #$00
+_TitleHookCopyLoop:
+    lda.l $C4B000,x
+    sta.l DMMetaMirror,x
+    inx
+    cpx.b #$0E
+    bne _TitleHookCopyLoop
+
+    stz DMOverlayInit      ; force overlay re-init (VRAM wiped by soft reset)
 
     stz FMVState
     stz FMVFlags
-    lda #$10
+    lda.b #$10
     sta FMVDebugMarker
     ; Write JSL FMV_TitleState01Hook + RTS over the 5 bytes
-    lda #$22                          ; JSL opcode
+    lda.b #$22                          ; JSL opcode
     sta TitleState01Patch
-    lda #<FMV_TitleState01Hook
+    lda.b #<FMV_TitleState01Hook
     sta TitleState01Patch+1
-    lda #>FMV_TitleState01Hook
+    lda.b #>FMV_TitleState01Hook
     sta TitleState01Patch+2
-    lda #$c4                          ; Bank $C4
+    lda.b #$c4                          ; Bank $C4
     sta TitleState01Patch+3
-    lda #$60                          ; RTS opcode
+    lda.b #$60                          ; RTS opcode
     sta TitleState01Patch+4
 _TitleScreenHookDone:
     plb
