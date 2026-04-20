@@ -767,6 +767,7 @@ BattleTheme:
     jmp ResumeSupportBT
 ;    jml SpecialHandlingBack ; If not, do our normal stuff.
 ResumeSupportBT:
+    stz FadeInPending ; Harden first battle entry: don't carry stale fade-in intent into battle theme start.
     lda #MSUControl_Pause ; Pause the current track.
     sta MSUControl
     jml SpecialHandlingBack
