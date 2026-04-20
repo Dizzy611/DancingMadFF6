@@ -740,6 +740,8 @@ WillItLoop:
     beq WILNope
     cmp #$43   ; Overture part 3
     beq WILNope
+    cmp #$38   ; Nighty Night
+    beq WILNope
     cmp #$51   ; Silence
     beq WILStop
     cmp #$53   ; Ending part 1
@@ -926,6 +928,9 @@ _FadeZero:
 _FadeZeroStore:
     sta MSUVolume
     sta MSUCurrentVolume    ; current volume = target volume
+    bne +
+    stz MSUControl          ; volume hit zero: stop MSU so AudioPlaying clears
++
     rep #$30
     rts
 
