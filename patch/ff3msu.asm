@@ -2218,7 +2218,6 @@ _FMVSubFrame3BaseReady:
 .ENDS
 
 
-; Ran out of space again...
 .BANK 18
 .ORG $FFD0
 .SECTION "YETMOREEVENTCODE" SIZE 18 OVERWRITE
