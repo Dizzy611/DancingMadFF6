@@ -604,6 +604,17 @@ DoNothing:
     sta MSUCurrentVolume
     sta MSUVolume
 +
+    ; If PlayVolume is non-zero, cancel any in-progress fade and restore volume.
+    ; OriginalCode zeroes PlayVolume for position-marker tracks ($41-$42), and a
+    ; subsequent $81 command then sees PlayVolume=0 and arms FadeFlag=$01, silencing
+    ; the MSU. For $43 (free-roam loop) PlayVolume stays non-zero, so this check
+    ; correctly cancels any stale fade from a prior fade_out_song in the same scene.
+    lda PlayVolume
+    beq _DoNothingSkipVol
+    stz FadeFlag
+    sta MSUCurrentVolume
+    sta MSUVolume
+_DoNothingSkipVol:
     jmp OriginalCode
 NotPlaying:
     ; Fall through even on volume=0. EventCmd_f3 sends volume=0 play then a
@@ -761,7 +772,10 @@ WillItLoop:
     beq WILNope
     cmp #$42   ; Overture part 2
     beq WILNope
-    cmp #$43   ; Overture part 3
+    ; $43 (Overture part 3) is NOT here: it plays as looping backstage area music.
+    ; Parts 1 & 2 are one-shot (event uses wait_song after each); part 3 has no wait_song
+    ; and loops indefinitely while the player is free to roam the theater.
+    cmp #$38   ; Nighty Night
     beq WILNope
     cmp #$38   ; Nighty Night
     beq WILNope
@@ -790,6 +804,7 @@ BattleTheme:
     jmp ResumeSupportBT
 ;    jml SpecialHandlingBack ; If not, do our normal stuff.
 ResumeSupportBT:
+    stz FadeInPending ; Harden first battle entry: don't carry stale fade-in intent into battle theme start.
     lda #MSUControl_Pause ; Pause the current track.
     sta MSUControl
     jml SpecialHandlingBack
@@ -857,6 +872,9 @@ OriginalCode:
     beq _OrigCodeZeroVol
     cmp.b #$41
     bcc _OrigCodeMask
+    cmp.b #$43
+    bcc _OrigCodeZeroVol ; $41-$42 (OVERTURE_1/2): zero vol — event uses wait_song, SPC must update APUIO1
+    beq _OrigCodeMask    ; $43 (OVERTURE_3): mask to $51 — free-roam loop, no wait_song, PlayVolume must stay non-zero
     cmp.b #$47
     bcc _OrigCodeZeroVol
     cmp.b #$53
