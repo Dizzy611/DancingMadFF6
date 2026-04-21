@@ -52,6 +52,9 @@
 .DEFINE TrainFlag          $1E34
 .DEFINE FadeInPending      $1E35
 .DEFINE DMOverlayInit      $1E36
+.DEFINE FadeTargetVolume   $1E37  ; Latched fade target — immune to $1302 SFX aliasing
+.DEFINE FadeTickInterval   $1E38  ; NMI frames between fade steps (duration >> 2)
+.DEFINE FadeTickCounter    $1E39  ; Countdown to next fade step
 .DEFINE MSULastTrackSet    $7EF001
 
 ; Runtime copy of ROM metadata for debugger visibility during title flow.
@@ -281,6 +284,10 @@ jml TitleScreenHook
 ; Main Code
 
 CommandHandle:
+    ; Any ExecSound invocation means we're in normal game code, never inside the
+    ; FMV player loop. Clear FMVState so stale values from vanilla save data
+    ; (loaded into WRAM from SRAM at $1E20) don't poison the NMI fade path.
+    stz FMVState
     ; Check for specific commands
     lda PlayCommand
     cmp #SPCSubSong
@@ -321,30 +328,44 @@ setflag:
     jmp OriginalCommand
 
 FadeCommandHandle:
+    ; Compute duration-aware tick interval from PlayTrack ($1301).
+    ; SPC $81 command: PlayTrack = envelope duration (in ~29.3 Hz steps).
+    ; NMI frames per fade step ≈ duration >> 2 (error ~2%).
+    lda PlayTrack
+    lsr a
+    lsr a
+    bne +
+    lda.b #$01              ; minimum 1 — never zero
++
+    sta FadeTickInterval
+    stz FadeTickCounter     ; reset counter for immediate first step
+
     ; If MSU is playing, apply fade intent now. This matters for EventCmd_f3 which
     ; loads the previous song at volume 0 then sends a separate $81 fade-up.
     lda MSUCurrentTrack
     beq _FadeCmdNoActiveMSU
 
+    ; Latch target volume so NMI fade is immune to $1302 SFX aliasing.
     lda PlayVolume
+    sta FadeTargetVolume
     beq _FadeCmdToZero
 
     cmp MSUCurrentVolume
     beq _FadeCmdClearPending
     bcs _FadeCmdUp
 
-    lda #$02
+    lda.b #$02
     sta FadeFlag
     stz FadeInPending
     jmp OriginalCommand
 
 _FadeCmdUp:
-    lda #$03
+    lda.b #$03
     sta FadeFlag
     ; Seed from silence so fade-up is audible right away.
     lda MSUCurrentVolume
     bne _FadeCmdClearPending
-    lda PlayVolume
+    lda FadeTargetVolume
     cmp.b #FadeInStartVolume
     bcc _FadeCmdClearPending
     lda.b #FadeInStartVolume
@@ -353,7 +374,7 @@ _FadeCmdUp:
     bra _FadeCmdClearPending
 
 _FadeCmdToZero:
-    lda #$01
+    lda.b #$01
     sta FadeFlag
 
 _FadeCmdClearPending:
@@ -363,7 +384,7 @@ _FadeCmdClearPending:
 _FadeCmdNoActiveMSU:
     lda PlayVolume
     beq +
-    lda #$01
+    lda.b #$01
     sta FadeInPending
     jmp OriginalCommand
 +
@@ -663,23 +684,30 @@ WaitMSU:
 PlayMSU:
     ; If a fade-in is pending, seed a low volume and let the NMI fade handle it.
     lda FadeInPending
-    cmp #$01
+    cmp.b #$01
     bne _PlayMSUImmediateVolume
     stz FadeInPending
     lda PlayVolume
     cmp.b #FadeInStartVolume
     bcc _PlayMSUImmediateVolume
+    ; Latch the target and start fade-up.
+    lda PlayVolume
+    sta FadeTargetVolume
     lda.b #FadeInStartVolume
     sta MSUCurrentVolume
     sta MSUVolume
     lda.b #$03
     sta FadeFlag
+    ; Deferred fades lack an $81 duration; use a sensible default (~533ms).
+    lda.b #$04
+    sta FadeTickInterval
+    stz FadeTickCounter
     bra _PlayMSUVolumeReady
 _PlayMSUImmediateVolume:
+    stz FadeFlag
     lda PlayVolume
     sta MSUCurrentVolume
     sta MSUVolume
-    stz FadeFlag
 _PlayMSUVolumeReady:
     ; Set our currently playing track to this one.
     lda PlayTrack
@@ -856,6 +884,9 @@ ShutUp:
     stz MSUCurrentTrack
     stz FadeInPending
     stz FadeFlag
+    stz FadeTargetVolume
+    stz FadeTickInterval
+    stz FadeTickCounter
     stz MSUVolume
     stz MSUTrack
     stz MSUTrack+1
@@ -896,6 +927,9 @@ ShutUpAndLetMeTalk:
     stz MSUCurrentTrack
     stz FadeInPending
     stz FadeFlag
+    stz FadeTargetVolume
+    stz FadeTickInterval
+    stz FadeTickCounter
     stz MSUVolume
     stz MSUTrack
     stz MSUTrack+1
@@ -942,10 +976,39 @@ _NMIHandleDone:
 ; End Subroutines
 
 ; Fade routine - Credit goes to Conn
+; Enhanced with duration-aware frame-skip and latched target volume.
 FadeRoutine:
     sep #$20
     lda FadeFlag
     beq _EndFadeRoutine
+    ; Frame-skip logic:
+    ; - Fade-up ($03): always apply frame-skip. PlaySong has already fired (song
+    ;   loads at silence then fades in), so there is no race condition.
+    ; - Fade-down/zero ($01/$02): apply frame-skip only when FadeTickInterval >= $08
+    ;   (i.e. SPC duration >= $20, ~1092ms). Short fades (e.g. battle exit dur=$10)
+    ;   fire PlaySong immediately after on game logic timers — frame-skip would
+    ;   leave us at high volume when the hard-cut hits. Long fades occur in
+    ;   event-script transitions gated on wait_fade (screen fade), giving our
+    ;   audio fade time to complete at SPC-matched speed.
+    ;   NOTE: fades with dur < $20 in a wait_fade context will still complete in
+    ;   133ms rather than SPC time — acceptable since those fades are short enough
+    ;   to be barely perceptible at either speed.
+    cmp.b #$03
+    beq _FadeCheckSkip      ; fade-up: always check skip
+    lda FadeTickInterval
+    cmp.b #$08              ; duration >= $20 SPC ticks ($20>>2=$08)?
+    bcc _FadeTickReady      ; below threshold: run every frame, no skip
+_FadeCheckSkip:
+    lda FadeTickCounter
+    beq _FadeTickReady
+    dec FadeTickCounter
+    bra _EndFadeRoutine
+_FadeTickReady:
+    ; Reload interval for next step.
+    lda FadeTickInterval
+    sta FadeTickCounter
+    ; Dispatch on fade type.
+    lda FadeFlag
     cmp.b #$01
     beq _FadeZero
     cmp.b #$02
@@ -962,12 +1025,12 @@ _FadeZero:
     sec
     sbc.b #FadeStep
     bcs +                   ; no underflow, check if result is near zero
-    lda.b #$00              ; underflow: volume was < $0A, snap to zero
+    lda.b #$00              ; underflow: volume was < FadeStep, snap to zero
     sta FadeFlag            ; erase fade flag
     bra _FadeZeroStore
 +
     cmp.b #FadeStep
-    bcs _FadeZeroStore      ; result >= $0A, just store it
+    bcs _FadeZeroStore      ; result >= FadeStep, just store it
     lda.b #$00
     sta FadeFlag            ; erase fade flag
 _FadeZeroStore:
@@ -983,12 +1046,12 @@ _FadeDown:
     lda MSUCurrentVolume
     sec
     sbc.b #FadeStep
-    bcc +                   ; underflow: snap to PlayVolume
-    cmp PlayVolume          ; gone below the target volume?
+    bcc +                   ; underflow: snap to FadeTargetVolume
+    cmp FadeTargetVolume    ; gone below the target volume?
     bcs _FadeDownStore      ; if still >= target, just store
 +
     stz FadeFlag
-    lda PlayVolume          ; current volume = target volume
+    lda FadeTargetVolume    ; current volume = target volume
 _FadeDownStore:
     sta MSUCurrentVolume
     sta MSUVolume
@@ -999,19 +1062,18 @@ _FadeUp:
     lda MSUCurrentVolume
     clc
     adc.b #FadeStep
-    bcs +                   ; overflow: cap to $FF
+    bcs +                   ; overflow: cap to target
     cmp.b #FadeStepClamp    ; safety: cap before the next step would wrap
     bcc _FadeUpCheck
 +
-    lda.b #$FF
-    sta PlayVolume
+    lda FadeTargetVolume
     bra _FadeUpClear
 _FadeUpCheck:
-    cmp PlayVolume          ; did we reach the target volume?
+    cmp FadeTargetVolume    ; did we reach the target volume?
     bcc _FadeUpStore
 _FadeUpClear:
     stz FadeFlag
-    lda PlayVolume          ; current volume = target volume
+    lda FadeTargetVolume    ; current volume = target volume
 _FadeUpStore:
     sta MSUCurrentVolume
     sta MSUVolume
@@ -1656,9 +1718,13 @@ FMV_StartAudio:
 FMV_StopAudio:
     sep #$20
     rep #$10
+    stz FMVState
     stz MSUCurrentTrack
     stz FadeInPending
     stz FadeFlag
+    stz FadeTargetVolume
+    stz FadeTickInterval
+    stz FadeTickCounter
     stz MSUVolume
     stz MSUTrack
     stz MSUTrack+1
